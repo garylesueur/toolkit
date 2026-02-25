@@ -1,7 +1,7 @@
-import Link from "next/link"
-import { tools } from "@/lib/tools"
-import { RiArrowRightLine, RiToolsFill } from "@remixicon/react"
+import { Suspense } from "react"
+import { RiToolsFill } from "@remixicon/react"
 import { Badge } from "@/components/ui/badge"
+import { ToolsExplorer } from "@/components/tools-explorer"
 
 export default function Page() {
   return (
@@ -34,34 +34,9 @@ export default function Page() {
           </p>
         </section>
 
-        <section className="mx-auto max-w-5xl px-6 pb-24">
-          <h2 className="text-muted-foreground mb-6 text-xs font-semibold uppercase tracking-widest">
-            Tools
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool) => (
-              <Link
-                key={tool.href}
-                href={tool.href}
-                className="group relative flex flex-col gap-4 rounded-xl border border-border/60 bg-card p-6 transition-all duration-200 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5"
-              >
-                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
-                  <tool.icon className="size-5" />
-                </div>
-                <div className="flex flex-1 flex-col gap-1">
-                  <h3 className="text-sm font-semibold">{tool.name}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {tool.description}
-                  </p>
-                </div>
-                <div className="text-muted-foreground flex items-center gap-1 text-xs font-medium transition-colors group-hover:text-primary">
-                  Open tool
-                  <RiArrowRightLine className="size-3 transition-transform group-hover:translate-x-0.5" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+        <Suspense>
+          <ToolsExplorer />
+        </Suspense>
       </main>
 
       <footer className="border-t border-border/60">

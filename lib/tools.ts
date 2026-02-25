@@ -1,5 +1,6 @@
 import type { RemixiconComponentType } from "@remixicon/react"
 import {
+  RiCollapseDiagonalLine,
   RiImageFill,
   RiGlobalLine,
   RiFingerprintLine,
@@ -18,6 +19,12 @@ import {
   RiRulerLine,
   RiEyeLine,
   RiPuzzleLine,
+  RiMarkdownLine,
+  RiCalendarScheduleLine,
+  RiFileImageLine,
+  RiQrCodeLine,
+  RiSortAsc,
+  RiImageAddLine,
 } from "@remixicon/react"
 
 export type Tool = {
@@ -135,5 +142,47 @@ export const tools: Tool[] = [
     description: "Spot invisible and non-printing characters hiding in your text.",
     href: "/tools/hidden-characters",
     icon: RiEyeLine,
+  },
+  {
+    name: "Markdown Preview",
+    description: "Write Markdown and see a live rendered preview side by side.",
+    href: "/tools/markdown-preview",
+    icon: RiMarkdownLine,
+  },
+  {
+    name: "Image Compressor / Resizer",
+    description: "Compress and resize images with adjustable quality and format.",
+    href: "/tools/image-compressor",
+    icon: RiCollapseDiagonalLine,
+  },
+  {
+    name: "Cron Expression Explainer",
+    description: "Decode cron expressions into plain English and preview upcoming run times.",
+    href: "/tools/cron-explainer",
+    icon: RiCalendarScheduleLine,
+  },
+  {
+    name: "SVG to PNG / JPEG Converter",
+    description: "Convert SVG files to rasterised PNG or JPEG at any size.",
+    href: "/tools/svg-converter",
+    icon: RiFileImageLine,
+  },
+  {
+    name: "QR Code Generator",
+    description: "Enter text or a URL to generate a QR code. Download as SVG or PNG.",
+    href: "/tools/qr-code-generator",
+    icon: RiQrCodeLine,
+  },
+  {
+    name: "Tailwind Class Sorter",
+    description: "Paste a className string and get it back sorted in the recommended Tailwind order.",
+    href: "/tools/tailwind-sorter",
+    icon: RiSortAsc,
+  },
+  {
+    name: "Placeholder Image Generator",
+    description: "Pick dimensions, colours, and overlay text — get a downloadable placeholder PNG or a data URL.",
+    href: "/tools/placeholder-image",
+    icon: RiImageAddLine,
   },
 ]
