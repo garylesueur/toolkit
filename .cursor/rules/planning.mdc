@@ -1,0 +1,60 @@
+---
+description: How agents must structure and execute plans
+alwaysApply: true
+---
+
+# Planning Protocol
+
+When this rule is explicitly invoked (e.g. the user references `planning.mdc` or asks you to follow the planning protocol), you **must** switch to Plan mode using the `SwitchMode` tool before doing anything else.
+
+When a task requires a plan, follow this protocol strictly.
+
+## Step Design
+
+Break the work into **small, focused steps** with clear boundaries. Steps should be grouped by the nature of the work — for example:
+
+- Installing or adding dependencies
+- Deleting or removing files/code
+- Working on a specific area or feature section
+- Configuration changes
+- Database or schema changes
+
+Each step must have a **clear scope boundary**: a description of exactly what it covers and what it does not touch. Steps should be small enough to execute without building up excessive context.
+
+Note the **order** of steps:
+- Where one step depends on another, mark it as ordered.
+- Where steps are independent, note that they could be done in any order (but still do them one at a time unless told otherwise).
+
+## Before Starting
+
+**Never begin executing until the user gives the go-ahead.**
+
+Present the full plan first:
+
+1. Step number, name, and a one-line description
+2. What will be changed or created
+3. What is explicitly out of scope for that step
+
+Wait for explicit approval before starting. The user may instruct you to run multiple steps together — that is fine, do exactly what is asked.
+
+## During Execution
+
+- Execute one step at a time unless instructed otherwise.
+- Use a subagent for steps that would otherwise cause context to grow too large.
+- Each step (or subagent) receives only the context relevant to that step — no more.
+- After completing a step, confirm the outcome before proceeding to the next.
+
+## Quality Gates (per step)
+
+Every step must leave the codebase in a valid state before it is considered complete:
+
+- **Coding guidelines**: All changes must follow the project coding guidelines (see `coding-guidelines.mdc`).
+- **DRY check**: Before marking a step done, verify no logic introduced by the step is duplicated across files. If the same pattern appears in more than one place, extract it into a shared helper before completing the step.
+- **No TypeScript errors**: The step must not introduce TypeScript errors. Check after changes and fix any before marking the step done.
+- **No linter errors**: Resolve any linter errors introduced by the step.
+
+If a step cannot be completed without violating these gates, stop and report the blocker rather than proceeding.
+
+## Strict Scope Boundary
+
+> **Never modify, delete, or create anything outside the boundaries of the current step.** If something outside scope seems necessary, stop and surface it — propose it as a new step and wait for approval before acting.

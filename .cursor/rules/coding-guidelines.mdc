@@ -1,0 +1,197 @@
+---
+description: Core coding guidelines and standards for the project
+alwaysApply: true
+---
+
+# Coding Guidelines
+
+## Documentation
+
+- **Document very well**: Add clear comments and JSDoc where behaviour is non-obvious or APIs are public.
+- Document intent, edge cases, and non-obvious assumptions.
+- Keep docs close to the code they describe.
+
+## TypeScript
+
+- **Do not use `any` or `unknown`**: Prefer explicit types everywhere.
+- If a type is complex or used in multiple places, define it once and reuse it.
+
+## DRY (Don't Repeat Yourself)
+
+- Extract repeated logic into shared functions or modules.
+- If you write the same pattern more than once, factor it out.
+
+## File Organisation
+
+- **Split large files up**: Keep files focused and reasonably sized.
+- One primary concern per file; extract sub-modules when a file grows unwieldy.
+
+## Types and Imports
+
+- **Don't inline types**: Define types, interfaces, and type aliases in dedicated declarations (either in the same file for local use or in a shared types module).
+- **Don't inline imports**: Put each import on its own line; avoid chained or inline import expressions.
+
+```typescript
+// ❌ BAD – inline type
+function process(data: { id: string; name: string }) {}
+
+// ✅ GOOD – named type
+interface ProcessInput {
+  id: string;
+  name: string;
+}
+function process(data: ProcessInput) {}
+```
+
+## Exports
+
+- **No barrel exports**: Never use `export * from`. Always use explicit named re-exports so the public surface is clear and tree-shaking works reliably.
+- **No default exports**: Always use named exports. Default exports make renaming implicit, hurt grep-ability, and lead to inconsistent import names across the codebase.
+
+```typescript
+// ❌ BAD – barrel export
+export * from './utils';
+
+// ✅ GOOD – explicit named re-exports
+export { formatDate } from './format-date';
+export { parseConfig } from './parse-config';
+```
+
+```typescript
+// ❌ BAD – default export
+export default function formatDate(date: Date): string { /* ... */ }
+
+// ✅ GOOD – named export
+export function formatDate(date: Date): string { /* ... */ }
+```
+
+## Object-Oriented Style
+
+- **Prefer object-factory pattern over `class`** wherever plausible.
+- Use plain functions that return objects with methods; avoids `this` binding issues and plays well with composition.
+
+```typescript
+// ❌ BAD – class
+class Recorder {
+  constructor(private config: Config) {}
+  start() { /* ... */ }
+}
+
+// ✅ GOOD – object factory
+interface Recorder {
+  start: () => void;
+}
+function createRecorder(config: Config): Recorder {
+  return {
+    start() { /* ... */ },
+  };
+}
+```
+
+## Iteration
+
+- **Prefer `for...of` over `.forEach()`** for loops.
+- `for...of` allows `break`, `continue`, and `return`; is often faster; and avoids callback scope issues.
+
+## Error Handling
+
+- Never swallow errors silently; always log or rethrow with context.
+- Use custom error classes for domain-specific failures.
+- Avoid empty `catch` blocks.
+
+## Naming
+
+- Use descriptive names; avoid abbreviations except common ones (e.g. `id`, `url`).
+- Use camelCase for variables/functions; PascalCase for types and components.
+
+## Functions
+
+- Keep functions small and single-purpose.
+- Prefer an options object when a function has three or more parameters.
+
+## Magic Values
+
+- Extract magic numbers and string literals into named constants.
+- Document non-obvious values.
+
+## Async
+
+- Prefer `async`/`await` over raw `Promise` chains.
+- Handle all promise rejections explicitly.
+
+## Comments
+
+- Prefer self-documenting code; comment *why*, not *what*.
+- Delete obsolete or redundant comments.
+
+## Logging
+
+- **Always use `@ramblecam/logger`**: Never use `console.log`/`console.error` in server code (browser extensions may use console as a fallback).
+- **Use the context logger in request handlers**: Prefer `context.log` from middleware so `correlationId`/`userId`/`organisationId` are automatically included.
+- **Standalone loggers**: Use `createServerLogger("service")` only for code outside request context (startup, scripts, background jobs).
+- **Message format**: The message string must be human-readable using template-literal interpolation. Structured/searchable fields go in `withMetadata()` or `withContext()`.
+
+```typescript
+// ✅ GOOD – searchable metadata + interpolated message
+log.withMetadata({ documentId }).info(`Publishing document ${documentId}`);
+
+// ✅ GOOD – error with searchable metadata
+log.withError(error).withMetadata({ documentId }).error(`Failed to publish document ${documentId}`);
+
+// ❌ BAD – no human-readable message
+log.withMetadata({ documentId, action: "publish" }).info("");
+
+// ❌ BAD – searchable fields buried in message string only
+log.info(`Publishing document ${documentId} for org ${organisationId}`);
+```
+
+- **Propagate the logger**: Always pass the logger (`log` parameter) to shared functions to preserve context.
+- **Log operations**: Log both start and completion of significant operations.
+
+## Environment Variables
+
+- **Never fall back to insecure defaults for secrets or security-sensitive config.** If a required env var (API keys, auth secrets, base URLs used for auth/CORS) is missing, throw an error at startup rather than silently using a dev placeholder. Silent fallbacks mask misconfiguration and can ship insecure defaults to production.
+- Fallbacks to `localhost` URLs are acceptable **only** for non-sensitive, developer-convenience config (e.g. an upload-server address used in local dev).
+
+```typescript
+// ❌ BAD – silent fallback for a secret
+const secret = process.env.AUTH_SECRET ?? "dev-secret-change-me";
+
+// ❌ BAD – silent fallback for a security-sensitive URL
+const baseURL = process.env.AUTH_URL ?? "http://localhost:3020";
+
+// ✅ GOOD – fail fast
+const secret = process.env.AUTH_SECRET;
+if (!secret) throw new Error("AUTH_SECRET must be set");
+```
+
+## Security
+
+- Never log credentials, tokens, or PII.
+- Validate and sanitise external input at boundaries.
+
+### Identity from Session
+
+`userId` and `organizationId` used in server operations must **always** come from the authenticated session — never from user-controlled input (request body, query params, URL params, or headers). This applies to any operation that concerns a user's own private data: listing videos, creating uploads, deleting content, reading private resources, etc.
+
+**TanStack Start server functions:** Use `context.userId` and `context.organizationId` from middleware (set by `authenticationMiddleware` or `adminMiddleware`).
+
+**Express routes:** Use `req.auth.user.id` and `req.auth.session.activeOrganizationId` (set by `requireAuth` or `optionalAuth`).
+
+DB-authoritative lookups (e.g. looking up `organizationId` from a video row to route a file on disk) are fine — the source is the database, not the client.
+
+```typescript
+// ❌ BAD – organisation ID from user input
+const orgId = req.body.organizationId;
+await listVideos({ organizationId: orgId });
+
+// ✅ GOOD – organisation ID from session (set by requireAuth middleware)
+const orgId = req.auth.session.activeOrganizationId;
+await listVideos({ organizationId: orgId });
+```
+
+## Dialogs and URL State
+
+- **Use query params for modal dialogs**: When a dialog’s visibility should be reflected in the URL (e.g. shareable links, back-button support), drive the dialog’s open state from query params.
+- **Validate search params**: Add `validateSearch` to the route so the dialog param is typed and parsed correctly.
+- **Sync on change**: When the dialog opens or closes, update the URL via `navigate({ search: { … } })` so the URL stays in sync and users can close via the back button.
