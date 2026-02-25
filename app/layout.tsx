@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 import "./globals.css";
 
+export const revalidate = 31536000; // 1 year
+
 const publicSans = Public_Sans({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
@@ -14,9 +16,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_DESCRIPTION =
+  "A growing collection of handy developer utilities — no sign-ups, no nonsense. By Gary Le Sueur.";
+
 export const metadata: Metadata = {
-  title: "LeSueur Toolkit",
-  description: "A developer's toolkit by LeSueur — handy utilities for everyday dev work.",
+  metadataBase: new URL("https://toolkit.lesueur.uk"),
+  title: {
+    template: "%s | Le Sueur Toolkit",
+    default: "Le Sueur Toolkit — Developer Utilities",
+  },
+  description: SITE_DESCRIPTION,
+  authors: [{ name: "Gary Le Sueur" }],
+  openGraph: {
+    type: "website",
+    siteName: "Le Sueur Toolkit",
+    locale: "en_GB",
+    title: "Le Sueur Toolkit — Developer Utilities",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
