@@ -1,11 +1,13 @@
 import type { MetadataRoute } from "next";
 
-export default function robots(): MetadataRoute.Robots {
+const BASE_URL = "https://toolkit.lesueur.uk";
+
+export function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://toolkit.lesueur.uk/sitemap.xml",
+    sitemap: `${BASE_URL}/sitemap.xml`,
   };
 }
