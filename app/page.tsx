@@ -12,7 +12,7 @@ export default function Page() {
             <RiToolsFill className="size-4" />
           </div>
           <span className="text-sm font-semibold tracking-tight">
-            Le Sueur Toolkit
+            Toolkit
           </span>
         </div>
       </header>

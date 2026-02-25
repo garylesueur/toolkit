@@ -22,16 +22,16 @@ const SITE_DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL("https://toolkit.lesueur.uk"),
   title: {
-    template: "%s | Le Sueur Toolkit",
-    default: "Le Sueur Toolkit — Developer Utilities",
+    template: "%s | Toolkit",
+    default: "Toolkit — Developer Utilities",
   },
   description: SITE_DESCRIPTION,
   authors: [{ name: "Gary Le Sueur" }],
   openGraph: {
     type: "website",
-    siteName: "Le Sueur Toolkit",
+    siteName: "Toolkit",
     locale: "en_GB",
-    title: "Le Sueur Toolkit — Developer Utilities",
+    title: "Toolkit — Developer Utilities",
     description: SITE_DESCRIPTION,
   },
   twitter: {
