@@ -124,74 +124,19 @@ function createRecorder(config: Config): Recorder {
 - Prefer self-documenting code; comment *why*, not *what*.
 - Delete obsolete or redundant comments.
 
-## Logging
+## Rendering and Client Components
 
-- **Always use `@ramblecam/logger`**: Never use `console.log`/`console.error` in server code (browser extensions may use console as a fallback).
-- **Use the context logger in request handlers**: Prefer `context.log` from middleware so `correlationId`/`userId`/`organisationId` are automatically included.
-- **Standalone loggers**: Use `createServerLogger("service")` only for code outside request context (startup, scripts, background jobs).
-- **Message format**: The message string must be human-readable using template-literal interpolation. Structured/searchable fields go in `withMetadata()` or `withContext()`.
+- **Server-side rendering by default**: Next.js pages are server components unless marked otherwise. Prefer SSR where possible for performance and SEO.
+- **Client components are fine**: Use `"use client"` freely for interactive tool pages. Most tool pages will need client-side state and that is expected.
+- **Keep page shells server-rendered when practical**: If a tool page can render a meaningful static shell (heading, description) on the server and delegate interactivity to a child client component, prefer that pattern. It is not required — a fully client-rendered page is acceptable when the split adds no value.
 
-```typescript
-// ✅ GOOD – searchable metadata + interpolated message
-log.withMetadata({ documentId }).info(`Publishing document ${documentId}`);
+## SEO and Metadata
 
-// ✅ GOOD – error with searchable metadata
-log.withError(error).withMetadata({ documentId }).error(`Failed to publish document ${documentId}`);
-
-// ❌ BAD – no human-readable message
-log.withMetadata({ documentId, action: "publish" }).info("");
-
-// ❌ BAD – searchable fields buried in message string only
-log.info(`Publishing document ${documentId} for org ${organisationId}`);
-```
-
-- **Propagate the logger**: Always pass the logger (`log` parameter) to shared functions to preserve context.
-- **Log operations**: Log both start and completion of significant operations.
-
-## Environment Variables
-
-- **Never fall back to insecure defaults for secrets or security-sensitive config.** If a required env var (API keys, auth secrets, base URLs used for auth/CORS) is missing, throw an error at startup rather than silently using a dev placeholder. Silent fallbacks mask misconfiguration and can ship insecure defaults to production.
-- Fallbacks to `localhost` URLs are acceptable **only** for non-sensitive, developer-convenience config (e.g. an upload-server address used in local dev).
-
-```typescript
-// ❌ BAD – silent fallback for a secret
-const secret = process.env.AUTH_SECRET ?? "dev-secret-change-me";
-
-// ❌ BAD – silent fallback for a security-sensitive URL
-const baseURL = process.env.AUTH_URL ?? "http://localhost:3020";
-
-// ✅ GOOD – fail fast
-const secret = process.env.AUTH_SECRET;
-if (!secret) throw new Error("AUTH_SECRET must be set");
-```
+- **Every tool page must export `metadata`** (or `generateMetadata`) with at minimum `title`, `description`, and Open Graph fields (`openGraph.title`, `openGraph.description`). Use the shared metadata helpers in `lib/tools-metadata.ts` where available.
+- **Keep `app/sitemap.ts` up to date**: When adding or removing a tool, ensure it appears in (or is removed from) the sitemap. The sitemap should be generated from the canonical tool list in `lib/tools.ts`.
+- **Keep `app/robots.ts` up to date**: Ensure the robots config allows crawling of all public tool pages and references the sitemap.
+- **Canonical tool list is the source of truth**: The tool registry in `lib/tools.ts` drives the home page, sitemap, and any other discovery surface. A new tool is not complete until it is registered there.
 
 ## Security
 
-- Never log credentials, tokens, or PII.
 - Validate and sanitise external input at boundaries.
-
-### Identity from Session
-
-`userId` and `organizationId` used in server operations must **always** come from the authenticated session — never from user-controlled input (request body, query params, URL params, or headers). This applies to any operation that concerns a user's own private data: listing videos, creating uploads, deleting content, reading private resources, etc.
-
-**TanStack Start server functions:** Use `context.userId` and `context.organizationId` from middleware (set by `authenticationMiddleware` or `adminMiddleware`).
-
-**Express routes:** Use `req.auth.user.id` and `req.auth.session.activeOrganizationId` (set by `requireAuth` or `optionalAuth`).
-
-DB-authoritative lookups (e.g. looking up `organizationId` from a video row to route a file on disk) are fine — the source is the database, not the client.
-
-```typescript
-// ❌ BAD – organisation ID from user input
-const orgId = req.body.organizationId;
-await listVideos({ organizationId: orgId });
-
-// ✅ GOOD – organisation ID from session (set by requireAuth middleware)
-const orgId = req.auth.session.activeOrganizationId;
-await listVideos({ organizationId: orgId });
-```
-
-## Dialogs and URL State
-
-- **Use query params for modal dialogs**: When a dialog’s visibility should be reflected in the URL (e.g. shareable links, back-button support), drive the dialog’s open state from query params.
-- **Validate search params**: Add `validateSearch` to the route so the dialog param is typed and parsed correctly.
-- **Sync on change**: When the dialog opens or closes, update the URL via `navigate({ search: { … } })` so the URL stays in sync and users can close via the back button.
