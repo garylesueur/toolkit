@@ -28,6 +28,7 @@ import {
   RiLink,
   RiLinksLine,
   RiLockLine,
+  RiLockPasswordLine,
   RiMarkdownLine,
   RiPaletteLine,
   RiPuzzleLine,
@@ -282,5 +283,17 @@ export const tools: Tool[] = [
     description: "A searchable reference of all HTTP status codes with descriptions and use cases.",
     href: "/tools/http-status-codes",
     icon: RiServerLine,
+  },
+  {
+    name: "Password Generator",
+    description: "Generate secure random passwords with configurable length and character sets.",
+    href: "/tools/password-generator",
+    icon: RiLockPasswordLine,
+  },
+  {
+    name: "Secret / Token Generator",
+    description: "Generate cryptographically random secrets and tokens for API keys, JWT secrets, and more.",
+    href: "/tools/secret-generator",
+    icon: RiShieldKeyholeLine,
   },
 ]
