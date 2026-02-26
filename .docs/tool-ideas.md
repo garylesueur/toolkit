@@ -110,18 +110,68 @@ Pick dimensions, background colour, and overlay text — get a downloadable plac
 
 ---
 
-## Tier 4 — Larger
+## Tier 4 — Date & Time
 
-May need an external library or a server-side component.
+Client-side date and time utilities. Builds on the existing Unix Timestamp Converter.
 
-### 23. API Request Builder
+### 23. Date / Time Formatter
 
-A mini Postman — set HTTP method, URL, headers, and body, fire the request, and inspect the response with syntax-highlighted JSON.
+Enter a date (or use "now") and see it formatted in dozens of common patterns: ISO 8601, RFC 2822, relative ("3 days ago"), locale-specific formats, SQL datetime, and format strings for Go, Python, and JavaScript. Pick a format, click to copy.
 
-### 24. SQL Formatter
+### 24. Time Zone Converter
 
-Paste raw SQL and get it pretty-printed with keyword highlighting and consistent indentation.
+Pick a date and time, then see it displayed across multiple time zones simultaneously. Add and remove zones from a saved list. Great for coordinating across distributed teams or debugging server logs in UTC vs local time.
 
-### 25. TypeScript Playground
+### 25. Duration Calculator
 
-Paste TypeScript, see the compiled JavaScript output and any type errors. Would need a WASM-based TypeScript compiler.
+Enter two dates (or a date and "now") and see the duration between them in every useful unit: years/months/days, total days, total hours, total minutes, total seconds, total milliseconds. Also works in reverse — enter a duration and a start date, get the end date.
+
+### 26. Relative Date Calculator
+
+"What date is 90 business days from today?" or "45 days before 2026-03-15?" Enter a base date and an offset (days, weeks, months, or business days) and get the result. Handy for deadline calculations, sprint planning, and contract terms.
+
+### 27. Week Number Lookup
+
+Enter a date, get the ISO week number. Or enter a week number and year, get the date range for that week. Useful in European business contexts and anywhere ISO weeks come up.
+
+### 28. Epoch Batch Converter
+
+Paste a block of text containing timestamps (log files, database dumps, JSON payloads) and get every timestamp converted to a human-readable date inline, preserving the surrounding text. Like the Unix Timestamp Converter but for bulk / embedded timestamps.
+
+---
+
+## Tier 5 — More Developer Utilities
+
+Miscellaneous client-side tools developers reach for regularly.
+
+### 29. Number Base Converter
+
+Convert between decimal, hexadecimal, octal, and binary. Enter a number in any base, see all the others instantly. Supports large integers. Useful for bitwise operations, colour values, file permissions, and memory addresses.
+
+### 30. Byte / Bit Size Converter
+
+Enter a value like "1.5 GB" and see it in bytes, KB, MB, GB, and TB — in both SI (1000-based) and binary (1024-based) units. Useful for storage calculations, bandwidth estimates, and file size limits.
+
+### 31. Aspect Ratio Calculator
+
+Enter a width and height, get the simplified aspect ratio. Or enter an aspect ratio and one dimension, get the other. Useful for responsive design, video encoding, and image cropping.
+
+### 32. Chmod Calculator
+
+Toggle read/write/execute for owner/group/other and see the numeric (e.g. `755`) and symbolic (e.g. `rwxr-xr-x`) representations. Or enter a number and see the permission breakdown.
+
+### 33. CIDR / Subnet Calculator
+
+Enter a CIDR notation (e.g. `192.168.1.0/24`) and see the network address, broadcast address, usable host range, total hosts, wildcard mask, and subnet mask.
+
+### 34. Slug Generator
+
+Paste a title or sentence, get a URL-friendly slug. Options for separator (hyphen vs underscore), max length, and transliteration of accented characters.
+
+### 35. Case Converter
+
+Paste text and convert between camelCase, PascalCase, snake_case, kebab-case, SCREAMING_SNAKE_CASE, Title Case, and Sentence case. Developers switch between naming conventions constantly.
+
+### 36. HTTP Status Code Reference
+
+A searchable, categorised reference of all HTTP status codes with descriptions, common use cases, and which ones are cacheable or retryable. A quick-reference card rather than a converter.

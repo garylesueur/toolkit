@@ -43,6 +43,18 @@ export function formatDateTime(date: Date | number | string): string {
   return dateTimeFormatter.format(new Date(date))
 }
 
+/** Formats a Date for use in an HTML datetime-local input (YYYY-MM-DDTHH:mm). */
+export function formatDateTimeLocalForInput(date: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, "0")
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+/** Formats a Date for use in an HTML date input (YYYY-MM-DD). */
+export function formatDateForInput(date: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, "0")
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
 export function formatRelative(date: Date | number | string): string {
   let duration = (new Date(date).getTime() - Date.now()) / 1000
 

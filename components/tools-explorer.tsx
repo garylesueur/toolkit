@@ -1,16 +1,14 @@
 "use client"
 
-import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import { useCallback, useMemo, useRef, useTransition } from "react"
-import { RiSearchLine, RiCloseLine } from "@remixicon/react"
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton, InputGroupText } from "@/components/ui/input-group"
+import { useSearchParams } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
 import { ToolCard } from "@/components/tool-card"
 import { useFavourites } from "@/hooks/use-favourites"
 import { tools } from "@/lib/tools"
 import type { Tool } from "@/lib/tools"
 
 const SEARCH_PARAM_KEY = "q"
-const DEBOUNCE_MS = 300
+const STATIC_GRID_ID = "static-tools-grid"
 
 function matchesQuery(tool: Tool, query: string): boolean {
   const lower = query.toLowerCase()
@@ -20,45 +18,24 @@ function matchesQuery(tool: Tool, query: string): boolean {
   )
 }
 
+/**
+ * Client-side interactive tool grid with search filtering and favourites.
+ * On mount, hides the server-rendered `ToolsGrid` (`#static-tools-grid`)
+ * and renders its own interactive version in its place.
+ */
 export function ToolsExplorer() {
   const searchParams = useSearchParams()
-  const router = useRouter()
-  const pathname = usePathname()
-  const [, startTransition] = useTransition()
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
   const query = searchParams.get(SEARCH_PARAM_KEY) ?? ""
   const { isFavourite, toggleFavourite } = useFavourites()
+  const [mounted, setMounted] = useState(false)
 
-  const updateSearchParam = useCallback(
-    (value: string) => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-
-      debounceRef.current = setTimeout(() => {
-        startTransition(() => {
-          const params = new URLSearchParams(searchParams.toString())
-          if (value) {
-            params.set(SEARCH_PARAM_KEY, value)
-          } else {
-            params.delete(SEARCH_PARAM_KEY)
-          }
-          const qs = params.toString()
-          router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false })
-        })
-      }, DEBOUNCE_MS)
-    },
-    [searchParams, router, pathname, startTransition],
-  )
-
-  const clearSearch = useCallback(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    startTransition(() => {
-      const params = new URLSearchParams(searchParams.toString())
-      params.delete(SEARCH_PARAM_KEY)
-      const qs = params.toString()
-      router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false })
-    })
-  }, [searchParams, router, pathname, startTransition])
+  useEffect(() => {
+    const staticGrid = document.getElementById(STATIC_GRID_ID)
+    if (staticGrid) {
+      staticGrid.hidden = true
+    }
+    setMounted(true)
+  }, [])
 
   const sortedTools = useMemo(() => {
     const filtered = query
@@ -79,41 +56,12 @@ export function ToolsExplorer() {
     return [...favourites, ...rest]
   }, [query, isFavourite])
 
-  return (
-    <section className="mx-auto max-w-5xl px-6 pb-24">
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <h2 className="text-muted-foreground text-xs font-semibold uppercase tracking-widest">
-          Tools
-        </h2>
-        <div className="w-full max-w-xs">
-          <InputGroup>
-            <InputGroupAddon align="inline-start">
-              <InputGroupText>
-                <RiSearchLine className="size-4" />
-              </InputGroupText>
-            </InputGroupAddon>
-            <InputGroupInput
-              placeholder="Search tools…"
-              defaultValue={query}
-              onChange={(e) => updateSearchParam(e.target.value)}
-              aria-label="Search tools"
-            />
-            {query && (
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
-                  size="icon-xs"
-                  variant="ghost"
-                  onClick={clearSearch}
-                  aria-label="Clear search"
-                >
-                  <RiCloseLine className="size-3.5" />
-                </InputGroupButton>
-              </InputGroupAddon>
-            )}
-          </InputGroup>
-        </div>
-      </div>
+  if (!mounted) {
+    return null
+  }
 
+  return (
+    <section className="mx-auto max-w-5xl px-6 pt-8 pb-24">
       {sortedTools.length === 0 ? (
         <p className="text-muted-foreground py-12 text-center text-sm">
           No tools match &ldquo;{query}&rdquo;

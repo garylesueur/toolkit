@@ -4,8 +4,9 @@ import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RiTimeLine, RiFileCopyLine, RiCheckLine } from "@remixicon/react"
-import { formatDateTime, formatRelative } from "@/lib/shared/date"
+import { RiTimeLine } from "@remixicon/react"
+import { CopyableRow } from "@/components/copyable-row"
+import { formatDateTime, formatRelative, formatDateTimeLocalForInput } from "@/lib/shared/date"
 
 const COPY_RESET_MS = 2000
 const SECONDS_THRESHOLD = 10_000_000_000
@@ -13,40 +14,6 @@ const SECONDS_THRESHOLD = 10_000_000_000
 /** Timestamp in seconds > this is treated as milliseconds. */
 function toMilliseconds(value: number): number {
   return value < SECONDS_THRESHOLD ? value * 1000 : value
-}
-
-function formatDateTimeLocalForInput(date: Date): string {
-  const pad = (n: number) => n.toString().padStart(2, "0")
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
-
-interface CopyableRowProps {
-  label: string
-  value: string
-  copiedValue: string | null
-  onCopy: (value: string) => void
-}
-
-function CopyableRow({ label, value, copiedValue, onCopy }: CopyableRowProps) {
-  const isCopied = copiedValue === value
-
-  return (
-    <div className="flex items-center justify-between gap-4 rounded-md border bg-muted/30 px-3 py-2">
-      <div className="min-w-0 flex-1">
-        <span className="text-muted-foreground text-xs">{label}</span>
-        <p className="truncate font-mono text-sm">{value}</p>
-      </div>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-sm"
-        onClick={() => onCopy(value)}
-        disabled={!value}
-      >
-        {isCopied ? <RiCheckLine /> : <RiFileCopyLine />}
-      </Button>
-    </div>
-  )
 }
 
 export default function UnixTimestampPage() {
