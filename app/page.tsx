@@ -1,5 +1,6 @@
 import { Suspense } from "react"
 import { RiToolsFill } from "@remixicon/react"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { ToolsExplorer } from "@/components/tools-explorer"
 import { ToolsGrid } from "@/components/tools-grid"
 import { ToolsSearch } from "@/components/tools-search"
@@ -22,9 +23,12 @@ export default function Page() {
               </p>
             </div>
           </div>
-          <Suspense>
-            <ToolsSearch />
-          </Suspense>
+          <div className="flex items-center gap-2">
+            <Suspense>
+              <ToolsSearch />
+            </Suspense>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
