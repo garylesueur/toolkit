@@ -17,6 +17,11 @@ export function ToolCardStatic({ tool }: ToolCardStaticProps) {
           <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover/card:bg-primary/15">
             <tool.icon className="size-5" />
           </div>
+          {tool.devOnly && (
+            <span className="rounded-md bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-600 dark:text-amber-500">
+              DEV
+            </span>
+          )}
         </div>
         <div className="flex flex-1 flex-col gap-1">
           <h3 className="text-sm font-semibold">{tool.name}</h3>

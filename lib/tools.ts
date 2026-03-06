@@ -9,6 +9,7 @@ import {
   RiCharacterRecognitionLine,
   RiCodeLine,
   RiCollapseDiagonalLine,
+  RiComputerLine,
   RiDatabase2Line,
   RiEarthLine,
   RiEyeLine,
@@ -47,6 +48,7 @@ export type Tool = {
   description: string
   href: string
   icon: RemixiconComponentType
+  devOnly?: boolean
 }
 
 export const tools: Tool[] = [
@@ -201,6 +203,13 @@ export const tools: Tool[] = [
     icon: RiImageAddLine,
   },
   {
+    name: "LinkedIn Banner Generator",
+    description: "Create a custom LinkedIn profile banner with gradients, logos, and text. Designed to avoid the profile photo overlay.",
+    href: "/tools/linkedin-banner",
+    icon: RiImageAddLine,
+    devOnly: true,
+  },
+  {
     name: "Date / Time Formatter",
     description: "Enter a date and see it formatted in ISO 8601, RFC 2822, SQL, relative, and more.",
     href: "/tools/date-formatter",
@@ -296,4 +305,15 @@ export const tools: Tool[] = [
     href: "/tools/secret-generator",
     icon: RiShieldKeyholeLine,
   },
+  {
+    name: "Browser Info",
+    description: "See everything your browser reveals — user agent, screen, GPU, network, and more.",
+    href: "/tools/browser-info",
+    icon: RiComputerLine,
+    devOnly: true,
+  },
 ]
+
+const isDevelopment = process.env.NODE_ENV === "development"
+
+export const visibleTools = tools.filter((tool) => !tool.devOnly || isDevelopment)

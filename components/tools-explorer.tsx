@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { ToolCard } from "@/components/tool-card"
 import { useFavourites } from "@/hooks/use-favourites"
-import { tools } from "@/lib/tools"
+import { visibleTools } from "@/lib/tools"
 import type { Tool } from "@/lib/tools"
 
 const SEARCH_PARAM_KEY = "q"
@@ -39,8 +39,8 @@ export function ToolsExplorer() {
 
   const sortedTools = useMemo(() => {
     const filtered = query
-      ? tools.filter((tool) => matchesQuery(tool, query))
-      : tools
+      ? visibleTools.filter((tool) => matchesQuery(tool, query))
+      : visibleTools
 
     const favourites: Tool[] = []
     const rest: Tool[] = []

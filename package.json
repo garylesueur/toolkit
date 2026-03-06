@@ -12,6 +12,7 @@
     "@base-ui/react": "^1.2.0",
     "@remixicon/react": "^4.9.0",
     "@vercel/analytics": "^1.6.1",
+    "bowser": "^2.14.1",
     "class-variance-authority": "^0.7.1",
     "client-zip": "^2.5.0",
     "clsx": "^2.1.1",
