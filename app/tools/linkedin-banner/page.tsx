@@ -432,7 +432,7 @@ export default function LinkedInBannerPage() {
               <canvas
                 ref={canvasRef}
                 className="block w-full h-full"
-                style={{ imageRendering: "high-quality" }}
+                style={{ imageRendering: "auto" }}
               />
               {/* Safe zone overlay */}
               <div

@@ -17,10 +17,39 @@ import type {
 } from "./types"
 
 /**
+ * Network Information API type definition.
+ */
+interface NetworkInformation {
+  type?: string
+  effectiveType?: string
+  downlink?: number
+  rtt?: number
+  saveData?: boolean
+}
+
+/**
+ * User-Agent Client Hints API type definition.
+ */
+interface UserAgentData {
+  architecture?: string
+  bitness?: string
+  brand?: string
+  brands?: Array<{ brand: string; version: string }>
+  fullVersionList?: Array<{ brand: string; version: string }>
+  mobile?: boolean
+  model?: string
+  platform?: string
+  platformVersion?: string
+  uaFullVersion?: string
+  wow64?: boolean
+  getHighEntropyValues?: (hints: string[]) => Promise<Record<string, unknown>>
+}
+
+/**
  * Extended navigator type covering non-standard properties
  * that various browsers expose.
  */
-interface ExtendedNavigator extends Navigator {
+interface ExtendedNavigator extends Omit<Navigator, "pdfViewerEnabled"> {
   buildID?: string
   pdfViewerEnabled?: boolean
   globalPrivacyControl?: boolean
@@ -30,6 +59,7 @@ interface ExtendedNavigator extends Navigator {
   webkitConnection?: NetworkInformation
   oscpu?: string
   cpuClass?: string
+  userAgentData?: UserAgentData
 }
 
 /**
@@ -124,12 +154,13 @@ export function detectOperatingSystem(): OperatingSystem {
   let architecture: string | null = null
 
   // Check Client Hints first for accurate architecture (if available)
+  const navExtended = nav as ExtendedNavigator | null
   if (
-    nav &&
-    nav.userAgentData &&
-    typeof nav.userAgentData.architecture === "string"
+    navExtended &&
+    navExtended.userAgentData &&
+    typeof navExtended.userAgentData.architecture === "string"
   ) {
-    const uaArch = nav.userAgentData.architecture.toLowerCase()
+    const uaArch = navExtended.userAgentData.architecture.toLowerCase()
     if (uaArch === "x86" || uaArch === "amd64") {
       architecture = "x64"
     } else if (uaArch === "arm") {
@@ -428,7 +459,7 @@ export function detectLocaleTime(): LocaleTime {
 
   return {
     language: nav.language || "unknown",
-    languages: nav.languages || [nav.language || "unknown"],
+    languages: nav.languages ? [...nav.languages] : [nav.language || "unknown"],
     timezone,
     timezoneOffset,
   }
