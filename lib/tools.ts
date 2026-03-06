@@ -310,7 +310,6 @@ export const tools: Tool[] = [
     description: "See everything your browser reveals — user agent, screen, GPU, network, and more.",
     href: "/tools/browser-info",
     icon: RiComputerLine,
-    devOnly: true,
   },
 ]
 

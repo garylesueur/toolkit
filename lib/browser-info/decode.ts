@@ -162,6 +162,22 @@ function getDeviceMemoryNote(
 }
 
 /**
+ * Finds the first real browser brand in Client Hints, skipping "Not:A-Brand" placeholders.
+ */
+function findRealBrand(
+  entries: Array<{ brand: string; version: string }> | undefined
+): { brand: string; version: string } | null {
+  if (!entries || entries.length === 0) return null
+  const entry = entries.find(
+    (e) =>
+      e?.brand &&
+      typeof e.brand === "string" &&
+      e.brand !== "Not:A-Brand"
+  )
+  return entry ?? null
+}
+
+/**
  * Normalises architecture string from Client Hints (x86, amd64, arm) to display form.
  */
 function normaliseArchitecture(arch: string | null | undefined): string | null {
@@ -219,7 +235,7 @@ export async function decodeFromBrowserInfo(
     osVersionName = getMacOSVersionName(osVersion) ?? osVersionName
   }
 
-  let architecture = normaliseArchitecture(
+  const architecture = normaliseArchitecture(
     highEntropyHints?.architecture ??
       operatingSystem.architecture ??
       undefined
@@ -240,14 +256,17 @@ export async function decodeFromBrowserInfo(
   const deviceMemoryNote = getDeviceMemoryNote(hardware.deviceMemory)
   const gpuChipName = extractGpuChipName(hardware.gpu?.renderer)
 
-  const fullVersion =
-    highEntropyHints?.fullVersionList?.[0]?.version ?? browser.version
-  const versionStr = fullVersion ?? browser.version ?? null
+  // Prioritize Client Hints brand information when available
+  const realBrand =
+    findRealBrand(highEntropyHints?.fullVersionList) ??
+    findRealBrand(highEntropyHints?.brands)
+  const browserName = realBrand?.brand ?? browser.name ?? null
+  const versionStr = realBrand?.version ?? browser.version ?? null
   const major = versionStr ? versionStr.split(".")[0] ?? null : null
 
   return {
     browser: {
-      name: browser.name ?? null,
+      name: browserName,
       version: versionStr,
       major,
     },
