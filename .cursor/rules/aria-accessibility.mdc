@@ -1,0 +1,142 @@
+---
+description: ARIA and accessibility guidelines for UI components
+globs: **/*.tsx
+alwaysApply: false
+---
+
+# ARIA Accessibility
+
+Ensure UI is compatible with screen readers and assistive tech by following these patterns.
+
+## Prefer Semantic HTML
+
+Use native elements instead of ARIA when possible. Semantic HTML carries built-in roles and states.
+
+```tsx
+// ❌ BAD – div with ARIA role
+<div role="button" onClick={handleClick}>Submit</div>
+
+// ✅ GOOD – native element
+<button type="button" onClick={handleClick}>Submit</button>
+```
+
+- Use `<button>` for actions, `<a>` for navigation, `<nav>` for nav regions, `<main>` for main content.
+- Use heading hierarchy (`h1` → `h2` → `h3`) correctly.
+
+## Icon-Only Buttons
+
+Every icon-only or image-only control must have an accessible name.
+
+```tsx
+// ❌ BAD – no label
+<button onClick={onClose}><IconX /></button>
+
+// ✅ GOOD – aria-label
+<button onClick={onClose} aria-label="Close">
+  <IconX aria-hidden />
+</button>
+```
+
+- Add `aria-hidden` to purely decorative icons so they are not announced twice.
+
+## Expandable Controls
+
+Expose expanded/collapsed state to assistive tech.
+
+```tsx
+// ✅ GOOD
+<button
+  aria-expanded={isOpen}
+  aria-haspopup="dialog"
+  aria-controls="my-dialog-id"
+  onClick={toggle}
+>
+  Open menu
+</button>
+```
+
+- Use `aria-expanded` for toggles, accordions, and disclosure widgets.
+- Use `aria-haspopup` when the control opens a menu, dialog, or listbox.
+
+## Toggle Buttons
+
+Use `aria-pressed` for on/off toggles (e.g. mute, favourite).
+
+```tsx
+// ✅ GOOD
+<button
+  aria-pressed={isMuted}
+  onClick={toggleMute}
+  aria-label={isMuted ? "Unmute" : "Mute"}
+>
+  {isMuted ? <IconVolumeOff /> : <IconVolume />}
+</button>
+```
+
+## Form Fields and Validation
+
+- Every form control needs a visible label (use `<label>` with `htmlFor`, or `aria-label` / `aria-labelledby`).
+- For errors: use `aria-invalid="true"` and `aria-errormessage` (or `aria-describedby`) linking to the error text.
+
+```tsx
+// ✅ GOOD
+<label htmlFor="email">Email</label>
+<input
+  id="email"
+  type="email"
+  aria-invalid={!!error}
+  aria-describedby={error ? "email-error" : undefined}
+/>
+{error ? <span id="email-error" role="alert">{error}</span> : null}
+```
+
+## Modals and Dialogs
+
+- Trap focus inside the dialog and return focus on close.
+- Add `aria-modal="true"` and `role="dialog"` (or use a dialog component that does this).
+- Provide `aria-labelledby` (and optionally `aria-describedby`) for the dialog.
+
+## Live Regions
+
+For dynamic updates (alerts, notifications, loading states) that should be announced:
+
+```tsx
+// ✅ GOOD – announce important updates
+<div aria-live="polite" aria-atomic="true">
+  {statusMessage}
+</div>
+```
+
+- Use `aria-live="polite"` for non-urgent updates; `aria-live="assertive"` sparingly.
+- Use `aria-atomic="true"` when the entire region should be read as one unit.
+
+## Decorative Content
+
+Hide purely decorative elements from screen readers:
+
+```tsx
+// ✅ GOOD
+<span aria-hidden="true"><IconCheck className="decorative" /></span>
+```
+
+## Avoid Redundant ARIA
+
+Do not add ARIA that repeats what HTML already provides.
+
+```tsx
+// ❌ BAD – redundant
+<button role="button" aria-label="Click me">Click me</button>
+
+// ✅ GOOD – native semantics suffice
+<button>Click me</button>
+```
+
+## Summary
+
+| Pattern | Do | Avoid |
+|--------|----|-------|
+| Buttons | `<button>` or `<a>` with clear text/label | `div` + `onClick`, icon-only without `aria-label` |
+| Expandables | `aria-expanded`, `aria-haspopup` | Missing state for toggles |
+| Forms | `<label>`, `aria-invalid`, `aria-describedby` | Unlabelled inputs, no error association |
+| Dialogs | Focus trap, `aria-modal`, `aria-labelledby` | Untrapped focus, missing labels |
+| Decorative | `aria-hidden` | Announcing non-meaningful content |
