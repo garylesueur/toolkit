@@ -1,5 +1,6 @@
 import type { RemixiconComponentType } from "@remixicon/react"
 import {
+  RiAccessibilityLine,
   RiAspectRatioLine,
   RiBracesLine,
   RiCalendar2Line,
@@ -16,6 +17,7 @@ import {
   RiFileCodeLine,
   RiFileImageLine,
   RiFileListLine,
+  RiFileTextLine,
   RiFindReplaceLine,
   RiFingerprintLine,
   RiFontSize,
@@ -39,6 +41,7 @@ import {
   RiServerLine,
   RiShieldKeyholeLine,
   RiSortAsc,
+  RiTableLine,
   RiTextBlock,
   RiTimeLine,
 } from "@remixicon/react"
@@ -131,6 +134,13 @@ export const tools: Tool[] = [
     icon: RiPaletteLine,
   },
   {
+    name: "WCAG Contrast Checker",
+    description:
+      "Check text and background contrast ratio against WCAG 2.1 AA and AAA thresholds.",
+    href: "/tools/contrast-checker",
+    icon: RiAccessibilityLine,
+  },
+  {
     name: "Hash Generator",
     description: "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text.",
     href: "/tools/hash-generator",
@@ -177,6 +187,20 @@ export const tools: Tool[] = [
     description: "Decode cron expressions into plain English and preview upcoming run times.",
     href: "/tools/cron-explainer",
     icon: RiCalendarScheduleLine,
+  },
+  {
+    name: "CSV ↔ JSON Converter",
+    description:
+      "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",
+    href: "/tools/csv-json-converter",
+    icon: RiTableLine,
+  },
+  {
+    name: "YAML Formatter",
+    description:
+      "Format and validate YAML, convert YAML to JSON, or JSON to YAML — all in the browser.",
+    href: "/tools/yaml-formatter",
+    icon: RiFileTextLine,
   },
   {
     name: "SVG to PNG / JPEG Converter",
