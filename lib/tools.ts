@@ -335,6 +335,12 @@ export const tools: Tool[] = [
     href: "/tools/browser-info",
     icon: RiComputerLine,
   },
+  {
+    name: "ASCII / Char Code Viewer",
+    description: "Paste a string to see each character with its numeric code point underneath.",
+    href: "/tools/ascii-char-codes",
+    icon: RiHashtag,
+  },
 ]
 
 const isDevelopment = process.env.NODE_ENV === "development"
