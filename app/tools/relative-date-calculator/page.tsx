@@ -1,53 +1,54 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { RiCalendarLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
+
+import { CopyableRow } from "@/components/copyable-row";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { RiCalendarLine } from "@remixicon/react"
-import { CopyableRow } from "@/components/copyable-row"
-import { formatDateForInput } from "@/lib/shared/date"
+} from "@/components/ui/select";
+import { formatDateForInput } from "@/lib/shared/date";
 
-const COPY_RESET_MS = 2000
+const COPY_RESET_MS = 2000;
 
-const SATURDAY = 6
-const SUNDAY = 0
+const SATURDAY = 6;
+const SUNDAY = 0;
 
-type OffsetUnit = "days" | "weeks" | "months" | "business-days"
-type OffsetDirection = "after" | "before"
+type OffsetUnit = "days" | "weeks" | "months" | "business-days";
+type OffsetDirection = "after" | "before";
 
 const DAY_OF_WEEK_FORMATTER = new Intl.DateTimeFormat("en-GB", {
   weekday: "long",
-})
+});
 
 const LOCAL_DATE_FORMATTER = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "long",
   year: "numeric",
-})
+});
 
 /** Adds (or subtracts) business days, skipping Saturdays and Sundays. */
 function addBusinessDays(date: Date, days: number): Date {
-  const result = new Date(date)
-  const direction = days >= 0 ? 1 : -1
-  let remaining = Math.abs(days)
+  const result = new Date(date);
+  const direction = days >= 0 ? 1 : -1;
+  let remaining = Math.abs(days);
 
   while (remaining > 0) {
-    result.setDate(result.getDate() + direction)
-    const dayOfWeek = result.getDay()
+    result.setDate(result.getDate() + direction);
+    const dayOfWeek = result.getDay();
     if (dayOfWeek !== SUNDAY && dayOfWeek !== SATURDAY) {
-      remaining--
+      remaining--;
     }
   }
 
-  return result
+  return result;
 }
 
 function computeResultDate(
@@ -56,29 +57,29 @@ function computeResultDate(
   unit: OffsetUnit,
   direction: OffsetDirection,
 ): Date {
-  const signedAmount = direction === "before" ? -amount : amount
-  const result = new Date(base)
+  const signedAmount = direction === "before" ? -amount : amount;
+  const result = new Date(base);
 
   switch (unit) {
     case "days":
-      result.setDate(result.getDate() + signedAmount)
-      return result
+      result.setDate(result.getDate() + signedAmount);
+      return result;
     case "weeks": {
-      const DAYS_PER_WEEK = 7
-      result.setDate(result.getDate() + signedAmount * DAYS_PER_WEEK)
-      return result
+      const DAYS_PER_WEEK = 7;
+      result.setDate(result.getDate() + signedAmount * DAYS_PER_WEEK);
+      return result;
     }
     case "months":
-      result.setMonth(result.getMonth() + signedAmount)
-      return result
+      result.setMonth(result.getMonth() + signedAmount);
+      return result;
     case "business-days":
-      return addBusinessDays(base, signedAmount)
+      return addBusinessDays(base, signedAmount);
   }
 }
 
 interface FormattedResult {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }
 
 function formatResults(date: Date): FormattedResult[] {
@@ -86,43 +87,45 @@ function formatResults(date: Date): FormattedResult[] {
     { label: "ISO 8601", value: date.toISOString().slice(0, 10) },
     { label: "Local date", value: LOCAL_DATE_FORMATTER.format(date) },
     { label: "Day of week", value: DAY_OF_WEEK_FORMATTER.format(date) },
-  ]
+  ];
 }
 
 export default function RelativeDateCalculatorPage() {
-  const [dateInput, setDateInput] = useState("")
-  const [amount, setAmount] = useState("1")
-  const [unit, setUnit] = useState<OffsetUnit>("days")
-  const [direction, setDirection] = useState<OffsetDirection>("after")
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [dateInput, setDateInput] = useState("");
+  const [amount, setAmount] = useState("1");
+  const [unit, setUnit] = useState<OffsetUnit>("days");
+  const [direction, setDirection] = useState<OffsetDirection>("after");
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const handleCopy = useCallback(async (value: string) => {
-    if (!value) return
-    await navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
   const handleToday = useCallback(() => {
-    setDateInput(formatDateForInput(new Date()))
-  }, [])
+    setDateInput(formatDateForInput(new Date()));
+  }, []);
 
-  const parsedDate = dateInput.trim() !== "" ? new Date(dateInput + "T00:00:00") : null
-  const isInvalid = parsedDate !== null && Number.isNaN(parsedDate.getTime())
-  const isValid = parsedDate !== null && !isInvalid
+  const parsedDate =
+    dateInput.trim() !== "" ? new Date(dateInput + "T00:00:00") : null;
+  const isInvalid = parsedDate !== null && Number.isNaN(parsedDate.getTime());
+  const isValid = parsedDate !== null && !isInvalid;
 
-  const parsedAmount = Number(amount)
-  const isAmountValid = amount.trim() !== "" && Number.isFinite(parsedAmount) && parsedAmount >= 0
+  const parsedAmount = Number(amount);
+  const isAmountValid =
+    amount.trim() !== "" && Number.isFinite(parsedAmount) && parsedAmount >= 0;
 
   const resultDate = useMemo(() => {
-    if (!isValid || !isAmountValid || parsedDate === null) return null
-    return computeResultDate(parsedDate, parsedAmount, unit, direction)
-  }, [isValid, isAmountValid, parsedDate, parsedAmount, unit, direction])
+    if (!isValid || !isAmountValid || parsedDate === null) return null;
+    return computeResultDate(parsedDate, parsedAmount, unit, direction);
+  }, [isValid, isAmountValid, parsedDate, parsedAmount, unit, direction]);
 
   const formats = useMemo(() => {
-    if (!resultDate) return null
-    return formatResults(resultDate)
-  }, [resultDate])
+    if (!resultDate) return null;
+    return formatResults(resultDate);
+  }, [resultDate]);
 
   return (
     <div className="space-y-8">
@@ -224,5 +227,5 @@ export default function RelativeDateCalculatorPage() {
         )}
       </section>
     </div>
-  )
+  );
 }

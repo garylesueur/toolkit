@@ -1,39 +1,39 @@
-"use client"
+"use client";
 
-import { useSyncExternalStore, useCallback } from "react"
+import { useSyncExternalStore, useCallback } from "react";
 
-const STORAGE_KEY = "toolkit-favourites"
+const STORAGE_KEY = "toolkit-favourites";
 
 type FavouritesStore = {
-  favourites: Set<string>
-  toggleFavourite: (href: string) => void
-  isFavourite: (href: string) => boolean
-}
+  favourites: Set<string>;
+  toggleFavourite: (href: string) => void;
+  isFavourite: (href: string) => boolean;
+};
 
-let listeners: Array<() => void> = []
+let listeners: Array<() => void> = [];
 
 function emitChange() {
   for (const listener of listeners) {
-    listener()
+    listener();
   }
 }
 
 function readFavourites(): string[] {
-  if (typeof window === "undefined") return []
+  if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed: unknown = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return []
-    return parsed.filter((item): item is string => typeof item === "string")
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is string => typeof item === "string");
   } catch {
-    return []
+    return [];
   }
 }
 
 function writeFavourites(hrefs: string[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(hrefs))
-  emitChange()
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(hrefs));
+  emitChange();
 }
 
 /**
@@ -42,25 +42,25 @@ function writeFavourites(hrefs: string[]) {
  * return a serialised string and parse it in the selector.
  */
 function getSnapshot(): string {
-  return localStorage.getItem(STORAGE_KEY) ?? "[]"
+  return localStorage.getItem(STORAGE_KEY) ?? "[]";
 }
 
 function getServerSnapshot(): string {
-  return "[]"
+  return "[]";
 }
 
 function subscribe(callback: () => void): () => void {
-  listeners.push(callback)
+  listeners.push(callback);
 
   const handleStorage = (event: StorageEvent) => {
-    if (event.key === STORAGE_KEY) emitChange()
-  }
-  window.addEventListener("storage", handleStorage)
+    if (event.key === STORAGE_KEY) emitChange();
+  };
+  window.addEventListener("storage", handleStorage);
 
   return () => {
-    listeners = listeners.filter((l) => l !== callback)
-    window.removeEventListener("storage", handleStorage)
-  }
+    listeners = listeners.filter((l) => l !== callback);
+    window.removeEventListener("storage", handleStorage);
+  };
 }
 
 /**
@@ -69,21 +69,21 @@ function subscribe(callback: () => void): () => void {
  * favourites change — including across browser tabs.
  */
 export function useFavourites(): FavouritesStore {
-  const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
-  const favourites = new Set<string>(JSON.parse(raw) as string[])
+  const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const favourites = new Set<string>(JSON.parse(raw) as string[]);
 
   const toggleFavourite = useCallback((href: string) => {
-    const current = readFavourites()
+    const current = readFavourites();
     const next = current.includes(href)
       ? current.filter((h) => h !== href)
-      : [...current, href]
-    writeFavourites(next)
-  }, [])
+      : [...current, href];
+    writeFavourites(next);
+  }, []);
 
   const isFavourite = useCallback(
     (href: string) => favourites.has(href),
     [favourites],
-  )
+  );
 
-  return { favourites, toggleFavourite, isFavourite }
+  return { favourites, toggleFavourite, isFavourite };
 }

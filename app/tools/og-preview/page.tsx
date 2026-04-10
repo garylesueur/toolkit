@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useRef } from "react"
-import { fetchAndParseOgTags, normaliseUrl, resolveImageUrl } from "@/lib/og-preview/parse"
-import type { OgTagData, OgFetchResult } from "@/lib/og-preview/types"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   RiSearchLine,
   RiLoader4Line,
   RiAlertLine,
   RiCheckLine,
   RiCloseLine,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback, useRef } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  fetchAndParseOgTags,
+  normaliseUrl,
+  resolveImageUrl,
+} from "@/lib/og-preview/parse";
+import type { OgTagData, OgFetchResult } from "@/lib/og-preview/types";
 
 const RECOMMENDED_TAGS = [
   "og:title",
@@ -22,35 +27,37 @@ const RECOMMENDED_TAGS = [
   "twitter:title",
   "twitter:description",
   "twitter:image",
-]
+];
 
 type PlatformPreviewProps = {
-  data: OgTagData
-  pageUrl: string
-}
+  data: OgTagData;
+  pageUrl: string;
+};
 
 function getDomain(url: string): string {
   try {
-    return new URL(url).hostname
+    return new URL(url).hostname;
   } catch {
-    return url
+    return url;
   }
 }
 
 function truncate(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text
-  return text.slice(0, maxLength).trimEnd() + "…"
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trimEnd() + "…";
 }
 
 // ─── Twitter/X Preview ───────────────────────────────────────────────
 
 function TwitterPreview({ data, pageUrl }: PlatformPreviewProps) {
-  const title = data.twitterTitle ?? data.ogTitle ?? data.htmlTitle ?? "Untitled"
-  const description = data.twitterDescription ?? data.ogDescription ?? data.metaDescription ?? ""
-  const image = resolveImageUrl(data.twitterImage ?? data.ogImage, pageUrl)
-  const domain = getDomain(pageUrl)
-  const cardType = data.twitterCard ?? "summary_large_image"
-  const isLargeCard = cardType === "summary_large_image"
+  const title =
+    data.twitterTitle ?? data.ogTitle ?? data.htmlTitle ?? "Untitled";
+  const description =
+    data.twitterDescription ?? data.ogDescription ?? data.metaDescription ?? "";
+  const image = resolveImageUrl(data.twitterImage ?? data.ogImage, pageUrl);
+  const domain = getDomain(pageUrl);
+  const cardType = data.twitterCard ?? "summary_large_image";
+  const isLargeCard = cardType === "summary_large_image";
 
   if (isLargeCard) {
     return (
@@ -62,7 +69,7 @@ function TwitterPreview({ data, pageUrl }: PlatformPreviewProps) {
               alt=""
               className="size-full object-cover"
               onError={(e) => {
-                e.currentTarget.style.display = "none"
+                e.currentTarget.style.display = "none";
               }}
             />
           </div>
@@ -79,7 +86,7 @@ function TwitterPreview({ data, pageUrl }: PlatformPreviewProps) {
           )}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -91,7 +98,7 @@ function TwitterPreview({ data, pageUrl }: PlatformPreviewProps) {
             alt=""
             className="size-full object-cover"
             onError={(e) => {
-              e.currentTarget.style.display = "none"
+              e.currentTarget.style.display = "none";
             }}
           />
         </div>
@@ -108,16 +115,16 @@ function TwitterPreview({ data, pageUrl }: PlatformPreviewProps) {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Facebook Preview ────────────────────────────────────────────────
 
 function FacebookPreview({ data, pageUrl }: PlatformPreviewProps) {
-  const title = data.ogTitle ?? data.htmlTitle ?? "Untitled"
-  const description = data.ogDescription ?? data.metaDescription ?? ""
-  const image = resolveImageUrl(data.ogImage, pageUrl)
-  const domain = getDomain(pageUrl).toUpperCase()
+  const title = data.ogTitle ?? data.htmlTitle ?? "Untitled";
+  const description = data.ogDescription ?? data.metaDescription ?? "";
+  const image = resolveImageUrl(data.ogImage, pageUrl);
+  const domain = getDomain(pageUrl).toUpperCase();
 
   return (
     <div className="overflow-hidden rounded-lg border border-neutral-300 bg-neutral-100 dark:border-neutral-600 dark:bg-neutral-800">
@@ -128,7 +135,7 @@ function FacebookPreview({ data, pageUrl }: PlatformPreviewProps) {
             alt=""
             className="size-full object-cover"
             onError={(e) => {
-              e.currentTarget.style.display = "none"
+              e.currentTarget.style.display = "none";
             }}
           />
         </div>
@@ -147,15 +154,15 @@ function FacebookPreview({ data, pageUrl }: PlatformPreviewProps) {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // ─── LinkedIn Preview ────────────────────────────────────────────────
 
 function LinkedInPreview({ data, pageUrl }: PlatformPreviewProps) {
-  const title = data.ogTitle ?? data.htmlTitle ?? "Untitled"
-  const image = resolveImageUrl(data.ogImage, pageUrl)
-  const source = data.ogSiteName ?? getDomain(pageUrl)
+  const title = data.ogTitle ?? data.htmlTitle ?? "Untitled";
+  const image = resolveImageUrl(data.ogImage, pageUrl);
+  const source = data.ogSiteName ?? getDomain(pageUrl);
 
   return (
     <div className="overflow-hidden rounded-sm border border-neutral-300 bg-white dark:border-neutral-600 dark:bg-neutral-900">
@@ -166,7 +173,7 @@ function LinkedInPreview({ data, pageUrl }: PlatformPreviewProps) {
             alt=""
             className="size-full object-cover"
             onError={(e) => {
-              e.currentTarget.style.display = "none"
+              e.currentTarget.style.display = "none";
             }}
           />
         </div>
@@ -178,23 +185,25 @@ function LinkedInPreview({ data, pageUrl }: PlatformPreviewProps) {
         <p className="mt-0.5 text-xs text-neutral-500">{source}</p>
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Discord Preview ─────────────────────────────────────────────────
 
 function DiscordPreview({ data, pageUrl }: PlatformPreviewProps) {
-  const title = data.ogTitle ?? data.htmlTitle ?? "Untitled"
-  const description = data.ogDescription ?? data.metaDescription ?? ""
-  const image = resolveImageUrl(data.ogImage, pageUrl)
-  const siteName = data.ogSiteName ?? getDomain(pageUrl)
+  const title = data.ogTitle ?? data.htmlTitle ?? "Untitled";
+  const description = data.ogDescription ?? data.metaDescription ?? "";
+  const image = resolveImageUrl(data.ogImage, pageUrl);
+  const siteName = data.ogSiteName ?? getDomain(pageUrl);
 
   return (
     <div className="flex max-w-md overflow-hidden rounded bg-[#2b2d31]">
       <div className="w-1 shrink-0 rounded-l bg-[#1e1f22]" />
       <div className="flex flex-col gap-2 p-3">
         <p className="text-xs font-medium text-[#00a8fc]">{siteName}</p>
-        <p className="text-sm font-semibold text-white">{truncate(title, 256)}</p>
+        <p className="text-sm font-semibold text-white">
+          {truncate(title, 256)}
+        </p>
         {description && (
           <p className="text-sm leading-snug text-[#dbdee1]">
             {truncate(description, 350)}
@@ -208,23 +217,23 @@ function DiscordPreview({ data, pageUrl }: PlatformPreviewProps) {
               className="w-full rounded object-cover"
               style={{ maxHeight: 200 }}
               onError={(e) => {
-                e.currentTarget.style.display = "none"
+                e.currentTarget.style.display = "none";
               }}
             />
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Slack Preview ───────────────────────────────────────────────────
 
 function SlackPreview({ data, pageUrl }: PlatformPreviewProps) {
-  const title = data.ogTitle ?? data.htmlTitle ?? "Untitled"
-  const description = data.ogDescription ?? data.metaDescription ?? ""
-  const image = resolveImageUrl(data.ogImage, pageUrl)
-  const siteName = data.ogSiteName ?? getDomain(pageUrl)
+  const title = data.ogTitle ?? data.htmlTitle ?? "Untitled";
+  const description = data.ogDescription ?? data.metaDescription ?? "";
+  const image = resolveImageUrl(data.ogImage, pageUrl);
+  const siteName = data.ogSiteName ?? getDomain(pageUrl);
 
   return (
     <div className="flex max-w-lg">
@@ -249,14 +258,14 @@ function SlackPreview({ data, pageUrl }: PlatformPreviewProps) {
               className="w-full rounded object-cover"
               style={{ maxHeight: 180 }}
               onError={(e) => {
-                e.currentTarget.style.display = "none"
+                e.currentTarget.style.display = "none";
               }}
             />
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Tag Status Indicator ────────────────────────────────────────────
@@ -268,14 +277,14 @@ function TagStatus({ present }: { present: boolean }) {
         <RiCheckLine className="size-3" />
         Set
       </Badge>
-    )
+    );
   }
   return (
     <Badge variant="destructive" className="gap-1">
       <RiCloseLine className="size-3" />
       Missing
     </Badge>
-  )
+  );
 }
 
 // ─── CORS Help Panel ─────────────────────────────────────────────────
@@ -307,47 +316,47 @@ function CorsHelp() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Main Page ───────────────────────────────────────────────────────
 
 export default function OgPreviewPage() {
-  const [url, setUrl] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<OgFetchResult | null>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<OgFetchResult | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFetch = useCallback(async () => {
-    const trimmed = url.trim()
-    if (!trimmed) return
+    const trimmed = url.trim();
+    if (!trimmed) return;
 
-    setLoading(true)
-    setResult(null)
+    setLoading(true);
+    setResult(null);
 
-    const fetchResult = await fetchAndParseOgTags(trimmed)
-    setResult(fetchResult)
-    setLoading(false)
-  }, [url])
+    const fetchResult = await fetchAndParseOgTags(trimmed);
+    setResult(fetchResult);
+    setLoading(false);
+  }, [url]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter") {
-        handleFetch()
+        handleFetch();
       }
     },
     [handleFetch],
-  )
+  );
 
-  const data = result?.ok ? result.data : null
-  const pageUrl = normaliseUrl(url)
+  const data = result?.ok ? result.data : null;
+  const pageUrl = normaliseUrl(url);
 
   const presentTags = data
     ? RECOMMENDED_TAGS.map((tag) => {
-        const raw = data.rawTags.find((r) => r.property === tag)
-        return { tag, present: raw !== undefined }
+        const raw = data.rawTags.find((r) => r.property === tag);
+        return { tag, present: raw !== undefined };
       })
-    : null
+    : null;
 
   return (
     <div>
@@ -370,7 +379,10 @@ export default function OgPreviewPage() {
         />
         <Button onClick={handleFetch} disabled={loading || !url.trim()}>
           {loading ? (
-            <RiLoader4Line className="size-4 animate-spin" data-icon="inline-start" />
+            <RiLoader4Line
+              className="size-4 animate-spin"
+              data-icon="inline-start"
+            />
           ) : (
             <RiSearchLine data-icon="inline-start" />
           )}
@@ -531,5 +543,5 @@ export default function OgPreviewPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

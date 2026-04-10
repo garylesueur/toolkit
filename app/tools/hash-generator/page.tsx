@@ -1,26 +1,24 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
-import {
-  computeAllHashes,
-  HASH_ALGORITHMS,
-} from "@/lib/hash/generate"
-import type { HashAlgorithm, HashResults } from "@/lib/hash/generate"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback, useEffect } from "react";
 
-const COPY_RESET_MS = 2000
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { computeAllHashes, HASH_ALGORITHMS } from "@/lib/hash/generate";
+import type { HashAlgorithm, HashResults } from "@/lib/hash/generate";
+
+const COPY_RESET_MS = 2000;
 
 interface HashRowProps {
-  label: HashAlgorithm
-  value: string
-  copiedValue: string | null
-  onCopy: (value: string) => void
+  label: HashAlgorithm;
+  value: string;
+  copiedValue: string | null;
+  onCopy: (value: string) => void;
 }
 
 function HashRow({ label, value, copiedValue, onCopy }: HashRowProps) {
-  const isCopied = copiedValue === value
+  const isCopied = copiedValue === value;
 
   return (
     <div className="flex items-center justify-between gap-4 rounded-md border bg-muted/30 px-3 py-2">
@@ -38,41 +36,41 @@ function HashRow({ label, value, copiedValue, onCopy }: HashRowProps) {
         {isCopied ? <RiCheckLine /> : <RiFileCopyLine />}
       </Button>
     </div>
-  )
+  );
 }
 
 const EMPTY_RESULTS: HashResults = Object.fromEntries(
   HASH_ALGORITHMS.map((alg) => [alg, ""]),
-) as HashResults
+) as HashResults;
 
 export default function HashGeneratorPage() {
-  const [input, setInput] = useState("")
-  const [results, setResults] = useState<HashResults>(EMPTY_RESULTS)
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [input, setInput] = useState("");
+  const [results, setResults] = useState<HashResults>(EMPTY_RESULTS);
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   useEffect(() => {
-    const text = input
+    const text = input;
     if (!text) {
-      setResults(EMPTY_RESULTS)
-      return
+      setResults(EMPTY_RESULTS);
+      return;
     }
 
-    let cancelled = false
+    let cancelled = false;
     computeAllHashes(text).then((hashes) => {
-      if (!cancelled) setResults(hashes)
-    })
+      if (!cancelled) setResults(hashes);
+    });
 
     return () => {
-      cancelled = true
-    }
-  }, [input])
+      cancelled = true;
+    };
+  }, [input]);
 
   const handleCopy = useCallback(async (value: string) => {
-    if (!value) return
-    await navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
   return (
     <div>
@@ -106,5 +104,5 @@ export default function HashGeneratorPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }

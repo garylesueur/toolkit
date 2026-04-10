@@ -1,35 +1,38 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { CopyableRow } from "@/components/copyable-row"
+import { useState, useCallback, useMemo } from "react";
 
-const COPY_RESET_MS = 2000
+import { CopyableRow } from "@/components/copyable-row";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const CIDR_PATTERN = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/(\d{1,2})$/
+const COPY_RESET_MS = 2000;
 
-const MAX_OCTET = 255
-const BITS_PER_ADDRESS = 32
+const CIDR_PATTERN = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/(\d{1,2})$/;
+
+const MAX_OCTET = 255;
+const BITS_PER_ADDRESS = 32;
 
 /** Prefix lengths at or above this value have no distinct broadcast/network separation. */
-const POINT_TO_POINT_PREFIX = 31
+const POINT_TO_POINT_PREFIX = 31;
 
 interface CidrResult {
-  networkAddress: string
-  broadcastAddress: string
-  subnetMask: string
-  wildcardMask: string
-  firstHost: string
-  lastHost: string
-  totalAddresses: number
-  usableHosts: number
-  cidrNotation: string
+  networkAddress: string;
+  broadcastAddress: string;
+  subnetMask: string;
+  wildcardMask: string;
+  firstHost: string;
+  lastHost: string;
+  totalAddresses: number;
+  usableHosts: number;
+  cidrNotation: string;
 }
 
 function ipToNumber(ip: string): number {
-  const parts = ip.split(".").map(Number)
-  return ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0
+  const parts = ip.split(".").map(Number);
+  return (
+    ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0
+  );
 }
 
 function numberToIp(num: number): string {
@@ -38,30 +41,30 @@ function numberToIp(num: number): string {
     (num >>> 16) & MAX_OCTET,
     (num >>> 8) & MAX_OCTET,
     num & MAX_OCTET,
-  ].join(".")
+  ].join(".");
 }
 
 function calculateCidr(cidr: string): CidrResult | null {
-  const match = cidr.trim().match(CIDR_PATTERN)
-  if (!match) return null
+  const match = cidr.trim().match(CIDR_PATTERN);
+  if (!match) return null;
 
-  const ip = match[1]
-  const prefix = parseInt(match[2], 10)
-  if (prefix < 0 || prefix > BITS_PER_ADDRESS) return null
+  const ip = match[1];
+  const prefix = parseInt(match[2], 10);
+  if (prefix < 0 || prefix > BITS_PER_ADDRESS) return null;
 
-  const octets = ip.split(".").map(Number)
+  const octets = ip.split(".").map(Number);
   if (octets.some((o) => o < 0 || o > MAX_OCTET || !Number.isInteger(o))) {
-    return null
+    return null;
   }
 
-  const ipNum = ipToNumber(ip)
-  const mask = prefix === 0 ? 0 : (~0 << (BITS_PER_ADDRESS - prefix)) >>> 0
-  const wildcard = ~mask >>> 0
-  const network = (ipNum & mask) >>> 0
-  const broadcast = (network | wildcard) >>> 0
-  const totalAddresses = Math.pow(2, BITS_PER_ADDRESS - prefix)
+  const ipNum = ipToNumber(ip);
+  const mask = prefix === 0 ? 0 : (~0 << (BITS_PER_ADDRESS - prefix)) >>> 0;
+  const wildcard = ~mask >>> 0;
+  const network = (ipNum & mask) >>> 0;
+  const broadcast = (network | wildcard) >>> 0;
+  const totalAddresses = Math.pow(2, BITS_PER_ADDRESS - prefix);
   const usableHosts =
-    prefix >= POINT_TO_POINT_PREFIX ? totalAddresses : totalAddresses - 2
+    prefix >= POINT_TO_POINT_PREFIX ? totalAddresses : totalAddresses - 2;
 
   return {
     networkAddress: numberToIp(network),
@@ -79,12 +82,12 @@ function calculateCidr(cidr: string): CidrResult | null {
     totalAddresses,
     usableHosts,
     cidrNotation: `/${prefix}`,
-  }
+  };
 }
 
 interface ResultRow {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }
 
 function buildResultRows(result: CidrResult): ResultRow[] {
@@ -98,23 +101,23 @@ function buildResultRows(result: CidrResult): ResultRow[] {
     { label: "Total addresses", value: result.totalAddresses.toLocaleString() },
     { label: "Usable hosts", value: result.usableHosts.toLocaleString() },
     { label: "CIDR notation", value: result.cidrNotation },
-  ]
+  ];
 }
 
 export default function CidrCalculatorPage() {
-  const [input, setInput] = useState("")
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [input, setInput] = useState("");
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
-  const result = useMemo(() => calculateCidr(input), [input])
+  const result = useMemo(() => calculateCidr(input), [input]);
 
   const handleCopy = useCallback(async (text: string) => {
-    await navigator.clipboard.writeText(text)
-    setCopiedValue(text)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    await navigator.clipboard.writeText(text);
+    setCopiedValue(text);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
-  const hasInput = input.trim().length > 0
-  const rows = result ? buildResultRows(result) : null
+  const hasInput = input.trim().length > 0;
+  const rows = result ? buildResultRows(result) : null;
 
   return (
     <div>
@@ -157,5 +160,5 @@ export default function CidrCalculatorPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

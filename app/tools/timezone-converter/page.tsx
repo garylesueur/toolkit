@@ -1,18 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useMemo, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { RiTimeLine, RiAddLine, RiCloseLine } from "@remixicon/react";
+import { useState, useMemo, useCallback } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { RiTimeLine, RiAddLine, RiCloseLine } from "@remixicon/react"
-import { formatDateTimeLocalForInput } from "@/lib/shared/date"
+} from "@/components/ui/select";
+import { formatDateTimeLocalForInput } from "@/lib/shared/date";
 
 const AVAILABLE_ZONES = [
   "UTC",
@@ -33,7 +34,7 @@ const AVAILABLE_ZONES = [
   "Asia/Singapore",
   "Australia/Sydney",
   "Pacific/Auckland",
-] as const
+] as const;
 
 const DEFAULT_ZONES: ReadonlyArray<string> = [
   "UTC",
@@ -42,12 +43,12 @@ const DEFAULT_ZONES: ReadonlyArray<string> = [
   "Europe/London",
   "Europe/Paris",
   "Asia/Tokyo",
-]
+];
 
 interface ConvertedTime {
-  zone: string
-  formatted: string
-  offset: string
+  zone: string;
+  formatted: string;
+  offset: string;
 }
 
 /**
@@ -58,19 +59,17 @@ function formatUtcOffset(date: Date, zone: string): string {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: zone,
     timeZoneName: "longOffset",
-  }).formatToParts(date)
+  }).formatToParts(date);
 
-  const tzPart = parts.find((p) => p.type === "timeZoneName")
-  if (!tzPart) return "UTC"
+  const tzPart = parts.find((p) => p.type === "timeZoneName");
+  if (!tzPart) return "UTC";
 
-  const raw = tzPart.value
-  if (raw === "GMT" || raw === "UTC") return "UTC+0"
+  const raw = tzPart.value;
+  if (raw === "GMT" || raw === "UTC") return "UTC+0";
 
-  const cleaned = raw
-    .replace("GMT", "UTC")
-    .replace(/:00$/, "")
+  const cleaned = raw.replace("GMT", "UTC").replace(/:00$/, "");
 
-  return cleaned
+  return cleaned;
 }
 
 function formatInZone(date: Date, zone: string): string {
@@ -82,35 +81,35 @@ function formatInZone(date: Date, zone: string): string {
     hour: "2-digit",
     minute: "2-digit",
     timeZoneName: "short",
-  }).format(date)
+  }).format(date);
 }
 
 export default function TimezoneConverterPage() {
-  const [dateTimeInput, setDateTimeInput] = useState("")
+  const [dateTimeInput, setDateTimeInput] = useState("");
   const [sourceZone, setSourceZone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
-  )
+  );
   const [selectedZones, setSelectedZones] = useState<string[]>([
     ...DEFAULT_ZONES,
-  ])
-  const [addZoneValue, setAddZoneValue] = useState("")
+  ]);
+  const [addZoneValue, setAddZoneValue] = useState("");
 
   const handleNow = useCallback(() => {
-    setDateTimeInput(formatDateTimeLocalForInput(new Date()))
-  }, [])
+    setDateTimeInput(formatDateTimeLocalForInput(new Date()));
+  }, []);
 
   const handleRemoveZone = useCallback((zone: string) => {
-    setSelectedZones((prev) => prev.filter((z) => z !== zone))
-  }, [])
+    setSelectedZones((prev) => prev.filter((z) => z !== zone));
+  }, []);
 
   const handleAddZone = useCallback(
     (zone: string) => {
-      if (!zone || selectedZones.includes(zone)) return
-      setSelectedZones((prev) => [...prev, zone])
-      setAddZoneValue("")
+      if (!zone || selectedZones.includes(zone)) return;
+      setSelectedZones((prev) => [...prev, zone]);
+      setAddZoneValue("");
     },
     [selectedZones],
-  )
+  );
 
   /**
    * Converts the wall-clock `datetime-local` value (interpreted as being in
@@ -124,10 +123,10 @@ export default function TimezoneConverterPage() {
    *      instant.
    */
   const sourceDate = useMemo(() => {
-    if (!dateTimeInput.trim()) return null
+    if (!dateTimeInput.trim()) return null;
 
-    const naiveDate = new Date(dateTimeInput)
-    if (Number.isNaN(naiveDate.getTime())) return null
+    const naiveDate = new Date(dateTimeInput);
+    if (Number.isNaN(naiveDate.getTime())) return null;
 
     const fmt = new Intl.DateTimeFormat("en-US", {
       timeZone: sourceZone,
@@ -138,34 +137,34 @@ export default function TimezoneConverterPage() {
       minute: "2-digit",
       second: "2-digit",
       hour12: false,
-    })
+    });
 
-    const parts = fmt.formatToParts(naiveDate)
+    const parts = fmt.formatToParts(naiveDate);
     const get = (type: Intl.DateTimeFormatPartTypes) =>
-      parts.find((p) => p.type === type)?.value ?? "0"
+      parts.find((p) => p.type === type)?.value ?? "0";
 
     const wallInSourceZone = new Date(
       `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`,
-    )
+    );
 
-    const deltaMs = wallInSourceZone.getTime() - naiveDate.getTime()
-    return new Date(naiveDate.getTime() - deltaMs)
-  }, [dateTimeInput, sourceZone])
+    const deltaMs = wallInSourceZone.getTime() - naiveDate.getTime();
+    return new Date(naiveDate.getTime() - deltaMs);
+  }, [dateTimeInput, sourceZone]);
 
   const convertedTimes: ConvertedTime[] = useMemo(() => {
-    if (!sourceDate) return []
+    if (!sourceDate) return [];
 
     return selectedZones.map((zone) => ({
       zone,
       formatted: formatInZone(sourceDate, zone),
       offset: formatUtcOffset(sourceDate, zone),
-    }))
-  }, [sourceDate, selectedZones])
+    }));
+  }, [sourceDate, selectedZones]);
 
   const addableZones = useMemo(
     () => AVAILABLE_ZONES.filter((z) => !selectedZones.includes(z)),
     [selectedZones],
-  )
+  );
 
   return (
     <div className="space-y-8">
@@ -282,7 +281,7 @@ export default function TimezoneConverterPage() {
             type="button"
             variant="outline"
             onClick={() => {
-              if (addZoneValue) handleAddZone(addZoneValue)
+              if (addZoneValue) handleAddZone(addZoneValue);
             }}
             disabled={!addZoneValue}
           >
@@ -292,5 +291,5 @@ export default function TimezoneConverterPage() {
         </section>
       )}
     </div>
-  )
+  );
 }

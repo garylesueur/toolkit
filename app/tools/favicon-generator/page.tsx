@@ -1,144 +1,153 @@
-"use client"
+"use client";
 
-import { useState, useRef, useCallback } from "react"
-import { generateFavicons, buildHeadSnippet } from "@/lib/favicon/generate"
-import { faviconTargets } from "@/lib/favicon/sizes"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
-import { RiUploadCloud2Line, RiDownload2Line, RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+import {
+  RiUploadCloud2Line,
+  RiDownload2Line,
+  RiFileCopyLine,
+  RiCheckLine,
+} from "@remixicon/react";
+import { useState, useRef, useCallback } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { generateFavicons, buildHeadSnippet } from "@/lib/favicon/generate";
+import { faviconTargets } from "@/lib/favicon/sizes";
 
 type GeneratedPreview = {
-  filename: string
-  size: number
-  url: string
-}
+  filename: string;
+  size: number;
+  url: string;
+};
 
 export default function FaviconGeneratorPage() {
-  const [sourceImage, setSourceImage] = useState<HTMLImageElement | null>(null)
-  const [sourceUrl, setSourceUrl] = useState<string | null>(null)
-  const [sourceDimensions, setSourceDimensions] = useState<{ w: number; h: number } | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [generating, setGenerating] = useState(false)
-  const [previews, setPreviews] = useState<GeneratedPreview[]>([])
-  const [zipBlob, setZipBlob] = useState<Blob | null>(null)
-  const [copied, setCopied] = useState(false)
-  const [dragOver, setDragOver] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const previewUrlsRef = useRef<string[]>([])
+  const [sourceImage, setSourceImage] = useState<HTMLImageElement | null>(null);
+  const [sourceUrl, setSourceUrl] = useState<string | null>(null);
+  const [sourceDimensions, setSourceDimensions] = useState<{
+    w: number;
+    h: number;
+  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [previews, setPreviews] = useState<GeneratedPreview[]>([]);
+  const [zipBlob, setZipBlob] = useState<Blob | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const previewUrlsRef = useRef<string[]>([]);
 
   const reset = useCallback(() => {
-    setSourceImage(null)
-    if (sourceUrl) URL.revokeObjectURL(sourceUrl)
-    setSourceUrl(null)
-    setSourceDimensions(null)
-    setError(null)
-    setPreviews([])
-    setZipBlob(null)
-    setCopied(false)
-    for (const url of previewUrlsRef.current) URL.revokeObjectURL(url)
-    previewUrlsRef.current = []
-  }, [sourceUrl])
+    setSourceImage(null);
+    if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+    setSourceUrl(null);
+    setSourceDimensions(null);
+    setError(null);
+    setPreviews([]);
+    setZipBlob(null);
+    setCopied(false);
+    for (const url of previewUrlsRef.current) URL.revokeObjectURL(url);
+    previewUrlsRef.current = [];
+  }, [sourceUrl]);
 
   const loadFile = useCallback(
     (file: File) => {
-      reset()
+      reset();
 
       if (!file.type.startsWith("image/png")) {
-        setError("Please upload a PNG file.")
-        return
+        setError("Please upload a PNG file.");
+        return;
       }
 
-      const url = URL.createObjectURL(file)
-      const img = new Image()
+      const url = URL.createObjectURL(file);
+      const img = new Image();
       img.onload = () => {
-        const longest = Math.max(img.naturalWidth, img.naturalHeight)
+        const longest = Math.max(img.naturalWidth, img.naturalHeight);
         if (longest < 512) {
-          URL.revokeObjectURL(url)
+          URL.revokeObjectURL(url);
           setError(
             `Image must be at least 512px on its longest side. Yours is ${img.naturalWidth}×${img.naturalHeight}.`,
-          )
-          return
+          );
+          return;
         }
-        setSourceImage(img)
-        setSourceUrl(url)
-        setSourceDimensions({ w: img.naturalWidth, h: img.naturalHeight })
-      }
+        setSourceImage(img);
+        setSourceUrl(url);
+        setSourceDimensions({ w: img.naturalWidth, h: img.naturalHeight });
+      };
       img.onerror = () => {
-        URL.revokeObjectURL(url)
-        setError("Failed to load image.")
-      }
-      img.src = url
+        URL.revokeObjectURL(url);
+        setError("Failed to load image.");
+      };
+      img.src = url;
     },
     [reset],
-  )
+  );
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault()
-      setDragOver(false)
-      const file = e.dataTransfer.files[0]
-      if (file) loadFile(file)
+      e.preventDefault();
+      setDragOver(false);
+      const file = e.dataTransfer.files[0];
+      if (file) loadFile(file);
     },
     [loadFile],
-  )
+  );
 
   const handleGenerate = useCallback(async () => {
-    if (!sourceImage) return
-    setGenerating(true)
-    setError(null)
+    if (!sourceImage) return;
+    setGenerating(true);
+    setError(null);
 
     try {
-      const blob = await generateFavicons(sourceImage)
-      setZipBlob(blob)
+      const blob = await generateFavicons(sourceImage);
+      setZipBlob(blob);
 
-      const newPreviews: GeneratedPreview[] = []
-      const srcW = sourceImage.naturalWidth
-      const srcH = sourceImage.naturalHeight
+      const newPreviews: GeneratedPreview[] = [];
+      const srcW = sourceImage.naturalWidth;
+      const srcH = sourceImage.naturalHeight;
       for (const target of faviconTargets) {
-        const canvas = document.createElement("canvas")
-        canvas.width = target.size
-        canvas.height = target.size
-        const ctx = canvas.getContext("2d")!
-        ctx.imageSmoothingEnabled = true
-        ctx.imageSmoothingQuality = "high"
-        const scale = target.size / Math.max(srcW, srcH)
-        const drawW = Math.round(srcW * scale)
-        const drawH = Math.round(srcH * scale)
-        const offsetX = Math.round((target.size - drawW) / 2)
-        const offsetY = Math.round((target.size - drawH) / 2)
-        ctx.drawImage(sourceImage, offsetX, offsetY, drawW, drawH)
-        const previewUrl = canvas.toDataURL("image/png")
-        previewUrlsRef.current.push(previewUrl)
+        const canvas = document.createElement("canvas");
+        canvas.width = target.size;
+        canvas.height = target.size;
+        const ctx = canvas.getContext("2d")!;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        const scale = target.size / Math.max(srcW, srcH);
+        const drawW = Math.round(srcW * scale);
+        const drawH = Math.round(srcH * scale);
+        const offsetX = Math.round((target.size - drawW) / 2);
+        const offsetY = Math.round((target.size - drawH) / 2);
+        ctx.drawImage(sourceImage, offsetX, offsetY, drawW, drawH);
+        const previewUrl = canvas.toDataURL("image/png");
+        previewUrlsRef.current.push(previewUrl);
         newPreviews.push({
           filename: target.filename,
           size: target.size,
           url: previewUrl,
-        })
+        });
       }
-      setPreviews(newPreviews)
+      setPreviews(newPreviews);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Generation failed.")
+      setError(err instanceof Error ? err.message : "Generation failed.");
     } finally {
-      setGenerating(false)
+      setGenerating(false);
     }
-  }, [sourceImage])
+  }, [sourceImage]);
 
   const handleDownload = useCallback(() => {
-    if (!zipBlob) return
-    const url = URL.createObjectURL(zipBlob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "favicons.zip"
-    a.click()
-    URL.revokeObjectURL(url)
-  }, [zipBlob])
+    if (!zipBlob) return;
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "favicons.zip";
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [zipBlob]);
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(buildHeadSnippet())
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }, [])
+    await navigator.clipboard.writeText(buildHeadSnippet());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, []);
 
   return (
     <div>
@@ -151,8 +160,8 @@ export default function FaviconGeneratorPage() {
       {/* Drop zone */}
       <div
         onDragOver={(e) => {
-          e.preventDefault()
-          setDragOver(true)
+          e.preventDefault();
+          setDragOver(true);
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
@@ -194,16 +203,14 @@ export default function FaviconGeneratorPage() {
           accept="image/png"
           className="hidden"
           onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) loadFile(file)
-            e.target.value = ""
+            const file = e.target.files?.[0];
+            if (file) loadFile(file);
+            e.target.value = "";
           }}
         />
       </div>
 
-      {error && (
-        <p className="mt-4 text-sm text-destructive">{error}</p>
-      )}
+      {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
       {/* Actions */}
       {sourceImage && (
@@ -226,7 +233,10 @@ export default function FaviconGeneratorPage() {
           <h2 className="text-lg font-semibold">Generated sizes</h2>
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {previews.map((p) => (
-              <Card key={p.filename} className="flex flex-col items-center gap-3 p-4">
+              <Card
+                key={p.filename}
+                className="flex flex-col items-center gap-3 p-4"
+              >
                 <div className="flex size-20 items-center justify-center">
                   <img
                     src={p.url}
@@ -272,5 +282,5 @@ export default function FaviconGeneratorPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

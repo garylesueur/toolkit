@@ -1,48 +1,49 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
-import { decodeJwt, isTokenExpired, formatExpiry } from "@/lib/jwt/decode"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
 
-const COPY_RESET_MS = 2000
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { decodeJwt, isTokenExpired, formatExpiry } from "@/lib/jwt/decode";
+
+const COPY_RESET_MS = 2000;
 
 export default function JwtDecoderPage() {
-  const [input, setInput] = useState("")
-  const [copiedSection, setCopiedSection] = useState<string | null>(null)
+  const [input, setInput] = useState("");
+  const [copiedSection, setCopiedSection] = useState<string | null>(null);
 
-  const { decoded, error } = useMemo(() => decodeJwt(input), [input])
+  const { decoded, error } = useMemo(() => decodeJwt(input), [input]);
 
   const expired = useMemo(() => {
-    if (!decoded) return null
-    return isTokenExpired(decoded.payload)
-  }, [decoded])
+    if (!decoded) return null;
+    return isTokenExpired(decoded.payload);
+  }, [decoded]);
 
   const expiryLabel = useMemo(() => {
-    if (!decoded) return null
-    const exp = decoded.payload.exp
-    if (typeof exp !== "number") return null
-    return formatExpiry(exp)
-  }, [decoded])
+    if (!decoded) return null;
+    const exp = decoded.payload.exp;
+    if (typeof exp !== "number") return null;
+    return formatExpiry(exp);
+  }, [decoded]);
 
   const headerJson = useMemo(
     () => (decoded ? JSON.stringify(decoded.header, null, 2) : ""),
     [decoded],
-  )
+  );
 
   const payloadJson = useMemo(
     () => (decoded ? JSON.stringify(decoded.payload, null, 2) : ""),
     [decoded],
-  )
+  );
 
   const handleCopy = useCallback(async (value: string, section: string) => {
-    if (!value) return
-    await navigator.clipboard.writeText(value)
-    setCopiedSection(section)
-    setTimeout(() => setCopiedSection(null), COPY_RESET_MS)
-  }, [])
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopiedSection(section);
+    setTimeout(() => setCopiedSection(null), COPY_RESET_MS);
+  }, []);
 
   return (
     <div>
@@ -123,5 +124,5 @@ export default function JwtDecoderPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

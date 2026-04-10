@@ -1,20 +1,25 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useEffect } from "react"
-import { readPdfMetadata, updatePdfMetadata, removePdfMetadata } from "@/lib/pdf/metadata"
-import type { PdfMetadata } from "@/lib/pdf/metadata"
-import { downloadPdf } from "@/lib/pdf/download"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import {
   RiDownload2Line,
   RiLoader4Line,
   RiDeleteBin6Line,
   RiEraserLine,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback, useEffect } from "react";
+
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { downloadPdf } from "@/lib/pdf/download";
+import {
+  readPdfMetadata,
+  updatePdfMetadata,
+  removePdfMetadata,
+} from "@/lib/pdf/metadata";
+import type { PdfMetadata } from "@/lib/pdf/metadata";
 
 const FIELDS: { key: keyof PdfMetadata; label: string }[] = [
   { key: "title", label: "Title" },
@@ -23,72 +28,74 @@ const FIELDS: { key: keyof PdfMetadata; label: string }[] = [
   { key: "keywords", label: "Keywords" },
   { key: "creator", label: "Creator" },
   { key: "producer", label: "Producer" },
-]
+];
 
 export default function PdfMetadataPage() {
-  const [file, setFile] = useState<File | null>(null)
-  const [bytes, setBytes] = useState<Uint8Array | null>(null)
-  const [metadata, setMetadata] = useState<PdfMetadata | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null);
+  const [bytes, setBytes] = useState<Uint8Array | null>(null);
+  const [metadata, setMetadata] = useState<PdfMetadata | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFiles = useCallback(async (files: File[]) => {
-    const f = files[0]
-    setFile(f)
-    setLoading(true)
-    setError(null)
+    const f = files[0];
+    setFile(f);
+    setLoading(true);
+    setError(null);
     try {
-      const buffer = await f.arrayBuffer()
-      const b = new Uint8Array(buffer)
-      setBytes(b)
-      const meta = await readPdfMetadata(b)
-      setMetadata(meta)
+      const buffer = await f.arrayBuffer();
+      const b = new Uint8Array(buffer);
+      setBytes(b);
+      const meta = await readPdfMetadata(b);
+      setMetadata(meta);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to read PDF.")
+      setError(err instanceof Error ? err.message : "Failed to read PDF.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   const handleSave = useCallback(async () => {
-    if (!bytes || !metadata) return
-    setSaving(true)
+    if (!bytes || !metadata) return;
+    setSaving(true);
     try {
-      const result = await updatePdfMetadata(bytes, metadata)
-      const baseName = (file?.name ?? "document").replace(/\.pdf$/i, "")
-      await downloadPdf(result, `${baseName}-metadata.pdf`)
+      const result = await updatePdfMetadata(bytes, metadata);
+      const baseName = (file?.name ?? "document").replace(/\.pdf$/i, "");
+      await downloadPdf(result, `${baseName}-metadata.pdf`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save.")
+      setError(err instanceof Error ? err.message : "Failed to save.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [bytes, metadata, file])
+  }, [bytes, metadata, file]);
 
   const handleStripAll = useCallback(async () => {
-    if (!bytes) return
-    setSaving(true)
+    if (!bytes) return;
+    setSaving(true);
     try {
-      const result = await removePdfMetadata(bytes)
-      const baseName = (file?.name ?? "document").replace(/\.pdf$/i, "")
-      await downloadPdf(result, `${baseName}-no-metadata.pdf`)
+      const result = await removePdfMetadata(bytes);
+      const baseName = (file?.name ?? "document").replace(/\.pdf$/i, "");
+      await downloadPdf(result, `${baseName}-no-metadata.pdf`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to strip metadata.")
+      setError(
+        err instanceof Error ? err.message : "Failed to strip metadata.",
+      );
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [bytes, file])
+  }, [bytes, file]);
 
   const updateField = useCallback((key: keyof PdfMetadata, value: string) => {
-    setMetadata((prev) => (prev ? { ...prev, [key]: value } : prev))
-  }, [])
+    setMetadata((prev) => (prev ? { ...prev, [key]: value } : prev));
+  }, []);
 
   const reset = useCallback(() => {
-    setFile(null)
-    setBytes(null)
-    setMetadata(null)
-    setError(null)
-  }, [])
+    setFile(null);
+    setBytes(null);
+    setMetadata(null);
+    setError(null);
+  }, []);
 
   return (
     <div>
@@ -105,7 +112,9 @@ export default function PdfMetadataPage() {
       {loading && (
         <div className="mt-8 flex items-center justify-center gap-2">
           <RiLoader4Line className="text-muted-foreground size-5 animate-spin" />
-          <span className="text-muted-foreground text-sm">Reading metadata…</span>
+          <span className="text-muted-foreground text-sm">
+            Reading metadata…
+          </span>
         </div>
       )}
 
@@ -156,5 +165,5 @@ export default function PdfMetadataPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

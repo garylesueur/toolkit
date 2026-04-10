@@ -1,18 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useMemo, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useMemo, useCallback } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 /**
  * Classic Lorem ipsum sentences used as source material.
@@ -55,34 +56,34 @@ const LOREM_SENTENCES = [
   "Accumsan tellus nisi eu orci mauris lacinia sapien quis libero nullam.",
   "Sit amet turpis elementum ligula vehicula consequat morbi a ipsum integer.",
   "A nibh in quis justo maecenas rhoncus aliquam lacus morbi quis tortor.",
-]
+];
 
-type LoremUnit = "paragraphs" | "sentences" | "words"
+type LoremUnit = "paragraphs" | "sentences" | "words";
 
-const START_WORDS = ["Lorem", "ipsum", "dolor", "sit", "amet"]
+const START_WORDS = ["Lorem", "ipsum", "dolor", "sit", "amet"];
 
 /**
  * Extracts all words from sentences (lowercase, no punctuation).
  */
 function getAllWords(sentences: readonly string[]): string[] {
-  const words: string[] = []
+  const words: string[] = [];
   for (const sentence of sentences) {
     const cleaned = sentence
       .replace(/[.,;:!?]/g, "")
       .toLowerCase()
-      .split(/\s+/)
+      .split(/\s+/);
     for (const w of cleaned) {
-      if (w.length > 0) words.push(w)
+      if (w.length > 0) words.push(w);
     }
   }
-  return words
+  return words;
 }
 
 /**
  * Picks a random element from an array.
  */
 function pickRandom<T>(arr: readonly T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)]!
+  return arr[Math.floor(Math.random() * arr.length)]!;
 }
 
 /**
@@ -90,10 +91,10 @@ function pickRandom<T>(arr: readonly T[]): T {
  */
 function shuffle<T>(arr: T[]): T[] {
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j]!, arr[i]!]
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j]!, arr[i]!];
   }
-  return arr
+  return arr;
 }
 
 /**
@@ -114,69 +115,64 @@ function generateLorem(
             ...Array.from({ length: count - START_WORDS.length }, () =>
               pickRandom(wordPool),
             ),
-          ]
-    const joined = result.join(" ")
+          ];
+    const joined = result.join(" ");
     const capitalised =
-      joined.charAt(0).toUpperCase() + joined.slice(1).toLowerCase()
-    return capitalised + "."
+      joined.charAt(0).toUpperCase() + joined.slice(1).toLowerCase();
+    return capitalised + ".";
   }
 
   if (unit === "sentences") {
-    const result: string[] = [sentences[0]!]
+    const result: string[] = [sentences[0]!];
     for (let i = 0; i < count - 1; i++) {
-      result.push(pickRandom(sentences))
+      result.push(pickRandom(sentences));
     }
-    return result.join(" ")
+    return result.join(" ");
   }
 
   // paragraphs: 4–6 sentences each, first paragraph starts with Lorem ipsum
-  const result: string[] = []
-  let sentenceIndex = 0
-  const shuffledRest = shuffle([...sentences.slice(1)])
+  const result: string[] = [];
+  let sentenceIndex = 0;
+  const shuffledRest = shuffle([...sentences.slice(1)]);
 
   for (let p = 0; p < count; p++) {
-    const sentencesInPara = 4 + Math.floor(Math.random() * 3) // 4, 5, or 6
-    const paraSentences: string[] = []
+    const sentencesInPara = 4 + Math.floor(Math.random() * 3); // 4, 5, or 6
+    const paraSentences: string[] = [];
 
     for (let s = 0; s < sentencesInPara; s++) {
       if (p === 0 && s === 0) {
-        paraSentences.push(sentences[0]!)
+        paraSentences.push(sentences[0]!);
       } else if (sentenceIndex < shuffledRest.length) {
-        paraSentences.push(shuffledRest[sentenceIndex]!)
-        sentenceIndex++
+        paraSentences.push(shuffledRest[sentenceIndex]!);
+        sentenceIndex++;
       } else {
-        paraSentences.push(pickRandom(sentences))
+        paraSentences.push(pickRandom(sentences));
       }
     }
-    result.push(paraSentences.join(" "))
+    result.push(paraSentences.join(" "));
   }
-  return result.join("\n\n")
+  return result.join("\n\n");
 }
 
-const COPY_FEEDBACK_MS = 2000
+const COPY_FEEDBACK_MS = 2000;
 
 export default function LoremIpsumPage() {
-  const [count, setCount] = useState(3)
-  const [unit, setUnit] = useState<LoremUnit>("paragraphs")
-  const [copied, setCopied] = useState(false)
+  const [count, setCount] = useState(3);
+  const [unit, setUnit] = useState<LoremUnit>("paragraphs");
+  const [copied, setCopied] = useState(false);
 
-  const wordPool = useMemo(() => getAllWords(LOREM_SENTENCES), [])
+  const wordPool = useMemo(() => getAllWords(LOREM_SENTENCES), []);
 
   const output = useMemo(() => {
-    const safeCount = Math.max(1, Math.min(50, count))
-    return generateLorem(
-      safeCount,
-      unit,
-      LOREM_SENTENCES,
-      wordPool,
-    )
-  }, [count, unit, wordPool])
+    const safeCount = Math.max(1, Math.min(50, count));
+    return generateLorem(safeCount, unit, LOREM_SENTENCES, wordPool);
+  }, [count, unit, wordPool]);
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(output)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_FEEDBACK_MS)
-  }, [output])
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_FEEDBACK_MS);
+  }, [output]);
 
   return (
     <div>
@@ -198,8 +194,8 @@ export default function LoremIpsumPage() {
             max={50}
             value={count}
             onChange={(e) => {
-              const v = parseInt(e.target.value, 10)
-              if (!Number.isNaN(v)) setCount(v)
+              const v = parseInt(e.target.value, 10);
+              if (!Number.isNaN(v)) setCount(v);
             }}
             className="w-24"
           />
@@ -244,5 +240,5 @@ export default function LoremIpsumPage() {
         </Button>
       </div>
     </div>
-  )
+  );
 }

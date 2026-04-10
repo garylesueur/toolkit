@@ -1,16 +1,17 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { RiTimeLine } from "@remixicon/react"
-import { describeCron, getNextCronRuns } from "@/lib/cron/parse"
+import { RiTimeLine } from "@remixicon/react";
+import { useState, useMemo } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { describeCron, getNextCronRuns } from "@/lib/cron/parse";
 
 interface CronPreset {
-  label: string
-  expression: string
+  label: string;
+  expression: string;
 }
 
 const PRESETS: CronPreset[] = [
@@ -19,9 +20,9 @@ const PRESETS: CronPreset[] = [
   { label: "Every hour", expression: "0 * * * *" },
   { label: "Every day at midnight", expression: "0 0 * * *" },
   { label: "Every Monday at 9am", expression: "0 9 * * 1" },
-]
+];
 
-const NEXT_RUNS_COUNT = 10
+const NEXT_RUNS_COUNT = 10;
 
 function formatRunDate(date: Date): string {
   return date.toLocaleDateString("en-GB", {
@@ -32,44 +33,48 @@ function formatRunDate(date: Date): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-  })
+  });
 }
 
 interface CronResult {
-  description: string
-  isValid: boolean
-  nextRuns: Date[]
+  description: string;
+  isValid: boolean;
+  nextRuns: Date[];
 }
 
 function evaluateCron(expression: string): CronResult {
   if (!expression.trim()) {
-    return { description: "", isValid: true, nextRuns: [] }
+    return { description: "", isValid: true, nextRuns: [] };
   }
 
-  const description = describeCron(expression)
-  const isValid = description !== "Invalid cron expression"
+  const description = describeCron(expression);
+  const isValid = description !== "Invalid cron expression";
 
-  let nextRuns: Date[] = []
+  let nextRuns: Date[] = [];
   if (isValid) {
     try {
-      nextRuns = getNextCronRuns(expression, NEXT_RUNS_COUNT)
+      nextRuns = getNextCronRuns(expression, NEXT_RUNS_COUNT);
     } catch {
-      return { description: "Invalid cron expression", isValid: false, nextRuns: [] }
+      return {
+        description: "Invalid cron expression",
+        isValid: false,
+        nextRuns: [],
+      };
     }
   }
 
-  return { description, isValid, nextRuns }
+  return { description, isValid, nextRuns };
 }
 
 export default function CronExplainerPage() {
-  const [expression, setExpression] = useState("")
+  const [expression, setExpression] = useState("");
 
   const { description, isValid, nextRuns } = useMemo(
     () => evaluateCron(expression),
     [expression],
-  )
+  );
 
-  const hasInput = expression.trim().length > 0
+  const hasInput = expression.trim().length > 0;
 
   return (
     <div>
@@ -107,9 +112,7 @@ export default function CronExplainerPage() {
       </div>
 
       {hasInput && !isValid && (
-        <p className="mt-4 text-sm text-destructive">
-          {description}
-        </p>
+        <p className="mt-4 text-sm text-destructive">{description}</p>
       )}
 
       {hasInput && isValid && description && (
@@ -147,5 +150,5 @@ export default function CronExplainerPage() {
         </p>
       )}
     </div>
-  )
+  );
 }

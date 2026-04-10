@@ -1,56 +1,66 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { usePdfDocument } from "@/hooks/use-pdf-document"
-import { resizePdfPages } from "@/lib/pdf/resize"
-import { downloadPdf } from "@/lib/pdf/download"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+import {
+  RiDownload2Line,
+  RiLoader4Line,
+  RiDeleteBin6Line,
+} from "@remixicon/react";
+import { useState, useCallback } from "react";
+
+import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid";
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select"
-import {
-  RiDownload2Line,
-  RiLoader4Line,
-  RiDeleteBin6Line,
-} from "@remixicon/react"
-import { PAGE_SIZES, type PageSizeKey } from "@/lib/pdf/constants"
+} from "@/components/ui/select";
+import { usePdfDocument } from "@/hooks/use-pdf-document";
+import { PAGE_SIZES, type PageSizeKey } from "@/lib/pdf/constants";
+import { downloadPdf } from "@/lib/pdf/download";
+import { resizePdfPages } from "@/lib/pdf/resize";
 
 export default function ResizePdfPage() {
-  const { pdfBytes, pageCount, thumbnails, fileName, loading, error, loadFile, reset } =
-    usePdfDocument()
-  const [sizeKey, setSizeKey] = useState<PageSizeKey | "custom">("A4")
-  const [customWidth, setCustomWidth] = useState(595)
-  const [customHeight, setCustomHeight] = useState(842)
-  const [scaleContent, setScaleContent] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const {
+    pdfBytes,
+    pageCount,
+    thumbnails,
+    fileName,
+    loading,
+    error,
+    loadFile,
+    reset,
+  } = usePdfDocument();
+  const [sizeKey, setSizeKey] = useState<PageSizeKey | "custom">("A4");
+  const [customWidth, setCustomWidth] = useState(595);
+  const [customHeight, setCustomHeight] = useState(842);
+  const [scaleContent, setScaleContent] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const width = sizeKey === "custom" ? customWidth : PAGE_SIZES[sizeKey].width
-  const height = sizeKey === "custom" ? customHeight : PAGE_SIZES[sizeKey].height
+  const width = sizeKey === "custom" ? customWidth : PAGE_SIZES[sizeKey].width;
+  const height =
+    sizeKey === "custom" ? customHeight : PAGE_SIZES[sizeKey].height;
 
   const handleSave = useCallback(async () => {
-    if (!pdfBytes) return
-    setSaving(true)
+    if (!pdfBytes) return;
+    setSaving(true);
     try {
       const result = await resizePdfPages(pdfBytes, {
         width,
         height,
         scaleContent,
-      })
-      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "")
-      await downloadPdf(result, `${baseName}-resized.pdf`)
+      });
+      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
+      await downloadPdf(result, `${baseName}-resized.pdf`);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [pdfBytes, width, height, scaleContent, fileName])
+  }, [pdfBytes, width, height, scaleContent, fileName]);
 
   return (
     <div>
@@ -61,7 +71,10 @@ export default function ResizePdfPage() {
       </p>
 
       <div className="mt-8">
-        <PdfDropZone onFiles={(files) => loadFile(files[0])} compact={!!pdfBytes} />
+        <PdfDropZone
+          onFiles={(files) => loadFile(files[0])}
+          compact={!!pdfBytes}
+        />
       </div>
 
       {loading && (
@@ -158,5 +171,5 @@ export default function ResizePdfPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -1,12 +1,5 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { prepareMergeInput, mergePdfs } from "@/lib/pdf/merge"
-import type { MergeInput } from "@/lib/pdf/merge"
-import { downloadPdf } from "@/lib/pdf/download"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   RiDownload2Line,
   RiLoader4Line,
@@ -14,55 +7,63 @@ import {
   RiArrowUpLine,
   RiArrowDownLine,
   RiCloseLine,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback } from "react";
+
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { downloadPdf } from "@/lib/pdf/download";
+import { prepareMergeInput, mergePdfs } from "@/lib/pdf/merge";
+import type { MergeInput } from "@/lib/pdf/merge";
 
 export default function MergePdfPage() {
-  const [files, setFiles] = useState<MergeInput[]>([])
-  const [loadingFiles, setLoadingFiles] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [files, setFiles] = useState<MergeInput[]>([]);
+  const [loadingFiles, setLoadingFiles] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const addFiles = useCallback(async (newFiles: File[]) => {
-    setLoadingFiles(true)
-    setError(null)
+    setLoadingFiles(true);
+    setError(null);
     try {
-      const inputs = await Promise.all(newFiles.map(prepareMergeInput))
-      setFiles((prev) => [...prev, ...inputs])
+      const inputs = await Promise.all(newFiles.map(prepareMergeInput));
+      setFiles((prev) => [...prev, ...inputs]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load PDF.")
+      setError(err instanceof Error ? err.message : "Failed to load PDF.");
     } finally {
-      setLoadingFiles(false)
+      setLoadingFiles(false);
     }
-  }, [])
+  }, []);
 
   const removeFile = useCallback((index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index))
-  }, [])
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
   const moveFile = useCallback((from: number, direction: -1 | 1) => {
     setFiles((prev) => {
-      const to = from + direction
-      if (to < 0 || to >= prev.length) return prev
-      const next = [...prev]
-      ;[next[from], next[to]] = [next[to], next[from]]
-      return next
-    })
-  }, [])
+      const to = from + direction;
+      if (to < 0 || to >= prev.length) return prev;
+      const next = [...prev];
+      [next[from], next[to]] = [next[to], next[from]];
+      return next;
+    });
+  }, []);
 
   const handleMerge = useCallback(async () => {
-    if (files.length < 2) return
-    setSaving(true)
+    if (files.length < 2) return;
+    setSaving(true);
     try {
-      const result = await mergePdfs(files)
-      await downloadPdf(result, "merged.pdf")
+      const result = await mergePdfs(files);
+      await downloadPdf(result, "merged.pdf");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Merge failed.")
+      setError(err instanceof Error ? err.message : "Merge failed.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [files])
+  }, [files]);
 
-  const totalPages = files.reduce((sum, f) => sum + f.pageCount, 0)
+  const totalPages = files.reduce((sum, f) => sum + f.pageCount, 0);
 
   return (
     <div>
@@ -97,19 +98,15 @@ export default function MergePdfPage() {
       {files.length > 0 && (
         <div className="mt-6 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setFiles([])}
-            >
+            <Button variant="outline" size="sm" onClick={() => setFiles([])}>
               <RiDeleteBin6Line data-icon="inline-start" />
               Clear All
             </Button>
 
             <div className="ml-auto flex items-center gap-2">
               <Badge>
-                {files.length} file{files.length !== 1 ? "s" : ""} · {totalPages}{" "}
-                page{totalPages !== 1 ? "s" : ""}
+                {files.length} file{files.length !== 1 ? "s" : ""} ·{" "}
+                {totalPages} page{totalPages !== 1 ? "s" : ""}
               </Badge>
               <Button
                 size="sm"
@@ -169,5 +166,5 @@ export default function MergePdfPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

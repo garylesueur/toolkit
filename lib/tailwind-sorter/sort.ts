@@ -139,14 +139,7 @@ const CATEGORY_ORDER: CategoryDefinition[] = [
   },
   {
     name: "Borders",
-    prefixes: [
-      "rounded",
-      "border",
-      "divide",
-      "outline",
-      "ring-offset",
-      "ring",
-    ],
+    prefixes: ["rounded", "border", "divide", "outline", "ring-offset", "ring"],
   },
   {
     name: "Effects",

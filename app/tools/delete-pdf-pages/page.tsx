@@ -1,50 +1,59 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { usePdfDocument } from "@/hooks/use-pdf-document"
-import { deletePdfPages } from "@/lib/pdf/delete"
-import { downloadPdf } from "@/lib/pdf/download"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   RiDownload2Line,
   RiLoader4Line,
   RiDeleteBin6Line,
   RiCloseLine,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback } from "react";
+
+import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid";
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { usePdfDocument } from "@/hooks/use-pdf-document";
+import { deletePdfPages } from "@/lib/pdf/delete";
+import { downloadPdf } from "@/lib/pdf/download";
 
 export default function DeletePdfPagesPage() {
-  const { pdfBytes, pageCount, thumbnails, fileName, loading, error, loadFile, reset } =
-    usePdfDocument()
-  const [selected, setSelected] = useState<Set<number>>(new Set())
-  const [saving, setSaving] = useState(false)
+  const {
+    pdfBytes,
+    pageCount,
+    thumbnails,
+    fileName,
+    loading,
+    error,
+    loadFile,
+    reset,
+  } = usePdfDocument();
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [saving, setSaving] = useState(false);
 
   const togglePage = useCallback((index: number) => {
     setSelected((prev) => {
-      const next = new Set(prev)
-      if (next.has(index)) next.delete(index)
-      else next.add(index)
-      return next
-    })
-  }, [])
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  }, []);
 
   const handleSave = useCallback(async () => {
-    if (!pdfBytes || selected.size === 0) return
-    setSaving(true)
+    if (!pdfBytes || selected.size === 0) return;
+    setSaving(true);
     try {
-      const result = await deletePdfPages(pdfBytes, selected)
-      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "")
-      await downloadPdf(result, `${baseName}-modified.pdf`)
+      const result = await deletePdfPages(pdfBytes, selected);
+      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
+      await downloadPdf(result, `${baseName}-modified.pdf`);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to delete pages.")
+      alert(err instanceof Error ? err.message : "Failed to delete pages.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [pdfBytes, selected, fileName])
+  }, [pdfBytes, selected, fileName]);
 
-  const canDelete = selected.size > 0 && selected.size < pageCount
+  const canDelete = selected.size > 0 && selected.size < pageCount;
 
   return (
     <div>
@@ -54,7 +63,10 @@ export default function DeletePdfPagesPage() {
       </p>
 
       <div className="mt-8">
-        <PdfDropZone onFiles={(files) => loadFile(files[0])} compact={!!pdfBytes} />
+        <PdfDropZone
+          onFiles={(files) => loadFile(files[0])}
+          compact={!!pdfBytes}
+        />
       </div>
 
       {loading && (
@@ -82,8 +94,8 @@ export default function DeletePdfPagesPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                reset()
-                setSelected(new Set())
+                reset();
+                setSelected(new Set());
               }}
             >
               <RiDeleteBin6Line data-icon="inline-start" />
@@ -93,8 +105,8 @@ export default function DeletePdfPagesPage() {
             <div className="ml-auto flex items-center gap-2">
               {selected.size > 0 && (
                 <Badge variant={canDelete ? "default" : "destructive"}>
-                  {selected.size} of {pageCount} page{selected.size !== 1 ? "s" : ""}{" "}
-                  selected
+                  {selected.size} of {pageCount} page
+                  {selected.size !== 1 ? "s" : ""} selected
                   {!canDelete && " (can't delete all)"}
                 </Badge>
               )}
@@ -128,5 +140,5 @@ export default function DeletePdfPagesPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

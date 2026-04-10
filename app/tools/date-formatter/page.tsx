@@ -1,14 +1,15 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RiTimeLine } from "@remixicon/react"
-import { CopyableRow } from "@/components/copyable-row"
-import { formatRelative, formatDateTimeLocalForInput } from "@/lib/shared/date"
+import { RiTimeLine } from "@remixicon/react";
+import { useState, useCallback } from "react";
 
-const COPY_RESET_MS = 2000
+import { CopyableRow } from "@/components/copyable-row";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { formatRelative, formatDateTimeLocalForInput } from "@/lib/shared/date";
+
+const COPY_RESET_MS = 2000;
 
 const LOCAL_DATE_TIME_FORMATTER = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
@@ -16,7 +17,7 @@ const LOCAL_DATE_TIME_FORMATTER = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
   hour: "2-digit",
   minute: "2-digit",
-})
+});
 
 /**
  * Formats a Date as an RFC 2822 string.
@@ -24,21 +25,21 @@ const LOCAL_DATE_TIME_FORMATTER = new Intl.DateTimeFormat("en-GB", {
  * RFC 2822 uses "+0000" instead of "GMT".
  */
 function formatRfc2822(date: Date): string {
-  return date.toUTCString().replace("GMT", "+0000")
+  return date.toUTCString().replace("GMT", "+0000");
 }
 
 /** Formats a Date as an SQL DATETIME string (YYYY-MM-DD HH:MM:SS) in UTC. */
 function formatSqlDatetime(date: Date): string {
-  return date.toISOString().replace("T", " ").slice(0, 19)
+  return date.toISOString().replace("T", " ").slice(0, 19);
 }
 
 interface FormattedResult {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }
 
 function computeFormats(date: Date): FormattedResult[] {
-  const ms = date.getTime()
+  const ms = date.getTime();
 
   return [
     { label: "ISO 8601", value: date.toISOString() },
@@ -47,33 +48,36 @@ function computeFormats(date: Date): FormattedResult[] {
     { label: "Local date/time", value: LOCAL_DATE_TIME_FORMATTER.format(date) },
     { label: "Relative", value: formatRelative(date) },
     { label: "SQL datetime", value: formatSqlDatetime(date) },
-    { label: "Unix timestamp (seconds)", value: Math.floor(ms / 1000).toString() },
+    {
+      label: "Unix timestamp (seconds)",
+      value: Math.floor(ms / 1000).toString(),
+    },
     { label: "Unix timestamp (milliseconds)", value: ms.toString() },
     { label: "Date only (ISO)", value: date.toISOString().slice(0, 10) },
     { label: "Time only (ISO)", value: date.toISOString().slice(11, 19) },
-  ]
+  ];
 }
 
 export default function DateFormatterPage() {
-  const [dateInput, setDateInput] = useState("")
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [dateInput, setDateInput] = useState("");
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const handleCopy = useCallback(async (value: string) => {
-    if (!value) return
-    await navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
   const handleNow = useCallback(() => {
-    setDateInput(formatDateTimeLocalForInput(new Date()))
-  }, [])
+    setDateInput(formatDateTimeLocalForInput(new Date()));
+  }, []);
 
-  const parsedDate = dateInput.trim() !== "" ? new Date(dateInput) : null
-  const isInvalid = parsedDate !== null && Number.isNaN(parsedDate.getTime())
-  const isValid = parsedDate !== null && !isInvalid
+  const parsedDate = dateInput.trim() !== "" ? new Date(dateInput) : null;
+  const isInvalid = parsedDate !== null && Number.isNaN(parsedDate.getTime());
+  const isValid = parsedDate !== null && !isInvalid;
 
-  const formats = isValid ? computeFormats(parsedDate) : null
+  const formats = isValid ? computeFormats(parsedDate) : null;
 
   return (
     <div className="space-y-8">
@@ -127,5 +131,5 @@ export default function DateFormatterPage() {
         )}
       </section>
     </div>
-  )
+  );
 }

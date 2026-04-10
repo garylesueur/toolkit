@@ -1,21 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { RiSwapLine } from "@remixicon/react"
-import { rgbToHex } from "@/lib/colour/convert"
-import { parseColour } from "@/lib/colour/parse"
-import {
-  analyseContrast,
-  formatRatio,
-} from "@/lib/wcag-contrast/contrast"
+import { RiSwapLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { rgbToHex } from "@/lib/colour/convert";
+import { parseColour } from "@/lib/colour/parse";
+import { analyseContrast, formatRatio } from "@/lib/wcag-contrast/contrast";
 
 interface RequirementRowProps {
-  label: string
-  threshold: string
-  pass: boolean
+  label: string;
+  threshold: string;
+  pass: boolean;
 }
 
 function RequirementRow({ label, threshold, pass }: RequirementRowProps) {
@@ -29,20 +27,20 @@ function RequirementRow({ label, threshold, pass }: RequirementRowProps) {
         {pass ? "Pass" : "Fail"}
       </Badge>
     </div>
-  )
+  );
 }
 
-const FOREGROUND_PICKER_FALLBACK = "#1e293b"
-const BACKGROUND_PICKER_FALLBACK = "#ffffff"
+const FOREGROUND_PICKER_FALLBACK = "#1e293b";
+const BACKGROUND_PICKER_FALLBACK = "#ffffff";
 
 interface ColourFieldProps {
-  id: string
-  label: string
-  value: string
-  onChange: (value: string) => void
-  placeholder: string
-  pickerFallback: string
-  pickerAriaLabel: string
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  pickerFallback: string;
+  pickerAriaLabel: string;
 }
 
 /**
@@ -58,8 +56,8 @@ function ColourField({
   pickerFallback,
   pickerAriaLabel,
 }: ColourFieldProps) {
-  const parsed = parseColour(value)
-  const pickerValue = parsed ? rgbToHex(parsed) : pickerFallback
+  const parsed = parseColour(value);
+  const pickerValue = parsed ? rgbToHex(parsed) : pickerFallback;
 
   return (
     <div className="space-y-2">
@@ -83,29 +81,31 @@ function ColourField({
         />
       </div>
     </div>
-  )
+  );
 }
 
 export default function ContrastCheckerPage() {
-  const [foreground, setForeground] = useState("#1e293b")
-  const [background, setBackground] = useState("#ffffff")
+  const [foreground, setForeground] = useState("#1e293b");
+  const [background, setBackground] = useState("#ffffff");
 
   const result = useMemo(
     () => analyseContrast(foreground, background),
     [foreground, background],
-  )
+  );
 
   const handleSwap = useCallback(() => {
-    setForeground(background)
-    setBackground(foreground)
-  }, [foreground, background])
+    setForeground(background);
+    setBackground(foreground);
+  }, [foreground, background]);
 
-  const fgHex = result ? rgbToHex(result.foreground) : null
-  const bgHex = result ? rgbToHex(result.background) : null
+  const fgHex = result ? rgbToHex(result.foreground) : null;
+  const bgHex = result ? rgbToHex(result.background) : null;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight">WCAG Contrast Checker</h1>
+      <h1 className="text-2xl font-bold tracking-tight">
+        WCAG Contrast Checker
+      </h1>
       <p className="text-muted-foreground mt-1">
         Use the colour pickers or type hex, rgb(), or hsl() for text and
         background to see the contrast ratio and WCAG 2.1 AA / AAA pass or fail.
@@ -150,8 +150,8 @@ export default function ContrastCheckerPage() {
           >
             <p className="text-lg font-semibold">Sample heading text</p>
             <p className="mt-2 text-sm opacity-90">
-              Body text at normal size — WCAG uses 18pt+ regular or 14pt+ bold as
-              &quot;large&quot; text for the relaxed thresholds.
+              Body text at normal size — WCAG uses 18pt+ regular or 14pt+ bold
+              as &quot;large&quot; text for the relaxed thresholds.
             </p>
           </div>
 
@@ -194,5 +194,5 @@ export default function ContrastCheckerPage() {
         </p>
       )}
     </div>
-  )
+  );
 }

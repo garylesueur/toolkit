@@ -1,8 +1,9 @@
-import type { ReactNode } from "react"
-import { createToolMetadata } from "@/lib/tools-metadata"
+import type { ReactNode } from "react";
 
-export const metadata = createToolMetadata("secret-generator")
+import { createToolMetadata } from "@/lib/tools-metadata";
+
+export const metadata = createToolMetadata("secret-generator");
 
 export default function Layout({ children }: { children: ReactNode }) {
-  return children
+  return children;
 }

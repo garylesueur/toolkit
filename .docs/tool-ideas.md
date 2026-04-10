@@ -10,53 +10,53 @@ This document tracks **what is shipped**, **what is hidden or broken**, and **ba
 
 These tools are registered and appear on the home grid for normal builds (45 entries).
 
-| Tool | Route |
-|------|--------|
-| ID Generator | `/tools/id-generator` |
-| Base64 Encode / Decode | `/tools/base64` |
-| URL Encode / Decode | `/tools/url-encode-decode` |
-| HTML Entities | `/tools/html-entities` |
-| Lorem Ipsum Generator | `/tools/lorem-ipsum` |
-| Unix Timestamp Converter | `/tools/unix-timestamp` |
-| Character & Word Counter | `/tools/character-counter` |
-| Favicon Generator | `/tools/favicon-generator` |
-| Chrome Extension Icons | `/tools/chrome-extension-icons` |
-| OG Preview | `/tools/og-preview` |
-| JSON Formatter | `/tools/json-formatter` |
-| JWT Decoder | `/tools/jwt-decoder` |
-| Colour Converter | `/tools/colour-converter` |
-| WCAG Contrast Checker | `/tools/contrast-checker` |
-| Hash Generator | `/tools/hash-generator` |
-| Regex Tester | `/tools/regex-tester` |
-| Diff Viewer | `/tools/diff-viewer` |
-| CSS Unit Converter | `/tools/css-unit-converter` |
-| Hidden Character Revealer | `/tools/hidden-characters` |
-| Markdown Preview | `/tools/markdown-preview` |
-| Image Compressor / Resizer | `/tools/image-compressor` |
-| Cron Expression Explainer | `/tools/cron-explainer` |
-| CSV ↔ JSON Converter | `/tools/csv-json-converter` |
-| YAML Formatter | `/tools/yaml-formatter` |
-| SVG to PNG / JPEG Converter | `/tools/svg-converter` |
-| QR Code Generator | `/tools/qr-code-generator` |
-| Tailwind Class Sorter | `/tools/tailwind-sorter` |
-| Placeholder Image Generator | `/tools/placeholder-image` |
-| Date / Time Formatter | `/tools/date-formatter` |
-| Time Zone Converter | `/tools/timezone-converter` |
-| Duration Calculator | `/tools/duration-calculator` |
-| Relative Date Calculator | `/tools/relative-date-calculator` |
-| Week Number Lookup | `/tools/week-number` |
-| Epoch Batch Converter | `/tools/epoch-batch-converter` |
-| Number Base Converter | `/tools/number-base-converter` |
-| Byte / Bit Size Converter | `/tools/byte-converter` |
-| Aspect Ratio Calculator | `/tools/aspect-ratio` |
-| Chmod Calculator | `/tools/chmod-calculator` |
-| CIDR / Subnet Calculator | `/tools/cidr-calculator` |
-| Slug Generator | `/tools/slug-generator` |
-| Case Converter | `/tools/case-converter` |
-| HTTP Status Code Reference | `/tools/http-status-codes` |
-| Password Generator | `/tools/password-generator` |
-| Secret / Token Generator | `/tools/secret-generator` |
-| Browser Info | `/tools/browser-info` |
+| Tool                        | Route                             |
+| --------------------------- | --------------------------------- |
+| ID Generator                | `/tools/id-generator`             |
+| Base64 Encode / Decode      | `/tools/base64`                   |
+| URL Encode / Decode         | `/tools/url-encode-decode`        |
+| HTML Entities               | `/tools/html-entities`            |
+| Lorem Ipsum Generator       | `/tools/lorem-ipsum`              |
+| Unix Timestamp Converter    | `/tools/unix-timestamp`           |
+| Character & Word Counter    | `/tools/character-counter`        |
+| Favicon Generator           | `/tools/favicon-generator`        |
+| Chrome Extension Icons      | `/tools/chrome-extension-icons`   |
+| OG Preview                  | `/tools/og-preview`               |
+| JSON Formatter              | `/tools/json-formatter`           |
+| JWT Decoder                 | `/tools/jwt-decoder`              |
+| Colour Converter            | `/tools/colour-converter`         |
+| WCAG Contrast Checker       | `/tools/contrast-checker`         |
+| Hash Generator              | `/tools/hash-generator`           |
+| Regex Tester                | `/tools/regex-tester`             |
+| Diff Viewer                 | `/tools/diff-viewer`              |
+| CSS Unit Converter          | `/tools/css-unit-converter`       |
+| Hidden Character Revealer   | `/tools/hidden-characters`        |
+| Markdown Preview            | `/tools/markdown-preview`         |
+| Image Compressor / Resizer  | `/tools/image-compressor`         |
+| Cron Expression Explainer   | `/tools/cron-explainer`           |
+| CSV ↔ JSON Converter        | `/tools/csv-json-converter`       |
+| YAML Formatter              | `/tools/yaml-formatter`           |
+| SVG to PNG / JPEG Converter | `/tools/svg-converter`            |
+| QR Code Generator           | `/tools/qr-code-generator`        |
+| Tailwind Class Sorter       | `/tools/tailwind-sorter`          |
+| Placeholder Image Generator | `/tools/placeholder-image`        |
+| Date / Time Formatter       | `/tools/date-formatter`           |
+| Time Zone Converter         | `/tools/timezone-converter`       |
+| Duration Calculator         | `/tools/duration-calculator`      |
+| Relative Date Calculator    | `/tools/relative-date-calculator` |
+| Week Number Lookup          | `/tools/week-number`              |
+| Epoch Batch Converter       | `/tools/epoch-batch-converter`    |
+| Number Base Converter       | `/tools/number-base-converter`    |
+| Byte / Bit Size Converter   | `/tools/byte-converter`           |
+| Aspect Ratio Calculator     | `/tools/aspect-ratio`             |
+| Chmod Calculator            | `/tools/chmod-calculator`         |
+| CIDR / Subnet Calculator    | `/tools/cidr-calculator`          |
+| Slug Generator              | `/tools/slug-generator`           |
+| Case Converter              | `/tools/case-converter`           |
+| HTTP Status Code Reference  | `/tools/http-status-codes`        |
+| Password Generator          | `/tools/password-generator`       |
+| Secret / Token Generator    | `/tools/secret-generator`         |
+| Browser Info                | `/tools/browser-info`             |
 
 **Implementation notes (for doc accuracy):**
 
@@ -67,8 +67,8 @@ These tools are registered and appear on the home grid for normal builds (45 ent
 
 ## Dev-only / needs work
 
-| Tool | Route | Status |
-|------|--------|--------|
+| Tool                      | Route                    | Status                                                                                                                                                                                                                      |
+| ------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | LinkedIn Banner Generator | `/tools/linkedin-banner` | Registered with `devOnly: true`. **Does not work reliably at the moment** (export / canvas / layout issues — treat as WIP). Keep hidden from production until fixed; then remove `devOnly` and verify metadata and sitemap. |
 
 ---

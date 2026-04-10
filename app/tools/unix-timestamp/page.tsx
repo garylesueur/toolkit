@@ -1,55 +1,59 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RiTimeLine } from "@remixicon/react"
-import { CopyableRow } from "@/components/copyable-row"
-import { formatDateTime, formatRelative, formatDateTimeLocalForInput } from "@/lib/shared/date"
+import { RiTimeLine } from "@remixicon/react";
+import { useState, useCallback } from "react";
 
-const COPY_RESET_MS = 2000
-const SECONDS_THRESHOLD = 10_000_000_000
+import { CopyableRow } from "@/components/copyable-row";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  formatDateTime,
+  formatRelative,
+  formatDateTimeLocalForInput,
+} from "@/lib/shared/date";
+
+const COPY_RESET_MS = 2000;
+const SECONDS_THRESHOLD = 10_000_000_000;
 
 /** Timestamp in seconds > this is treated as milliseconds. */
 function toMilliseconds(value: number): number {
-  return value < SECONDS_THRESHOLD ? value * 1000 : value
+  return value < SECONDS_THRESHOLD ? value * 1000 : value;
 }
 
 export default function UnixTimestampPage() {
-  const [timestampInput, setTimestampInput] = useState("")
-  const [dateInput, setDateInput] = useState("")
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [timestampInput, setTimestampInput] = useState("");
+  const [dateInput, setDateInput] = useState("");
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const handleCopy = useCallback(async (value: string) => {
-    if (!value) return
-    await navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
   const handleTimestampNow = useCallback(() => {
-    setTimestampInput(Math.floor(Date.now() / 1000).toString())
-  }, [])
+    setTimestampInput(Math.floor(Date.now() / 1000).toString());
+  }, []);
 
   const handleDateNow = useCallback(() => {
-    setDateInput(formatDateTimeLocalForInput(new Date()))
-  }, [])
+    setDateInput(formatDateTimeLocalForInput(new Date()));
+  }, []);
 
-  const timestampNum = timestampInput.trim() ? Number(timestampInput.trim()) : null
+  const timestampNum = timestampInput.trim()
+    ? Number(timestampInput.trim())
+    : null;
   const timestampMs =
     timestampNum !== null && Number.isFinite(timestampNum)
       ? toMilliseconds(timestampNum)
-      : null
-  const timestampDate =
-    timestampMs !== null ? new Date(timestampMs) : null
+      : null;
+  const timestampDate = timestampMs !== null ? new Date(timestampMs) : null;
   const isInvalidDate =
-    timestampDate !== null && Number.isNaN(timestampDate.getTime())
+    timestampDate !== null && Number.isNaN(timestampDate.getTime());
 
-  const dateTs =
-    dateInput.trim() !== "" ? new Date(dateInput).getTime() : NaN
-  const isInvalidDateInput =
-    dateInput.trim() !== "" && Number.isNaN(dateTs)
+  const dateTs = dateInput.trim() !== "" ? new Date(dateInput).getTime() : NaN;
+  const isInvalidDateInput = dateInput.trim() !== "" && Number.isNaN(dateTs);
 
   const timestampResults =
     timestampDate !== null && !isInvalidDate
@@ -59,16 +63,15 @@ export default function UnixTimestampPage() {
           relative: formatRelative(timestampDate),
           utc: timestampDate.toUTCString(),
         }
-      : null
+      : null;
 
   const dateResults =
-    dateInput.trim() !== "" &&
-    !Number.isNaN(dateTs)
+    dateInput.trim() !== "" && !Number.isNaN(dateTs)
       ? {
           seconds: Math.floor(dateTs / 1000).toString(),
           milliseconds: dateTs.toString(),
         }
-      : null
+      : null;
 
   return (
     <div className="space-y-12">
@@ -189,5 +192,5 @@ export default function UnixTimestampPage() {
         )}
       </section>
     </div>
-  )
+  );
 }

@@ -1,71 +1,75 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { compressPdf } from "@/lib/pdf/compress"
-import { downloadPdf } from "@/lib/pdf/download"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   RiDownload2Line,
   RiLoader4Line,
   RiDeleteBin6Line,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback } from "react";
+
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { compressPdf } from "@/lib/pdf/compress";
+import { downloadPdf } from "@/lib/pdf/download";
 
 function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export default function CompressPdfPage() {
-  const [file, setFile] = useState<File | null>(null)
-  const [stripMetadata, setStripMetadata] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [file, setFile] = useState<File | null>(null);
+  const [stripMetadata, setStripMetadata] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<{
-    originalSize: number
-    compressedSize: number
-  } | null>(null)
-  const [error, setError] = useState<string | null>(null)
+    originalSize: number;
+    compressedSize: number;
+  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFiles = useCallback((files: File[]) => {
-    setFile(files[0])
-    setResult(null)
-    setError(null)
-  }, [])
+    setFile(files[0]);
+    setResult(null);
+    setError(null);
+  }, []);
 
   const handleCompress = useCallback(async () => {
-    if (!file) return
-    setSaving(true)
-    setError(null)
+    if (!file) return;
+    setSaving(true);
+    setError(null);
     try {
-      const buffer = await file.arrayBuffer()
-      const bytes = new Uint8Array(buffer)
-      const { pdfDoc, originalSize, compressedSize } = await compressPdf(bytes, {
-        stripMetadata,
-      })
-      setResult({ originalSize, compressedSize })
-      const baseName = file.name.replace(/\.pdf$/i, "")
-      await downloadPdf(pdfDoc, `${baseName}-compressed.pdf`)
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      const { pdfDoc, originalSize, compressedSize } = await compressPdf(
+        bytes,
+        {
+          stripMetadata,
+        },
+      );
+      setResult({ originalSize, compressedSize });
+      const baseName = file.name.replace(/\.pdf$/i, "");
+      await downloadPdf(pdfDoc, `${baseName}-compressed.pdf`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Compression failed.")
+      setError(err instanceof Error ? err.message : "Compression failed.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [file, stripMetadata])
+  }, [file, stripMetadata]);
 
-  const saved = result ? result.originalSize - result.compressedSize : 0
+  const saved = result ? result.originalSize - result.compressedSize : 0;
   const savedPercent =
     result && result.originalSize > 0
       ? Math.round((saved / result.originalSize) * 100)
-      : 0
+      : 0;
 
   return (
     <div>
       <h1 className="text-2xl font-bold tracking-tight">Compress PDF</h1>
       <p className="text-muted-foreground mt-1">
-        Re-save your PDF to strip unused objects and reduce file size. Works best
-        on PDFs that have been edited many times.
+        Re-save your PDF to strip unused objects and reduce file size. Works
+        best on PDFs that have been edited many times.
       </p>
 
       <div className="mt-8">
@@ -98,9 +102,9 @@ export default function CompressPdfPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                setFile(null)
-                setResult(null)
-                setError(null)
+                setFile(null);
+                setResult(null);
+                setError(null);
               }}
             >
               <RiDeleteBin6Line data-icon="inline-start" />
@@ -137,5 +141,5 @@ export default function CompressPdfPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

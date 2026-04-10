@@ -1,23 +1,24 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RiTimeLine } from "@remixicon/react"
-import { CopyableRow } from "@/components/copyable-row"
-import { formatDateTimeLocalForInput } from "@/lib/shared/date"
+import { RiTimeLine } from "@remixicon/react";
+import { useState, useCallback } from "react";
 
-const COPY_RESET_MS = 2000
-const MS_PER_SECOND = 1000
-const MS_PER_MINUTE = 60 * MS_PER_SECOND
-const MS_PER_HOUR = 60 * MS_PER_MINUTE
-const MS_PER_DAY = 24 * MS_PER_HOUR
+import { CopyableRow } from "@/components/copyable-row";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { formatDateTimeLocalForInput } from "@/lib/shared/date";
+
+const COPY_RESET_MS = 2000;
+const MS_PER_SECOND = 1000;
+const MS_PER_MINUTE = 60 * MS_PER_SECOND;
+const MS_PER_HOUR = 60 * MS_PER_MINUTE;
+const MS_PER_DAY = 24 * MS_PER_HOUR;
 
 interface DurationBreakdown {
-  years: number
-  months: number
-  days: number
+  years: number;
+  months: number;
+  days: number;
 }
 
 /**
@@ -26,40 +27,40 @@ interface DurationBreakdown {
  * internally.
  */
 function computeCalendarDuration(a: Date, b: Date): DurationBreakdown {
-  const [start, end] = a <= b ? [a, b] : [b, a]
+  const [start, end] = a <= b ? [a, b] : [b, a];
 
-  let years = end.getFullYear() - start.getFullYear()
-  let months = end.getMonth() - start.getMonth()
-  let days = end.getDate() - start.getDate()
+  let years = end.getFullYear() - start.getFullYear();
+  let months = end.getMonth() - start.getMonth();
+  let days = end.getDate() - start.getDate();
 
   if (days < 0) {
-    months -= 1
-    const previousMonth = new Date(end.getFullYear(), end.getMonth(), 0)
-    days += previousMonth.getDate()
+    months -= 1;
+    const previousMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+    days += previousMonth.getDate();
   }
 
   if (months < 0) {
-    years -= 1
-    months += 12
+    years -= 1;
+    months += 12;
   }
 
-  return { years, months, days }
+  return { years, months, days };
 }
 
 function formatBreakdown({ years, months, days }: DurationBreakdown): string {
-  const parts: string[] = []
+  const parts: string[] = [];
 
   if (years > 0) {
-    parts.push(`${years} ${years === 1 ? "year" : "years"}`)
+    parts.push(`${years} ${years === 1 ? "year" : "years"}`);
   }
   if (months > 0) {
-    parts.push(`${months} ${months === 1 ? "month" : "months"}`)
+    parts.push(`${months} ${months === 1 ? "month" : "months"}`);
   }
   if (days > 0 || parts.length === 0) {
-    parts.push(`${days} ${days === 1 ? "day" : "days"}`)
+    parts.push(`${days} ${days === 1 ? "day" : "days"}`);
   }
 
-  return parts.join(", ")
+  return parts.join(", ");
 }
 
 function formatLocalDateTime(date: Date): string {
@@ -69,15 +70,15 @@ function formatLocalDateTime(date: Date): string {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(date)
+  }).format(date);
 }
 
 interface DurationInputsState {
-  years: string
-  months: string
-  days: string
-  hours: string
-  minutes: string
+  years: string;
+  months: string;
+  days: string;
+  hours: string;
+  minutes: string;
 }
 
 const EMPTY_DURATION_INPUTS: DurationInputsState = {
@@ -86,104 +87,110 @@ const EMPTY_DURATION_INPUTS: DurationInputsState = {
   days: "",
   hours: "",
   minutes: "",
-}
+};
 
 export default function DurationCalculatorPage() {
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
-  const [addStartDate, setAddStartDate] = useState("")
-  const [durationInputs, setDurationInputs] =
-    useState<DurationInputsState>(EMPTY_DURATION_INPUTS)
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [addStartDate, setAddStartDate] = useState("");
+  const [durationInputs, setDurationInputs] = useState<DurationInputsState>(
+    EMPTY_DURATION_INPUTS,
+  );
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const handleCopy = useCallback(async (value: string) => {
-    if (!value) return
-    await navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
   const handleStartNow = useCallback(() => {
-    setStartDate(formatDateTimeLocalForInput(new Date()))
-  }, [])
+    setStartDate(formatDateTimeLocalForInput(new Date()));
+  }, []);
 
   const handleEndNow = useCallback(() => {
-    setEndDate(formatDateTimeLocalForInput(new Date()))
-  }, [])
+    setEndDate(formatDateTimeLocalForInput(new Date()));
+  }, []);
 
   const handleAddStartNow = useCallback(() => {
-    setAddStartDate(formatDateTimeLocalForInput(new Date()))
-  }, [])
+    setAddStartDate(formatDateTimeLocalForInput(new Date()));
+  }, []);
 
   const handleDurationChange = useCallback(
     (field: keyof DurationInputsState, value: string) => {
-      setDurationInputs((prev) => ({ ...prev, [field]: value }))
+      setDurationInputs((prev) => ({ ...prev, [field]: value }));
     },
     [],
-  )
+  );
 
   // Section 1: Duration between two dates
-  const startMs = startDate ? new Date(startDate).getTime() : NaN
-  const endMs = endDate ? new Date(endDate).getTime() : NaN
-  const hasBothDates = !Number.isNaN(startMs) && !Number.isNaN(endMs)
+  const startMs = startDate ? new Date(startDate).getTime() : NaN;
+  const endMs = endDate ? new Date(endDate).getTime() : NaN;
+  const hasBothDates = !Number.isNaN(startMs) && !Number.isNaN(endMs);
 
-  const diffMs = hasBothDates ? Math.abs(endMs - startMs) : 0
-  const calendarBreakdown =
-    hasBothDates
-      ? computeCalendarDuration(new Date(startDate), new Date(endDate))
-      : null
+  const diffMs = hasBothDates ? Math.abs(endMs - startMs) : 0;
+  const calendarBreakdown = hasBothDates
+    ? computeCalendarDuration(new Date(startDate), new Date(endDate))
+    : null;
 
   const betweenResults = hasBothDates
     ? {
         breakdown: formatBreakdown(calendarBreakdown!),
         totalDays: Math.floor(diffMs / MS_PER_DAY).toLocaleString("en-GB"),
         totalHours: Math.floor(diffMs / MS_PER_HOUR).toLocaleString("en-GB"),
-        totalMinutes: Math.floor(diffMs / MS_PER_MINUTE).toLocaleString("en-GB"),
-        totalSeconds: Math.floor(diffMs / MS_PER_SECOND).toLocaleString("en-GB"),
+        totalMinutes: Math.floor(diffMs / MS_PER_MINUTE).toLocaleString(
+          "en-GB",
+        ),
+        totalSeconds: Math.floor(diffMs / MS_PER_SECOND).toLocaleString(
+          "en-GB",
+        ),
         totalMilliseconds: diffMs.toLocaleString("en-GB"),
       }
-    : null
+    : null;
 
   // Section 2: Add duration to a date
-  const addStartMs = addStartDate ? new Date(addStartDate).getTime() : NaN
-  const hasAddStart = !Number.isNaN(addStartMs)
+  const addStartMs = addStartDate ? new Date(addStartDate).getTime() : NaN;
+  const hasAddStart = !Number.isNaN(addStartMs);
 
-  const parsedYears = parseInt(durationInputs.years, 10) || 0
-  const parsedMonths = parseInt(durationInputs.months, 10) || 0
-  const parsedDays = parseInt(durationInputs.days, 10) || 0
-  const parsedHours = parseInt(durationInputs.hours, 10) || 0
-  const parsedMinutes = parseInt(durationInputs.minutes, 10) || 0
+  const parsedYears = parseInt(durationInputs.years, 10) || 0;
+  const parsedMonths = parseInt(durationInputs.months, 10) || 0;
+  const parsedDays = parseInt(durationInputs.days, 10) || 0;
+  const parsedHours = parseInt(durationInputs.hours, 10) || 0;
+  const parsedMinutes = parseInt(durationInputs.minutes, 10) || 0;
 
   const hasDurationInput =
     parsedYears !== 0 ||
     parsedMonths !== 0 ||
     parsedDays !== 0 ||
     parsedHours !== 0 ||
-    parsedMinutes !== 0
+    parsedMinutes !== 0;
 
-  const addResult = hasAddStart && hasDurationInput
-    ? (() => {
-        const base = new Date(addStartDate)
-        const result = new Date(base)
-        result.setFullYear(result.getFullYear() + parsedYears)
-        result.setMonth(result.getMonth() + parsedMonths)
-        result.setDate(result.getDate() + parsedDays)
-        result.setHours(result.getHours() + parsedHours)
-        result.setMinutes(result.getMinutes() + parsedMinutes)
-        return {
-          iso: result.toISOString(),
-          local: formatLocalDateTime(result),
-        }
-      })()
-    : null
+  const addResult =
+    hasAddStart && hasDurationInput
+      ? (() => {
+          const base = new Date(addStartDate);
+          const result = new Date(base);
+          result.setFullYear(result.getFullYear() + parsedYears);
+          result.setMonth(result.getMonth() + parsedMonths);
+          result.setDate(result.getDate() + parsedDays);
+          result.setHours(result.getHours() + parsedHours);
+          result.setMinutes(result.getMinutes() + parsedMinutes);
+          return {
+            iso: result.toISOString(),
+            local: formatLocalDateTime(result),
+          };
+        })()
+      : null;
 
-  const durationFields: { field: keyof DurationInputsState; label: string }[] = [
-    { field: "years", label: "Years" },
-    { field: "months", label: "Months" },
-    { field: "days", label: "Days" },
-    { field: "hours", label: "Hours" },
-    { field: "minutes", label: "Minutes" },
-  ]
+  const durationFields: { field: keyof DurationInputsState; label: string }[] =
+    [
+      { field: "years", label: "Years" },
+      { field: "months", label: "Months" },
+      { field: "days", label: "Days" },
+      { field: "hours", label: "Hours" },
+      { field: "minutes", label: "Minutes" },
+    ];
 
   return (
     <div className="space-y-12">
@@ -213,11 +220,7 @@ export default function DurationCalculatorPage() {
               />
             </div>
             <div className="flex shrink-0 items-end">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleStartNow}
-              >
+              <Button type="button" variant="outline" onClick={handleStartNow}>
                 <RiTimeLine data-icon="inline-start" />
                 Now
               </Button>
@@ -347,5 +350,5 @@ export default function DurationCalculatorPage() {
         )}
       </section>
     </div>
-  )
+  );
 }

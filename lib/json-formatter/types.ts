@@ -1,10 +1,10 @@
 export type FormatResult =
   | { formatted: string; error: null }
-  | { formatted: ""; error: string }
+  | { formatted: ""; error: string };
 
 export interface JsonStats {
-  lines: number
-  bytes: number
+  lines: number;
+  bytes: number;
 }
 
-export type IndentSize = 2 | 0
+export type IndentSize = 2 | 0;

@@ -1,63 +1,64 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
 
-type Direction = "encode" | "decode"
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
-const COPY_RESET_MS = 2000
+type Direction = "encode" | "decode";
+
+const COPY_RESET_MS = 2000;
 
 function base64Encode(input: string): string {
-  return btoa(unescape(encodeURIComponent(input)))
+  return btoa(unescape(encodeURIComponent(input)));
 }
 
 function base64Decode(input: string): { output: string; error: string | null } {
-  const trimmed = input.trim()
+  const trimmed = input.trim();
   if (!trimmed) {
-    return { output: "", error: null }
+    return { output: "", error: null };
   }
   try {
-    const decoded = decodeURIComponent(escape(atob(trimmed)))
-    return { output: decoded, error: null }
+    const decoded = decodeURIComponent(escape(atob(trimmed)));
+    return { output: decoded, error: null };
   } catch {
-    return { output: "", error: "Invalid Base64" }
+    return { output: "", error: "Invalid Base64" };
   }
 }
 
 export default function Base64Page() {
-  const [direction, setDirection] = useState<Direction>("encode")
-  const [input, setInput] = useState("")
-  const [copied, setCopied] = useState(false)
+  const [direction, setDirection] = useState<Direction>("encode");
+  const [input, setInput] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const { output, error } = useMemo(() => {
     if (direction === "encode") {
-      return { output: base64Encode(input), error: null }
+      return { output: base64Encode(input), error: null };
     }
-    return base64Decode(input)
-  }, [direction, input])
+    return base64Decode(input);
+  }, [direction, input]);
 
   const handleDirectionChange = useCallback(
     (newDirection: Direction) => {
-      if (newDirection === direction) return
-      setInput(output)
-      setDirection(newDirection)
+      if (newDirection === direction) return;
+      setInput(output);
+      setDirection(newDirection);
     },
     [direction, output],
-  )
+  );
 
   const handleCopy = useCallback(async () => {
-    if (!output) return
-    await navigator.clipboard.writeText(output)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_RESET_MS)
-  }, [output])
+    if (!output) return;
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
+  }, [output]);
 
   const inputPlaceholder =
     direction === "encode"
       ? "Enter text to encode…"
-      : "Paste Base64 to decode…"
+      : "Paste Base64 to decode…";
 
   return (
     <div>
@@ -98,7 +99,9 @@ export default function Base64Page() {
         </div>
         <div>
           <Textarea
-            placeholder={direction === "encode" ? "Base64 output…" : "Decoded text…"}
+            placeholder={
+              direction === "encode" ? "Base64 output…" : "Decoded text…"
+            }
             value={output}
             readOnly
             className="min-h-32 resize-y bg-muted/50"
@@ -120,9 +123,7 @@ export default function Base64Page() {
         </div>
       </div>
 
-      {error && (
-        <p className="mt-4 text-sm text-destructive">{error}</p>
-      )}
+      {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
     </div>
-  )
+  );
 }

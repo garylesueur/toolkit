@@ -1,29 +1,30 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
 
-const COPY_RESET_MS = 2000
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+
+const COPY_RESET_MS = 2000;
 
 /**
  * Matches 13-digit (millisecond) or 10-digit (second) numeric sequences
  * on word boundaries so embedded numbers in longer strings are ignored.
  */
-const EPOCH_PATTERN = /\b(\d{13}|\d{10})\b/g
+const EPOCH_PATTERN = /\b(\d{13}|\d{10})\b/g;
 
 /** Minimum 10-digit epoch in seconds: 2001-09-09T01:46:40Z */
-const MIN_EPOCH_SECONDS = 1_000_000_000
+const MIN_EPOCH_SECONDS = 1_000_000_000;
 
 /** Maximum 10-digit epoch in seconds: 2286-11-20T17:46:39Z */
-const MAX_EPOCH_SECONDS = 9_999_999_999
+const MAX_EPOCH_SECONDS = 9_999_999_999;
 
-const MS_PER_SECOND = 1000
+const MS_PER_SECOND = 1000;
 
 interface ConversionResult {
-  output: string
-  count: number
+  output: string;
+  count: number;
 }
 
 /**
@@ -32,48 +33,48 @@ interface ConversionResult {
  */
 function isPlausibleEpoch(value: number, digitCount: number): boolean {
   if (digitCount === 13) {
-    const seconds = value / MS_PER_SECOND
-    return seconds >= MIN_EPOCH_SECONDS && seconds <= MAX_EPOCH_SECONDS
+    const seconds = value / MS_PER_SECOND;
+    return seconds >= MIN_EPOCH_SECONDS && seconds <= MAX_EPOCH_SECONDS;
   }
-  return value >= MIN_EPOCH_SECONDS && value <= MAX_EPOCH_SECONDS
+  return value >= MIN_EPOCH_SECONDS && value <= MAX_EPOCH_SECONDS;
 }
 
 function convertEpochs(text: string): ConversionResult {
-  let count = 0
+  let count = 0;
 
   const output = text.replace(EPOCH_PATTERN, (match) => {
-    const value = Number(match)
-    const digitCount = match.length
+    const value = Number(match);
+    const digitCount = match.length;
 
     if (!isPlausibleEpoch(value, digitCount)) {
-      return match
+      return match;
     }
 
-    const ms = digitCount === 13 ? value : value * MS_PER_SECOND
-    const date = new Date(ms)
+    const ms = digitCount === 13 ? value : value * MS_PER_SECOND;
+    const date = new Date(ms);
 
     if (Number.isNaN(date.getTime())) {
-      return match
+      return match;
     }
 
-    count++
-    return `${match} (${date.toISOString()})`
-  })
+    count++;
+    return `${match} (${date.toISOString()})`;
+  });
 
-  return { output, count }
+  return { output, count };
 }
 
 export default function EpochBatchConverterPage() {
-  const [input, setInput] = useState("")
-  const [copied, setCopied] = useState(false)
+  const [input, setInput] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  const { output, count } = useMemo(() => convertEpochs(input), [input])
+  const { output, count } = useMemo(() => convertEpochs(input), [input]);
 
   const handleCopy = useCallback(async (text: string) => {
-    await navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_RESET_MS)
-  }, [])
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
+  }, []);
 
   return (
     <div>
@@ -125,5 +126,5 @@ export default function EpochBatchConverterPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

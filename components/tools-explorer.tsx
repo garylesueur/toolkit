@@ -1,21 +1,22 @@
-"use client"
+"use client";
 
-import { useSearchParams } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
-import { ToolCard } from "@/components/tool-card"
-import { useFavourites } from "@/hooks/use-favourites"
-import { visibleTools } from "@/lib/tools"
-import type { Tool } from "@/lib/tools"
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
-const SEARCH_PARAM_KEY = "q"
-const STATIC_GRID_ID = "static-tools-grid"
+import { ToolCard } from "@/components/tool-card";
+import { useFavourites } from "@/hooks/use-favourites";
+import { visibleTools } from "@/lib/tools";
+import type { Tool } from "@/lib/tools";
+
+const SEARCH_PARAM_KEY = "q";
+const STATIC_GRID_ID = "static-tools-grid";
 
 function matchesQuery(tool: Tool, query: string): boolean {
-  const lower = query.toLowerCase()
+  const lower = query.toLowerCase();
   return (
     tool.name.toLowerCase().includes(lower) ||
     tool.description.toLowerCase().includes(lower)
-  )
+  );
 }
 
 /**
@@ -24,40 +25,40 @@ function matchesQuery(tool: Tool, query: string): boolean {
  * and renders its own interactive version in its place.
  */
 export function ToolsExplorer() {
-  const searchParams = useSearchParams()
-  const query = searchParams.get(SEARCH_PARAM_KEY) ?? ""
-  const { isFavourite, toggleFavourite } = useFavourites()
-  const [mounted, setMounted] = useState(false)
+  const searchParams = useSearchParams();
+  const query = searchParams.get(SEARCH_PARAM_KEY) ?? "";
+  const { isFavourite, toggleFavourite } = useFavourites();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const staticGrid = document.getElementById(STATIC_GRID_ID)
+    const staticGrid = document.getElementById(STATIC_GRID_ID);
     if (staticGrid) {
-      staticGrid.hidden = true
+      staticGrid.hidden = true;
     }
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   const sortedTools = useMemo(() => {
     const filtered = query
       ? visibleTools.filter((tool) => matchesQuery(tool, query))
-      : visibleTools
+      : visibleTools;
 
-    const favourites: Tool[] = []
-    const rest: Tool[] = []
+    const favourites: Tool[] = [];
+    const rest: Tool[] = [];
 
     for (const tool of filtered) {
       if (isFavourite(tool.href)) {
-        favourites.push(tool)
+        favourites.push(tool);
       } else {
-        rest.push(tool)
+        rest.push(tool);
       }
     }
 
-    return [...favourites, ...rest]
-  }, [query, isFavourite])
+    return [...favourites, ...rest];
+  }, [query, isFavourite]);
 
   if (!mounted) {
-    return null
+    return null;
   }
 
   return (
@@ -79,5 +80,5 @@ export function ToolsExplorer() {
         </div>
       )}
     </section>
-  )
+  );
 }

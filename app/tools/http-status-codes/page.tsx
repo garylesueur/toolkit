@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { RiSearchLine } from "@remixicon/react";
+import { useState, useMemo } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   httpStatusCodes,
   type HttpStatusCode,
@@ -74,10 +75,7 @@ function groupByCategory(codes: HttpStatusCode[]): GroupedCodes[] {
   return result;
 }
 
-function filterCodes(
-  codes: HttpStatusCode[],
-  query: string,
-): HttpStatusCode[] {
+function filterCodes(codes: HttpStatusCode[], query: string): HttpStatusCode[] {
   const normalised = query.trim().toLowerCase();
   if (normalised === "") return codes;
 

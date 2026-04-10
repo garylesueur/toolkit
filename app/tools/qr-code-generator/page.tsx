@@ -1,102 +1,103 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import { RiDownload2Line } from "@remixicon/react";
+import { useState, useRef, useEffect, useCallback } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select"
-import { RiDownload2Line } from "@remixicon/react"
+} from "@/components/ui/select";
 import {
   renderQrToCanvas,
   generateQrSvg,
   downloadCanvasAsPng,
-} from "@/lib/qr-code/generate"
-import type { ErrorCorrectionLevel } from "@/lib/qr-code/generate"
+} from "@/lib/qr-code/generate";
+import type { ErrorCorrectionLevel } from "@/lib/qr-code/generate";
 
 const ERROR_CORRECTION_OPTIONS: {
-  value: ErrorCorrectionLevel
-  label: string
+  value: ErrorCorrectionLevel;
+  label: string;
 }[] = [
   { value: "L", label: "Low (L)" },
   { value: "M", label: "Medium (M)" },
   { value: "Q", label: "Quartile (Q)" },
   { value: "H", label: "High (H)" },
-]
+];
 
-const QR_CANVAS_WIDTH = 300
+const QR_CANVAS_WIDTH = 300;
 
 export default function QrCodeGeneratorPage() {
-  const [text, setText] = useState("")
+  const [text, setText] = useState("");
   const [errorCorrection, setErrorCorrection] =
-    useState<ErrorCorrectionLevel>("M")
-  const [error, setError] = useState<string | null>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+    useState<ErrorCorrectionLevel>("M");
+  const [error, setError] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
     if (!text.trim()) {
-      const ctx = canvas.getContext("2d")
+      const ctx = canvas.getContext("2d");
       if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
-      canvas.width = 0
-      canvas.height = 0
-      setError(null)
-      return
+      canvas.width = 0;
+      canvas.height = 0;
+      setError(null);
+      return;
     }
 
-    let cancelled = false
+    let cancelled = false;
 
     renderQrToCanvas(canvas, text, {
       errorCorrectionLevel: errorCorrection,
       width: QR_CANVAS_WIDTH,
     })
       .then(() => {
-        if (!cancelled) setError(null)
+        if (!cancelled) setError(null);
       })
       .catch((err: Error) => {
-        if (!cancelled) setError(err.message)
-      })
+        if (!cancelled) setError(err.message);
+      });
 
     return () => {
-      cancelled = true
-    }
-  }, [text, errorCorrection])
+      cancelled = true;
+    };
+  }, [text, errorCorrection]);
 
   const handleDownloadPng = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas || !text.trim()) return
-    downloadCanvasAsPng(canvas, "qr-code.png")
-  }, [text])
+    const canvas = canvasRef.current;
+    if (!canvas || !text.trim()) return;
+    downloadCanvasAsPng(canvas, "qr-code.png");
+  }, [text]);
 
   const handleDownloadSvg = useCallback(async () => {
-    if (!text.trim()) return
+    if (!text.trim()) return;
 
     try {
       const svg = await generateQrSvg(text, {
         errorCorrectionLevel: errorCorrection,
-      })
-      const blob = new Blob([svg], { type: "image/svg+xml" })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = "qr-code.svg"
-      a.click()
-      URL.revokeObjectURL(url)
+      });
+      const blob = new Blob([svg], { type: "image/svg+xml" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "qr-code.svg";
+      a.click();
+      URL.revokeObjectURL(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate SVG.")
+      setError(err instanceof Error ? err.message : "Failed to generate SVG.");
     }
-  }, [text, errorCorrection])
+  }, [text, errorCorrection]);
 
-  const hasText = text.trim().length > 0
+  const hasText = text.trim().length > 0;
 
   return (
     <div>
@@ -141,10 +142,7 @@ export default function QrCodeGeneratorPage() {
 
       <div className="mt-8 flex flex-col items-center">
         {hasText ? (
-          <canvas
-            ref={canvasRef}
-            className="rounded-lg border"
-          />
+          <canvas ref={canvasRef} className="rounded-lg border" />
         ) : (
           <>
             <canvas ref={canvasRef} className="hidden" />
@@ -162,11 +160,15 @@ export default function QrCodeGeneratorPage() {
           <RiDownload2Line data-icon="inline-start" />
           Download PNG
         </Button>
-        <Button variant="outline" onClick={handleDownloadSvg} disabled={!hasText}>
+        <Button
+          variant="outline"
+          onClick={handleDownloadSvg}
+          disabled={!hasText}
+        >
           <RiDownload2Line data-icon="inline-start" />
           Download SVG
         </Button>
       </div>
     </div>
-  )
+  );
 }

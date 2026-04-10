@@ -1,66 +1,65 @@
-"use client"
+"use client";
 
-import { useState, useMemo, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { RiFileCopyLine, RiCheckLine, RiCloseLine } from "@remixicon/react";
+import { useState, useMemo, useCallback } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { RiFileCopyLine, RiCheckLine, RiCloseLine } from "@remixicon/react"
-import { runYamlTransform } from "@/lib/yaml-formatter/transform"
-import type { JsonIndentSize, YamlToolMode } from "@/lib/yaml-formatter/types"
+} from "@/components/ui/tooltip";
+import { runYamlTransform } from "@/lib/yaml-formatter/transform";
+import type { JsonIndentSize, YamlToolMode } from "@/lib/yaml-formatter/types";
 
-const COPY_RESET_MS = 2000
+const COPY_RESET_MS = 2000;
 
 const MODE_OPTIONS: { value: YamlToolMode; label: string }[] = [
   { value: "format-yaml", label: "Format YAML" },
   { value: "yaml-to-json", label: "YAML → JSON" },
   { value: "json-to-yaml", label: "JSON → YAML" },
-]
+];
 
 export default function YamlFormatterPage() {
-  const [input, setInput] = useState("")
-  const [mode, setMode] = useState<YamlToolMode>("format-yaml")
-  const [yamlIndent, setYamlIndent] = useState<2 | 4>(2)
-  const [jsonIndent, setJsonIndent] = useState<JsonIndentSize>(2)
-  const [copied, setCopied] = useState(false)
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState<YamlToolMode>("format-yaml");
+  const [yamlIndent, setYamlIndent] = useState<2 | 4>(2);
+  const [jsonIndent, setJsonIndent] = useState<JsonIndentSize>(2);
+  const [copied, setCopied] = useState(false);
 
   const { output, error } = useMemo(
     () => runYamlTransform(input, mode, yamlIndent, jsonIndent),
     [input, mode, yamlIndent, jsonIndent],
-  )
+  );
 
   const handleCopy = useCallback(async () => {
-    if (!output) return
-    await navigator.clipboard.writeText(output)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_RESET_MS)
-  }, [output])
+    if (!output) return;
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
+  }, [output]);
 
   const handleClear = useCallback(() => {
-    setInput("")
-  }, [])
+    setInput("");
+  }, []);
 
   const inputHint =
     mode === "json-to-yaml"
       ? '{"name": "Ada", "role": "dev"}'
-      : "name: Ada\nrole: dev"
+      : "name: Ada\nrole: dev";
 
   const inputDescription =
-    mode === "json-to-yaml"
-      ? "Paste JSON (object or array)."
-      : "Paste YAML."
+    mode === "json-to-yaml" ? "Paste JSON (object or array)." : "Paste YAML.";
 
   return (
     <TooltipProvider>
@@ -73,7 +72,10 @@ export default function YamlFormatterPage() {
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <Label htmlFor="yaml-mode" className="text-muted-foreground text-xs whitespace-nowrap">
+            <Label
+              htmlFor="yaml-mode"
+              className="text-muted-foreground text-xs whitespace-nowrap"
+            >
               Mode
             </Label>
             <Select
@@ -95,7 +97,10 @@ export default function YamlFormatterPage() {
 
           {(mode === "format-yaml" || mode === "json-to-yaml") && (
             <div className="flex items-center gap-2">
-              <Label htmlFor="yaml-indent" className="text-muted-foreground text-xs whitespace-nowrap">
+              <Label
+                htmlFor="yaml-indent"
+                className="text-muted-foreground text-xs whitespace-nowrap"
+              >
                 YAML indent
               </Label>
               <Select
@@ -176,10 +181,15 @@ export default function YamlFormatterPage() {
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <div>
-            <label htmlFor="yaml-input" className="mb-2 block text-sm font-medium">
+            <label
+              htmlFor="yaml-input"
+              className="mb-2 block text-sm font-medium"
+            >
               Input
             </label>
-            <p className="text-muted-foreground mb-2 text-xs">{inputDescription}</p>
+            <p className="text-muted-foreground mb-2 text-xs">
+              {inputDescription}
+            </p>
             <Textarea
               id="yaml-input"
               placeholder={inputHint}
@@ -189,7 +199,10 @@ export default function YamlFormatterPage() {
             />
           </div>
           <div>
-            <label htmlFor="yaml-output" className="mb-2 block text-sm font-medium">
+            <label
+              htmlFor="yaml-output"
+              className="mb-2 block text-sm font-medium"
+            >
               Output
             </label>
             <Textarea
@@ -203,10 +216,8 @@ export default function YamlFormatterPage() {
           </div>
         </div>
 
-        {error && (
-          <p className="text-destructive mt-4 text-sm">{error}</p>
-        )}
+        {error && <p className="text-destructive mt-4 text-sm">{error}</p>}
       </div>
     </TooltipProvider>
-  )
+  );
 }

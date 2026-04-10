@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import type { RotationAngle } from "@/lib/pdf/constants"
+import type { RotationAngle } from "@/lib/pdf/constants";
 
 type PageThumbnailProps = {
-  src: string
-  pageNumber: number
-  selected?: boolean
-  rotation?: RotationAngle
-  overlay?: React.ReactNode
-  onClick?: () => void
-  draggable?: boolean
-  onDragStart?: (e: React.DragEvent) => void
-  onDragOver?: (e: React.DragEvent) => void
-  onDrop?: (e: React.DragEvent) => void
-}
+  src: string;
+  pageNumber: number;
+  selected?: boolean;
+  rotation?: RotationAngle;
+  overlay?: React.ReactNode;
+  onClick?: () => void;
+  draggable?: boolean;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
+};
 
 export function PageThumbnail({
   src,
@@ -57,5 +57,5 @@ export function PageThumbnail({
       </div>
       {overlay}
     </div>
-  )
+  );
 }

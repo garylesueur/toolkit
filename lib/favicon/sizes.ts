@@ -1,9 +1,9 @@
 export type FaviconTarget = {
-  filename: string
-  size: number
-  includeInIco?: boolean
-  purpose?: string
-}
+  filename: string;
+  size: number;
+  includeInIco?: boolean;
+  purpose?: string;
+};
 
 export const faviconTargets: FaviconTarget[] = [
   { filename: "favicon-16x16.png", size: 16, includeInIco: true },
@@ -20,4 +20,4 @@ export const faviconTargets: FaviconTarget[] = [
     size: 512,
     purpose: "any maskable",
   },
-]
+];

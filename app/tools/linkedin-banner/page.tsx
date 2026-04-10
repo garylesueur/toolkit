@@ -1,105 +1,113 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { RiDownload2Line } from "@remixicon/react";
+import { useState, useRef, useEffect, useCallback } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { RiDownload2Line } from "@remixicon/react"
-import { renderBanner, downloadBannerPng } from "@/lib/linkedin-banner/render"
-import type { BannerOptions, GradientType, TextAlignment } from "@/lib/linkedin-banner/types"
-import { GRADIENT_PRESETS, DEFAULT_PRESET } from "@/lib/linkedin-banner/presets"
+} from "@/components/ui/select";
+import {
+  GRADIENT_PRESETS,
+  DEFAULT_PRESET,
+} from "@/lib/linkedin-banner/presets";
+import { renderBanner, downloadBannerPng } from "@/lib/linkedin-banner/render";
+import type {
+  BannerOptions,
+  GradientType,
+  TextAlignment,
+} from "@/lib/linkedin-banner/types";
 
-const BANNER_WIDTH = 1584
-const BANNER_HEIGHT = 396
+const BANNER_WIDTH = 1584;
+const BANNER_HEIGHT = 396;
 
-const DEFAULT_TITLE_FONT_SIZE = 64
-const DEFAULT_SUBTITLE_FONT_SIZE = 32
-const DEFAULT_TEXT_COLOR = "#ffffff"
-const DEFAULT_LOGO_SCALE = 0.3
+const DEFAULT_TITLE_FONT_SIZE = 64;
+const DEFAULT_SUBTITLE_FONT_SIZE = 32;
+const DEFAULT_TEXT_COLOR = "#ffffff";
+const DEFAULT_LOGO_SCALE = 0.3;
 
 export default function LinkedInBannerPage() {
-  const [selectedPreset, setSelectedPreset] = useState<string>("Ocean")
+  const [selectedPreset, setSelectedPreset] = useState<string>("Ocean");
   const [gradientStartColor, setGradientStartColor] = useState(
     DEFAULT_PRESET.startColor,
-  )
+  );
   const [gradientEndColor, setGradientEndColor] = useState(
     DEFAULT_PRESET.endColor,
-  )
-  const [gradientAngle, setGradientAngle] = useState(DEFAULT_PRESET.angle)
+  );
+  const [gradientAngle, setGradientAngle] = useState(DEFAULT_PRESET.angle);
   const [gradientType, setGradientType] = useState<GradientType>(
     DEFAULT_PRESET.type,
-  )
+  );
 
-  const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null)
-  const [logoScale, setLogoScale] = useState(DEFAULT_LOGO_SCALE)
-  const [logoX, setLogoX] = useState(80)
-  const [logoY, setLogoY] = useState(80)
+  const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
+  const [logoScale, setLogoScale] = useState(DEFAULT_LOGO_SCALE);
+  const [logoX, setLogoX] = useState(80);
+  const [logoY, setLogoY] = useState(80);
 
-  const [title, setTitle] = useState("")
-  const [subtitle, setSubtitle] = useState("")
-  const [titleFontSize, setTitleFontSize] = useState(DEFAULT_TITLE_FONT_SIZE)
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [titleFontSize, setTitleFontSize] = useState(DEFAULT_TITLE_FONT_SIZE);
   const [subtitleFontSize, setSubtitleFontSize] = useState(
     DEFAULT_SUBTITLE_FONT_SIZE,
-  )
-  const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOR)
-  const [textAlignment, setTextAlignment] = useState<TextAlignment>("left")
-  const [titleY, setTitleY] = useState(120)
-  const [subtitleY, setSubtitleY] = useState(200)
+  );
+  const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOR);
+  const [textAlignment, setTextAlignment] = useState<TextAlignment>("left");
+  const [titleY, setTitleY] = useState(120);
+  const [subtitleY, setSubtitleY] = useState(200);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handlePresetChange = useCallback((presetName: string) => {
-    setSelectedPreset(presetName)
-    const preset = GRADIENT_PRESETS.find((p) => p.name === presetName)
+    setSelectedPreset(presetName);
+    const preset = GRADIENT_PRESETS.find((p) => p.name === presetName);
     if (preset) {
-      setGradientStartColor(preset.startColor)
-      setGradientEndColor(preset.endColor)
-      setGradientAngle(preset.angle)
-      setGradientType(preset.type)
+      setGradientStartColor(preset.startColor);
+      setGradientEndColor(preset.endColor);
+      setGradientAngle(preset.angle);
+      setGradientType(preset.type);
     }
-  }, [])
+  }, []);
 
   const handleLogoUpload = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (!file) return
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (event) => {
-        const img = new Image()
+        const img = new Image();
         img.onload = () => {
-          setLogoImage(img)
-        }
+          setLogoImage(img);
+        };
         img.onerror = () => {
           // Silently fail - user can try again
-        }
+        };
         if (event.target?.result) {
-          img.src = event.target.result as string
+          img.src = event.target.result as string;
         }
-      }
-      reader.readAsDataURL(file)
+      };
+      reader.readAsDataURL(file);
     },
     [],
-  )
+  );
 
   const handleRemoveLogo = useCallback(() => {
-    setLogoImage(null)
+    setLogoImage(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""
+      fileInputRef.current.value = "";
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
     const options: BannerOptions = {
       gradientStartColor,
@@ -122,9 +130,9 @@ export default function LinkedInBannerPage() {
         titleY,
         subtitleY,
       },
-    }
+    };
 
-    renderBanner(canvas, options)
+    renderBanner(canvas, options);
   }, [
     gradientStartColor,
     gradientEndColor,
@@ -142,13 +150,13 @@ export default function LinkedInBannerPage() {
     textAlignment,
     titleY,
     subtitleY,
-  ])
+  ]);
 
   const handleDownload = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    downloadBannerPng(canvas, "linkedin-banner.png")
-  }, [])
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    downloadBannerPng(canvas, "linkedin-banner.png");
+  }, []);
 
   return (
     <div>
@@ -335,9 +343,7 @@ export default function LinkedInBannerPage() {
                 min={12}
                 max={120}
                 value={titleFontSize}
-                onChange={(e) =>
-                  setTitleFontSize(Number(e.target.value) || 12)
-                }
+                onChange={(e) => setTitleFontSize(Number(e.target.value) || 12)}
               />
             </div>
 
@@ -352,7 +358,9 @@ export default function LinkedInBannerPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="subtitle-font-size">Subtitle font size (px)</Label>
+              <Label htmlFor="subtitle-font-size">
+                Subtitle font size (px)
+              </Label>
               <Input
                 id="subtitle-font-size"
                 type="number"
@@ -428,7 +436,10 @@ export default function LinkedInBannerPage() {
           <h2 className="text-lg font-semibold">Preview</h2>
 
           <div className="relative w-full overflow-auto rounded-lg border p-4">
-            <div className="relative" style={{ aspectRatio: `${BANNER_WIDTH} / ${BANNER_HEIGHT}` }}>
+            <div
+              className="relative"
+              style={{ aspectRatio: `${BANNER_WIDTH} / ${BANNER_HEIGHT}` }}
+            >
               <canvas
                 ref={canvasRef}
                 className="block w-full h-full"
@@ -459,5 +470,5 @@ export default function LinkedInBannerPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
