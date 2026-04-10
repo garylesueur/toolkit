@@ -1,3 +1,5 @@
+import { downloadZip } from "client-zip";
+
 export type OutputFormat = "image/png" | "image/jpeg" | "image/webp";
 
 /**
@@ -38,6 +40,44 @@ export function compressImage(
       quality,
     );
   });
+}
+
+export function loadImage(
+  file: File,
+): Promise<{ img: HTMLImageElement; url: string }> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => resolve({ img, url });
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Failed to load image."));
+    };
+    img.src = url;
+  });
+}
+
+export async function compressSingleFile(
+  file: File,
+  format: OutputFormat,
+  quality: number,
+): Promise<{ img: HTMLImageElement; sourceUrl: string; blob: Blob }> {
+  const { img, url } = await loadImage(file);
+  const blob = await compressImage(
+    img,
+    img.naturalWidth,
+    img.naturalHeight,
+    format,
+    quality,
+  );
+  return { img, sourceUrl: url, blob };
+}
+
+export async function buildBatchZip(
+  items: Array<{ name: string; blob: Blob }>,
+): Promise<Blob> {
+  const files = items.map(({ name, blob }) => ({ name, input: blob }));
+  return downloadZip(files).blob();
 }
 
 const SIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
