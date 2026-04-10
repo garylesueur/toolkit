@@ -1,4 +1,4 @@
-import type { OgTagData, OgFetchResult } from "./types"
+import type { OgTagData, OgFetchResult } from "./types";
 
 const OG_PROPERTIES = [
   "og:title",
@@ -8,7 +8,7 @@ const OG_PROPERTIES = [
   "og:type",
   "og:site_name",
   "og:locale",
-] as const
+] as const;
 
 const TWITTER_NAMES = [
   "twitter:card",
@@ -17,7 +17,7 @@ const TWITTER_NAMES = [
   "twitter:image",
   "twitter:site",
   "twitter:creator",
-] as const
+] as const;
 
 /**
  * Map from meta tag property/name to the corresponding key on OgTagData.
@@ -37,11 +37,11 @@ const TAG_TO_KEY: Record<string, keyof OgTagData> = {
   "twitter:image": "twitterImage",
   "twitter:site": "twitterSite",
   "twitter:creator": "twitterCreator",
-}
+};
 
 export function parseOgTags(html: string): OgTagData {
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(html, "text/html")
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
 
   const data: OgTagData = {
     ogTitle: null,
@@ -60,41 +60,41 @@ export function parseOgTags(html: string): OgTagData {
     htmlTitle: null,
     metaDescription: null,
     rawTags: [],
-  }
+  };
 
-  const titleEl = doc.querySelector("title")
+  const titleEl = doc.querySelector("title");
   if (titleEl) {
-    data.htmlTitle = titleEl.textContent?.trim() ?? null
+    data.htmlTitle = titleEl.textContent?.trim() ?? null;
   }
 
-  const descEl = doc.querySelector('meta[name="description"]')
+  const descEl = doc.querySelector('meta[name="description"]');
   if (descEl) {
-    data.metaDescription = descEl.getAttribute("content")?.trim() ?? null
+    data.metaDescription = descEl.getAttribute("content")?.trim() ?? null;
   }
 
   for (const prop of OG_PROPERTIES) {
-    const el = doc.querySelector(`meta[property="${prop}"]`)
-    const content = el?.getAttribute("content")?.trim() ?? null
-    const key = TAG_TO_KEY[prop]
+    const el = doc.querySelector(`meta[property="${prop}"]`);
+    const content = el?.getAttribute("content")?.trim() ?? null;
+    const key = TAG_TO_KEY[prop];
     if (key && content) {
-      ;(data[key] as string | null) = content
-      data.rawTags.push({ property: prop, content })
+      (data[key] as string | null) = content;
+      data.rawTags.push({ property: prop, content });
     }
   }
 
   for (const name of TWITTER_NAMES) {
     const el =
       doc.querySelector(`meta[name="${name}"]`) ??
-      doc.querySelector(`meta[property="${name}"]`)
-    const content = el?.getAttribute("content")?.trim() ?? null
-    const key = TAG_TO_KEY[name]
+      doc.querySelector(`meta[property="${name}"]`);
+    const content = el?.getAttribute("content")?.trim() ?? null;
+    const key = TAG_TO_KEY[name];
     if (key && content) {
-      ;(data[key] as string | null) = content
-      data.rawTags.push({ property: name, content })
+      (data[key] as string | null) = content;
+      data.rawTags.push({ property: name, content });
     }
   }
 
-  return data
+  return data;
 }
 
 /**
@@ -102,11 +102,11 @@ export function parseOgTags(html: string): OgTagData {
  * e.g. "localhost:3000" -> "http://localhost:3000"
  */
 export function normaliseUrl(raw: string): string {
-  const trimmed = raw.trim()
+  const trimmed = raw.trim();
   if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed
+    return trimmed;
   }
-  return `http://${trimmed}`
+  return `http://${trimmed}`;
 }
 
 /**
@@ -116,44 +116,44 @@ export function resolveImageUrl(
   imageUrl: string | null,
   pageUrl: string,
 ): string | null {
-  if (!imageUrl) return null
+  if (!imageUrl) return null;
   try {
-    return new URL(imageUrl, pageUrl).href
+    return new URL(imageUrl, pageUrl).href;
   } catch {
-    return imageUrl
+    return imageUrl;
   }
 }
 
 export async function fetchAndParseOgTags(
   rawUrl: string,
 ): Promise<OgFetchResult> {
-  const url = normaliseUrl(rawUrl)
+  const url = normaliseUrl(rawUrl);
 
   try {
     const response = await fetch(url, {
       mode: "cors",
       headers: { Accept: "text/html" },
-    })
+    });
 
     if (!response.ok) {
       return {
         ok: false,
         error: `Server returned ${response.status} ${response.statusText}`,
         isCors: false,
-      }
+      };
     }
 
-    const html = await response.text()
-    const data = parseOgTags(html)
+    const html = await response.text();
+    const data = parseOgTags(html);
 
-    return { ok: true, data }
+    return { ok: true, data };
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
+    const message = err instanceof Error ? err.message : String(err);
     const isCors =
       message.includes("Failed to fetch") ||
       message.includes("NetworkError") ||
       message.includes("CORS") ||
-      message.includes("Load failed")
+      message.includes("Load failed");
 
     return {
       ok: false,
@@ -161,6 +161,6 @@ export async function fetchAndParseOgTags(
         ? "Could not fetch the URL. This is likely a CORS issue — the target server needs to allow cross-origin requests from this page."
         : `Fetch failed: ${message}`,
       isCors,
-    }
+    };
   }
 }

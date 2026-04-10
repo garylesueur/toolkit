@@ -1,14 +1,14 @@
-import QRCode from "qrcode"
+import QRCode from "qrcode";
 
-export type ErrorCorrectionLevel = "L" | "M" | "Q" | "H"
+export type ErrorCorrectionLevel = "L" | "M" | "Q" | "H";
 
 interface RenderQrOptions {
-  errorCorrectionLevel: ErrorCorrectionLevel
-  width: number
+  errorCorrectionLevel: ErrorCorrectionLevel;
+  width: number;
 }
 
 interface GenerateSvgOptions {
-  errorCorrectionLevel: ErrorCorrectionLevel
+  errorCorrectionLevel: ErrorCorrectionLevel;
 }
 
 export async function renderQrToCanvas(
@@ -20,7 +20,7 @@ export async function renderQrToCanvas(
     errorCorrectionLevel: options.errorCorrectionLevel,
     width: options.width,
     margin: 2,
-  })
+  });
 }
 
 export async function generateQrSvg(
@@ -31,7 +31,7 @@ export async function generateQrSvg(
     type: "svg",
     errorCorrectionLevel: options.errorCorrectionLevel,
     margin: 2,
-  })
+  });
 }
 
 export function downloadCanvasAsPng(
@@ -39,12 +39,12 @@ export function downloadCanvasAsPng(
   filename: string,
 ): void {
   canvas.toBlob((blob) => {
-    if (!blob) return
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(url)
-  }, "image/png")
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, "image/png");
 }

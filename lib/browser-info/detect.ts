@@ -14,35 +14,35 @@ import type {
   Plugins,
   ScreenDisplay,
   StorageFeatures,
-} from "./types"
+} from "./types";
 
 /**
  * Network Information API type definition.
  */
 interface NetworkInformation {
-  type?: string
-  effectiveType?: string
-  downlink?: number
-  rtt?: number
-  saveData?: boolean
+  type?: string;
+  effectiveType?: string;
+  downlink?: number;
+  rtt?: number;
+  saveData?: boolean;
 }
 
 /**
  * User-Agent Client Hints API type definition.
  */
 interface UserAgentData {
-  architecture?: string
-  bitness?: string
-  brand?: string
-  brands?: Array<{ brand: string; version: string }>
-  fullVersionList?: Array<{ brand: string; version: string }>
-  mobile?: boolean
-  model?: string
-  platform?: string
-  platformVersion?: string
-  uaFullVersion?: string
-  wow64?: boolean
-  getHighEntropyValues?: (hints: string[]) => Promise<Record<string, unknown>>
+  architecture?: string;
+  bitness?: string;
+  brand?: string;
+  brands?: Array<{ brand: string; version: string }>;
+  fullVersionList?: Array<{ brand: string; version: string }>;
+  mobile?: boolean;
+  model?: string;
+  platform?: string;
+  platformVersion?: string;
+  uaFullVersion?: string;
+  wow64?: boolean;
+  getHighEntropyValues?: (hints: string[]) => Promise<Record<string, unknown>>;
 }
 
 /**
@@ -50,16 +50,16 @@ interface UserAgentData {
  * that various browsers expose.
  */
 interface ExtendedNavigator extends Omit<Navigator, "pdfViewerEnabled"> {
-  buildID?: string
-  pdfViewerEnabled?: boolean
-  globalPrivacyControl?: boolean
-  deviceMemory?: number
-  connection?: NetworkInformation
-  mozConnection?: NetworkInformation
-  webkitConnection?: NetworkInformation
-  oscpu?: string
-  cpuClass?: string
-  userAgentData?: UserAgentData
+  buildID?: string;
+  pdfViewerEnabled?: boolean;
+  globalPrivacyControl?: boolean;
+  deviceMemory?: number;
+  connection?: NetworkInformation;
+  mozConnection?: NetworkInformation;
+  webkitConnection?: NetworkInformation;
+  oscpu?: string;
+  cpuClass?: string;
+  userAgentData?: UserAgentData;
 }
 
 /**
@@ -67,9 +67,7 @@ interface ExtendedNavigator extends Omit<Navigator, "pdfViewerEnabled"> {
  */
 export function detectBrowserIdentity(): BrowserIdentity {
   const nav =
-    typeof navigator !== "undefined"
-      ? (navigator as ExtendedNavigator)
-      : null
+    typeof navigator !== "undefined" ? (navigator as ExtendedNavigator) : null;
 
   if (!nav) {
     return {
@@ -90,17 +88,17 @@ export function detectBrowserIdentity(): BrowserIdentity {
       javaEnabled: null,
       online: false,
       clientHints: null,
-    }
+    };
   }
 
-  let clientHints: BrowserIdentity["clientHints"] = null
+  let clientHints: BrowserIdentity["clientHints"] = null;
 
   if (
     nav.userAgentData &&
     typeof nav.userAgentData.getHighEntropyValues === "function"
   ) {
     try {
-      const uaData = nav.userAgentData
+      const uaData = nav.userAgentData;
       clientHints = {
         architecture: uaData.architecture || null,
         bitness: uaData.bitness || null,
@@ -113,7 +111,7 @@ export function detectBrowserIdentity(): BrowserIdentity {
         platformVersion: uaData.platformVersion || null,
         uaFullVersion: uaData.uaFullVersion || null,
         wow64: uaData.wow64 ?? null,
-      }
+      };
     } catch {
       // Client Hints not available
     }
@@ -138,95 +136,92 @@ export function detectBrowserIdentity(): BrowserIdentity {
       typeof nav.javaEnabled === "function" ? nav.javaEnabled() : null,
     online: nav.onLine ?? false,
     clientHints,
-  }
+  };
 }
 
 /**
  * Detects operating system information from user agent and platform.
  */
 export function detectOperatingSystem(): OperatingSystem {
-  const nav = typeof navigator !== "undefined" ? navigator : null
-  const platform = nav?.platform || ""
-  const userAgent = nav?.userAgent || ""
+  const nav = typeof navigator !== "undefined" ? navigator : null;
+  const platform = nav?.platform || "";
+  const userAgent = nav?.userAgent || "";
 
-  let name: string | null = null
-  let version: string | null = null
-  let architecture: string | null = null
+  let name: string | null = null;
+  let version: string | null = null;
+  let architecture: string | null = null;
 
   // Check Client Hints first for accurate architecture (if available)
-  const navExtended = nav as ExtendedNavigator | null
+  const navExtended = nav as ExtendedNavigator | null;
   if (
     navExtended &&
     navExtended.userAgentData &&
     typeof navExtended.userAgentData.architecture === "string"
   ) {
-    const uaArch = navExtended.userAgentData.architecture.toLowerCase()
+    const uaArch = navExtended.userAgentData.architecture.toLowerCase();
     if (uaArch === "x86" || uaArch === "amd64") {
-      architecture = "x64"
+      architecture = "x64";
     } else if (uaArch === "arm") {
-      architecture = "arm64"
+      architecture = "arm64";
     } else {
-      architecture = uaArch
+      architecture = uaArch;
     }
   }
 
   // Simple OS detection from platform and user agent
   if (platform.includes("Win")) {
-    name = "Windows"
-    if (userAgent.includes("Windows NT 10.0")) version = "10/11"
-    else if (userAgent.includes("Windows NT 6.3")) version = "8.1"
-    else if (userAgent.includes("Windows NT 6.2")) version = "8"
-    else if (userAgent.includes("Windows NT 6.1")) version = "7"
+    name = "Windows";
+    if (userAgent.includes("Windows NT 10.0")) version = "10/11";
+    else if (userAgent.includes("Windows NT 6.3")) version = "8.1";
+    else if (userAgent.includes("Windows NT 6.2")) version = "8";
+    else if (userAgent.includes("Windows NT 6.1")) version = "7";
   } else if (platform.includes("Mac")) {
-    name = "macOS"
-    const match = userAgent.match(/Mac OS X (\d+[._]\d+)/)
-    if (match) version = match[1].replace("_", ".")
+    name = "macOS";
+    const match = userAgent.match(/Mac OS X (\d+[._]\d+)/);
+    if (match) version = match[1].replace("_", ".");
 
     // macOS architecture detection
     // navigator.platform always returns "MacIntel" even on Apple Silicon for compatibility
     // So we need to check other signals
     if (!architecture) {
       if (userAgent.includes("Intel")) {
-        architecture = "x64"
-      } else if (
-        userAgent.includes("arm64") ||
-        userAgent.includes("aarch64")
-      ) {
-        architecture = "arm64"
+        architecture = "x64";
+      } else if (userAgent.includes("arm64") || userAgent.includes("aarch64")) {
+        architecture = "arm64";
       } else {
         // On modern macOS, if no Intel mention and platform is MacIntel,
         // it's likely Apple Silicon (M1/M2/M3)
         // This is a heuristic but works for most cases
-        architecture = "arm64"
+        architecture = "arm64";
       }
     }
   } else if (platform.includes("Linux")) {
-    name = "Linux"
+    name = "Linux";
   } else if (platform.includes("iPhone") || platform.includes("iPad")) {
-    name = platform.includes("iPad") ? "iPadOS" : "iOS"
-    const match = userAgent.match(/OS (\d+[._]\d+)/)
-    if (match) version = match[1].replace("_", ".")
-    if (!architecture) architecture = "arm64"
+    name = platform.includes("iPad") ? "iPadOS" : "iOS";
+    const match = userAgent.match(/OS (\d+[._]\d+)/);
+    if (match) version = match[1].replace("_", ".");
+    if (!architecture) architecture = "arm64";
   } else if (platform.includes("Android")) {
-    name = "Android"
-    const match = userAgent.match(/Android (\d+\.\d+)/)
-    if (match) version = match[1]
+    name = "Android";
+    const match = userAgent.match(/Android (\d+\.\d+)/);
+    if (match) version = match[1];
   }
 
   // Architecture detection fallback (if Client Hints didn't provide it)
   if (!architecture) {
     if (userAgent.includes("x64") || userAgent.includes("WOW64")) {
-      architecture = "x64"
+      architecture = "x64";
     } else if (userAgent.includes("x86") || userAgent.includes("Win32")) {
-      architecture = "x86"
+      architecture = "x86";
     } else if (userAgent.includes("arm64") || userAgent.includes("aarch64")) {
-      architecture = "arm64"
+      architecture = "arm64";
     } else if (userAgent.includes("arm")) {
-      architecture = "arm"
+      architecture = "arm";
     }
   }
 
-  return { name, version, architecture }
+  return { name, version, architecture };
 }
 
 /**
@@ -258,29 +253,29 @@ export function detectScreenDisplay(): ScreenDisplay {
       forcedColors: null,
       invertedColors: null,
       monochrome: null,
-    }
+    };
   }
 
   const matchesMedia = (query: string): boolean | null => {
     try {
-      return window.matchMedia(query).matches
+      return window.matchMedia(query).matches;
     } catch {
-      return null
+      return null;
     }
-  }
+  };
 
-  let colorGamut: string | null = null
-  if (matchesMedia("(color-gamut: rec2020)")) colorGamut = "rec2020"
-  else if (matchesMedia("(color-gamut: p3)")) colorGamut = "p3"
-  else if (matchesMedia("(color-gamut: srgb)")) colorGamut = "srgb"
+  let colorGamut: string | null = null;
+  if (matchesMedia("(color-gamut: rec2020)")) colorGamut = "rec2020";
+  else if (matchesMedia("(color-gamut: p3)")) colorGamut = "p3";
+  else if (matchesMedia("(color-gamut: srgb)")) colorGamut = "srgb";
 
-  let colorScheme: string | null = null
-  if (matchesMedia("(prefers-color-scheme: dark)")) colorScheme = "dark"
-  else if (matchesMedia("(prefers-color-scheme: light)")) colorScheme = "light"
+  let colorScheme: string | null = null;
+  if (matchesMedia("(prefers-color-scheme: dark)")) colorScheme = "dark";
+  else if (matchesMedia("(prefers-color-scheme: light)")) colorScheme = "light";
 
-  let contrast: string | null = null
-  if (matchesMedia("(prefers-contrast: more)")) contrast = "more"
-  else if (matchesMedia("(prefers-contrast: less)")) contrast = "less"
+  let contrast: string | null = null;
+  if (matchesMedia("(prefers-contrast: more)")) contrast = "more";
+  else if (matchesMedia("(prefers-contrast: less)")) contrast = "less";
 
   return {
     width: screen.width || 0,
@@ -306,7 +301,7 @@ export function detectScreenDisplay(): ScreenDisplay {
     forcedColors: matchesMedia("(forced-colors: active)"),
     invertedColors: matchesMedia("(inverted-colors: inverted)"),
     monochrome: matchesMedia("(monochrome)"),
-  }
+  };
 }
 
 /**
@@ -314,9 +309,7 @@ export function detectScreenDisplay(): ScreenDisplay {
  */
 export function detectHardware(): Hardware {
   const nav =
-    typeof navigator !== "undefined"
-      ? (navigator as ExtendedNavigator)
-      : null
+    typeof navigator !== "undefined" ? (navigator as ExtendedNavigator) : null;
 
   if (!nav) {
     return {
@@ -325,43 +318,43 @@ export function detectHardware(): Hardware {
       maxTouchPoints: null,
       touchSupport: false,
       gpu: null,
-    }
+    };
   }
 
-  let gpu: GpuInfo | null = null
+  let gpu: GpuInfo | null = null;
 
   try {
-    const canvas = document.createElement("canvas")
+    const canvas = document.createElement("canvas");
     const gl =
       canvas.getContext("webgl") ||
-      (canvas.getContext("experimental-webgl") as WebGLRenderingContext | null)
+      (canvas.getContext("experimental-webgl") as WebGLRenderingContext | null);
 
     if (gl) {
       const debugInfo =
         gl.getExtension("WEBGL_debug_renderer_info") ||
         (gl.getExtension("WEBGL_lose_context") &&
-          gl.getExtension("WEBGL_debug_renderer_info"))
+          gl.getExtension("WEBGL_debug_renderer_info"));
 
       const vendor =
         debugInfo &&
         gl.getParameter(
-          (debugInfo as WEBGL_debug_renderer_info).UNMASKED_VENDOR_WEBGL
-        )
+          (debugInfo as WEBGL_debug_renderer_info).UNMASKED_VENDOR_WEBGL,
+        );
       const renderer =
         debugInfo &&
         gl.getParameter(
-          (debugInfo as WEBGL_debug_renderer_info).UNMASKED_RENDERER_WEBGL
-        )
+          (debugInfo as WEBGL_debug_renderer_info).UNMASKED_RENDERER_WEBGL,
+        );
 
-      const version = gl.getParameter(gl.VERSION)
+      const version = gl.getParameter(gl.VERSION);
       const shadingLanguageVersion = gl.getParameter(
-        gl.SHADING_LANGUAGE_VERSION
-      )
-      const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
-      const maxVertexAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS)
-      const maxViewportDims = gl.getParameter(gl.MAX_VIEWPORT_DIMS)
-      const extensions = gl.getSupportedExtensions() || []
-      const antialiasing = gl.getContextAttributes()?.antialias ?? null
+        gl.SHADING_LANGUAGE_VERSION,
+      );
+      const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+      const maxVertexAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+      const maxViewportDims = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
+      const extensions = gl.getSupportedExtensions() || [];
+      const antialiasing = gl.getContextAttributes()?.antialias ?? null;
 
       gpu = {
         vendor: (vendor as string) || null,
@@ -375,7 +368,7 @@ export function detectHardware(): Hardware {
           : null,
         extensions,
         antialiasing,
-      }
+      };
     }
   } catch {
     // WebGL not available or error
@@ -387,7 +380,7 @@ export function detectHardware(): Hardware {
     maxTouchPoints: nav.maxTouchPoints || null,
     touchSupport: "ontouchstart" in window,
     gpu,
-  }
+  };
 }
 
 /**
@@ -395,9 +388,7 @@ export function detectHardware(): Hardware {
  */
 export function detectNetwork(): Network {
   const nav =
-    typeof navigator !== "undefined"
-      ? (navigator as ExtendedNavigator)
-      : null
+    typeof navigator !== "undefined" ? (navigator as ExtendedNavigator) : null;
 
   if (!nav) {
     return {
@@ -406,11 +397,11 @@ export function detectNetwork(): Network {
       downlink: null,
       rtt: null,
       saveData: null,
-    }
+    };
   }
 
   const connection =
-    nav.connection || nav.mozConnection || nav.webkitConnection || null
+    nav.connection || nav.mozConnection || nav.webkitConnection || null;
 
   if (!connection) {
     return {
@@ -419,7 +410,7 @@ export function detectNetwork(): Network {
       downlink: null,
       rtt: null,
       saveData: null,
-    }
+    };
   }
 
   return {
@@ -428,14 +419,14 @@ export function detectNetwork(): Network {
     downlink: connection.downlink || null,
     rtt: connection.rtt || null,
     saveData: connection.saveData ?? null,
-  }
+  };
 }
 
 /**
  * Detects locale and timezone information.
  */
 export function detectLocaleTime(): LocaleTime {
-  const nav = typeof navigator !== "undefined" ? navigator : null
+  const nav = typeof navigator !== "undefined" ? navigator : null;
 
   if (!nav) {
     return {
@@ -443,33 +434,32 @@ export function detectLocaleTime(): LocaleTime {
       languages: [],
       timezone: "Unknown",
       timezoneOffset: 0,
-    }
+    };
   }
 
-  let timezone = "Unknown"
+  let timezone = "Unknown";
   try {
-    timezone =
-      Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown"
+    timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
   } catch {
     // Fallback
   }
 
-  const now = new Date()
-  const timezoneOffset = now.getTimezoneOffset()
+  const now = new Date();
+  const timezoneOffset = now.getTimezoneOffset();
 
   return {
     language: nav.language || "unknown",
     languages: nav.languages ? [...nav.languages] : [nav.language || "unknown"],
     timezone,
     timezoneOffset,
-  }
+  };
 }
 
 /**
  * Detects storage and feature support.
  */
 export function detectStorageFeatures(): StorageFeatures {
-  const win = typeof window !== "undefined" ? window : null
+  const win = typeof window !== "undefined" ? window : null;
 
   if (!win) {
     return {
@@ -483,64 +473,63 @@ export function detectStorageFeatures(): StorageFeatures {
       webgl: false,
       webgl2: false,
       webRTC: false,
-    }
+    };
   }
 
   // Test localStorage
-  let localStorage = false
+  let localStorage = false;
   try {
-    localStorage = !!win.localStorage
-    win.localStorage.setItem("__test__", "1")
-    win.localStorage.removeItem("__test__")
+    localStorage = !!win.localStorage;
+    win.localStorage.setItem("__test__", "1");
+    win.localStorage.removeItem("__test__");
   } catch {
-    localStorage = false
+    localStorage = false;
   }
 
   // Test sessionStorage
-  let sessionStorage = false
+  let sessionStorage = false;
   try {
-    sessionStorage = !!win.sessionStorage
-    win.sessionStorage.setItem("__test__", "1")
-    win.sessionStorage.removeItem("__test__")
+    sessionStorage = !!win.sessionStorage;
+    win.sessionStorage.setItem("__test__", "1");
+    win.sessionStorage.removeItem("__test__");
   } catch {
-    sessionStorage = false
+    sessionStorage = false;
   }
 
   // Test IndexedDB
-  let indexedDB = false
+  let indexedDB = false;
   try {
-    indexedDB = !!win.indexedDB
+    indexedDB = !!win.indexedDB;
   } catch {
-    indexedDB = false
+    indexedDB = false;
   }
 
   // Test WebSQL
-  let openDatabase = false
+  let openDatabase = false;
   try {
-    openDatabase = !!(win as Window & { openDatabase?: unknown }).openDatabase
+    openDatabase = !!(win as Window & { openDatabase?: unknown }).openDatabase;
   } catch {
-    openDatabase = false
+    openDatabase = false;
   }
 
   // Test Service Worker
-  const serviceWorker = "serviceWorker" in navigator
+  const serviceWorker = "serviceWorker" in navigator;
 
   // Test Web Worker
-  const webWorker = typeof Worker !== "undefined"
+  const webWorker = typeof Worker !== "undefined";
 
   // Test WebAssembly
-  const webAssembly = typeof WebAssembly !== "undefined"
+  const webAssembly = typeof WebAssembly !== "undefined";
 
   // Test WebGL
-  let webgl = false
-  let webgl2 = false
+  let webgl = false;
+  let webgl2 = false;
   try {
-    const canvas = document.createElement("canvas")
+    const canvas = document.createElement("canvas");
     webgl = !!(
-      canvas.getContext("webgl") ||
-      canvas.getContext("experimental-webgl")
-    )
-    webgl2 = !!canvas.getContext("webgl2")
+      canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
+    );
+    webgl2 = !!canvas.getContext("webgl2");
   } catch {
     // Ignore
   }
@@ -551,7 +540,7 @@ export function detectStorageFeatures(): StorageFeatures {
     typeof (win as Window & { webkitRTCPeerConnection?: unknown })
       .webkitRTCPeerConnection !== "undefined" ||
     typeof (win as Window & { mozRTCPeerConnection?: unknown })
-      .mozRTCPeerConnection !== "undefined"
+      .mozRTCPeerConnection !== "undefined";
 
   return {
     localStorage,
@@ -564,53 +553,56 @@ export function detectStorageFeatures(): StorageFeatures {
     webgl,
     webgl2,
     webRTC,
-  }
+  };
 }
 
 /**
  * Detects installed plugins and MIME types.
  */
 export function detectPlugins(): Plugins {
-  const nav = typeof navigator !== "undefined" ? navigator : null
+  const nav = typeof navigator !== "undefined" ? navigator : null;
 
   if (!nav || !nav.plugins) {
     return {
       plugins: [],
       mimeTypes: [],
-    }
+    };
   }
 
-  const plugins: Array<{ name: string; description: string; filename: string }> =
-    []
+  const plugins: Array<{
+    name: string;
+    description: string;
+    filename: string;
+  }> = [];
   for (let i = 0; i < nav.plugins.length; i++) {
-    const plugin = nav.plugins[i]
+    const plugin = nav.plugins[i];
     plugins.push({
       name: plugin.name,
       description: plugin.description,
       filename: plugin.filename,
-    })
+    });
   }
 
   const mimeTypes: Array<{
-    type: string
-    description: string
-    suffixes: string
-  }> = []
+    type: string;
+    description: string;
+    suffixes: string;
+  }> = [];
   if (nav.mimeTypes) {
     for (let i = 0; i < nav.mimeTypes.length; i++) {
-      const mimeType = nav.mimeTypes[i]
+      const mimeType = nav.mimeTypes[i];
       mimeTypes.push({
         type: mimeType.type,
         description: mimeType.description,
         suffixes: mimeType.suffixes,
-      })
+      });
     }
   }
 
   return {
     plugins,
     mimeTypes,
-  }
+  };
 }
 
 /**
@@ -628,5 +620,5 @@ export function detectAllBrowserInfo(): BrowserInfo {
     storageFeatures: detectStorageFeatures(),
     plugins: detectPlugins(),
     decoded: null,
-  }
+  };
 }

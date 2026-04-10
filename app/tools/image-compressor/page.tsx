@@ -1,22 +1,5 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useEffect, useRef } from "react"
-import {
-  compressSingleFile,
-  buildBatchZip,
-  formatBytes,
-} from "@/lib/image-compressor/compress"
-import type { OutputFormat } from "@/lib/image-compressor/compress"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   RiUploadCloud2Line,
   RiDownload2Line,
@@ -24,79 +7,105 @@ import {
   RiLoader4Line,
   RiDeleteBin6Line,
   RiRefreshLine,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
-const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"]
-const MAX_CONCURRENCY = 3
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  compressSingleFile,
+  buildBatchZip,
+  formatBytes,
+} from "@/lib/image-compressor/compress";
+import type { OutputFormat } from "@/lib/image-compressor/compress";
+
+const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+const MAX_CONCURRENCY = 3;
 
 type ImageItem = {
-  id: string
-  file: File
-  sourceUrl: string
-  sourceFileSize: number
-  originalWidth: number
-  originalHeight: number
-  status: "compressing" | "done" | "error"
-  result: { blob: Blob; url: string } | null
-  error: string | null
-  compressedWith: { format: OutputFormat; quality: number } | null
-}
+  id: string;
+  file: File;
+  sourceUrl: string;
+  sourceFileSize: number;
+  originalWidth: number;
+  originalHeight: number;
+  status: "compressing" | "done" | "error";
+  result: { blob: Blob; url: string } | null;
+  error: string | null;
+  compressedWith: { format: OutputFormat; quality: number } | null;
+};
 
 export default function ImageCompressorPage() {
-  const [items, setItems] = useState<ImageItem[]>([])
-  const [format, setFormat] = useState<OutputFormat>("image/webp")
-  const [quality, setQuality] = useState(80)
-  const [dragOver, setDragOver] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const queueRef = useRef<Array<{ id: string; file: File }>>([])
-  const activeRef = useRef(0)
+  const [items, setItems] = useState<ImageItem[]>([]);
+  const [format, setFormat] = useState<OutputFormat>("image/webp");
+  const [quality, setQuality] = useState(80);
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const queueRef = useRef<Array<{ id: string; file: File }>>([]);
+  const activeRef = useRef(0);
 
   const updateItem = useCallback(
     (id: string, patch: Partial<ImageItem>) =>
-      setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } : i))),
+      setItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, ...patch } : i)),
+      ),
     [],
-  )
+  );
 
   const processQueue = useCallback(
     async (currentFormat: OutputFormat, currentQuality: number) => {
-      while (queueRef.current.length > 0 && activeRef.current < MAX_CONCURRENCY) {
-        const next = queueRef.current.shift()
-        if (!next) break
-        activeRef.current++
+      while (
+        queueRef.current.length > 0 &&
+        activeRef.current < MAX_CONCURRENCY
+      ) {
+        const next = queueRef.current.shift();
+        if (!next) break;
+        activeRef.current++;
 
         compressSingleFile(next.file, currentFormat, currentQuality / 100)
           .then(({ sourceUrl, img, blob }) => {
-            const resultUrl = URL.createObjectURL(blob)
+            const resultUrl = URL.createObjectURL(blob);
             updateItem(next.id, {
               sourceUrl,
               originalWidth: img.naturalWidth,
               originalHeight: img.naturalHeight,
               status: "done",
               result: { blob, url: resultUrl },
-              compressedWith: { format: currentFormat, quality: currentQuality },
-            })
+              compressedWith: {
+                format: currentFormat,
+                quality: currentQuality,
+              },
+            });
           })
           .catch((err) => {
             updateItem(next.id, {
               status: "error",
               error: err instanceof Error ? err.message : "Compression failed.",
-            })
+            });
           })
           .finally(() => {
-            activeRef.current--
-            processQueue(currentFormat, currentQuality)
-          })
+            activeRef.current--;
+            processQueue(currentFormat, currentQuality);
+          });
       }
     },
     [updateItem],
-  )
+  );
 
   const loadFiles = useCallback(
     (fileList: FileList) => {
       const validFiles = Array.from(fileList).filter((f) =>
         ACCEPTED_TYPES.includes(f.type),
-      )
-      if (validFiles.length === 0) return
+      );
+      if (validFiles.length === 0) return;
 
       const newItems: ImageItem[] = validFiles.map((file) => ({
         id: crypto.randomUUID(),
@@ -109,53 +118,53 @@ export default function ImageCompressorPage() {
         result: null,
         error: null,
         compressedWith: null,
-      }))
+      }));
 
-      setItems((prev) => [...prev, ...newItems])
+      setItems((prev) => [...prev, ...newItems]);
 
       for (const item of newItems) {
-        queueRef.current.push({ id: item.id, file: item.file })
+        queueRef.current.push({ id: item.id, file: item.file });
       }
-      processQueue(format, quality)
+      processQueue(format, quality);
     },
     [format, quality, processQueue],
-  )
+  );
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault()
-      setDragOver(false)
-      if (e.dataTransfer.files.length > 0) loadFiles(e.dataTransfer.files)
+      e.preventDefault();
+      setDragOver(false);
+      if (e.dataTransfer.files.length > 0) loadFiles(e.dataTransfer.files);
     },
     [loadFiles],
-  )
+  );
 
   const removeItem = useCallback((id: string) => {
     setItems((prev) => {
-      const item = prev.find((i) => i.id === id)
+      const item = prev.find((i) => i.id === id);
       if (item) {
-        if (item.sourceUrl) URL.revokeObjectURL(item.sourceUrl)
-        if (item.result?.url) URL.revokeObjectURL(item.result.url)
+        if (item.sourceUrl) URL.revokeObjectURL(item.sourceUrl);
+        if (item.result?.url) URL.revokeObjectURL(item.result.url);
       }
-      return prev.filter((i) => i.id !== id)
-    })
-  }, [])
+      return prev.filter((i) => i.id !== id);
+    });
+  }, []);
 
   const clearAll = useCallback(() => {
     setItems((prev) => {
       for (const item of prev) {
-        if (item.sourceUrl) URL.revokeObjectURL(item.sourceUrl)
-        if (item.result?.url) URL.revokeObjectURL(item.result.url)
+        if (item.sourceUrl) URL.revokeObjectURL(item.sourceUrl);
+        if (item.result?.url) URL.revokeObjectURL(item.result.url);
       }
-      return []
-    })
-    queueRef.current = []
-  }, [])
+      return [];
+    });
+    queueRef.current = [];
+  }, []);
 
   const recompressAll = useCallback(() => {
     setItems((prev) => {
       for (const item of prev) {
-        if (item.result?.url) URL.revokeObjectURL(item.result.url)
+        if (item.result?.url) URL.revokeObjectURL(item.result.url);
       }
       return prev.map((i) => ({
         ...i,
@@ -163,83 +172,84 @@ export default function ImageCompressorPage() {
         result: null,
         error: null,
         compressedWith: null,
-      }))
-    })
+      }));
+    });
 
     setItems((prev) => {
-      queueRef.current = prev.map((i) => ({ id: i.id, file: i.file }))
-      processQueue(format, quality)
-      return prev
-    })
-  }, [format, quality, processQueue])
+      queueRef.current = prev.map((i) => ({ id: i.id, file: i.file }));
+      processQueue(format, quality);
+      return prev;
+    });
+  }, [format, quality, processQueue]);
 
   const handleDownloadSingle = useCallback((item: ImageItem) => {
-    if (!item.result) return
-    const ext = item.compressedWith?.format.split("/")[1] ?? "webp"
-    const baseName = item.file.name.replace(/\.[^.]+$/, "")
-    const a = document.createElement("a")
-    a.href = item.result.url
-    a.download = `${baseName}.${ext}`
-    a.click()
-  }, [])
+    if (!item.result) return;
+    const ext = item.compressedWith?.format.split("/")[1] ?? "webp";
+    const baseName = item.file.name.replace(/\.[^.]+$/, "");
+    const a = document.createElement("a");
+    a.href = item.result.url;
+    a.download = `${baseName}.${ext}`;
+    a.click();
+  }, []);
 
   const handleDownloadZip = useCallback(async () => {
-    const doneItems = items.filter((i) => i.status === "done" && i.result)
-    if (doneItems.length === 0) return
+    const doneItems = items.filter((i) => i.status === "done" && i.result);
+    if (doneItems.length === 0) return;
 
     const entries = doneItems.map((item) => {
-      const ext = item.compressedWith?.format.split("/")[1] ?? "webp"
-      const baseName = item.file.name.replace(/\.[^.]+$/, "")
-      return { name: `${baseName}.${ext}`, blob: item.result!.blob }
-    })
+      const ext = item.compressedWith?.format.split("/")[1] ?? "webp";
+      const baseName = item.file.name.replace(/\.[^.]+$/, "");
+      return { name: `${baseName}.${ext}`, blob: item.result!.blob };
+    });
 
-    const zipBlob = await buildBatchZip(entries)
-    const url = URL.createObjectURL(zipBlob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "compressed-images.zip"
-    a.click()
-    URL.revokeObjectURL(url)
-  }, [items])
+    const zipBlob = await buildBatchZip(entries);
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "compressed-images.zip";
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [items]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       setItems((prev) => {
         for (const item of prev) {
-          if (item.sourceUrl) URL.revokeObjectURL(item.sourceUrl)
-          if (item.result?.url) URL.revokeObjectURL(item.result.url)
+          if (item.sourceUrl) URL.revokeObjectURL(item.sourceUrl);
+          if (item.result?.url) URL.revokeObjectURL(item.result.url);
         }
-        return prev
-      })
-    }
-  }, [])
+        return prev;
+      });
+    };
+  }, []);
 
-  const doneCount = items.filter((i) => i.status === "done").length
-  const compressingCount = items.filter((i) => i.status === "compressing").length
+  const doneCount = items.filter((i) => i.status === "done").length;
+  const compressingCount = items.filter(
+    (i) => i.status === "compressing",
+  ).length;
   const settingsChanged = items.some(
     (i) =>
       i.status === "done" &&
       i.compressedWith &&
-      (i.compressedWith.format !== format || i.compressedWith.quality !== quality),
-  )
+      (i.compressedWith.format !== format ||
+        i.compressedWith.quality !== quality),
+  );
 
-  const totalOriginal = items.reduce((sum, i) => sum + i.sourceFileSize, 0)
+  const totalOriginal = items.reduce((sum, i) => sum + i.sourceFileSize, 0);
   const totalCompressed = items.reduce(
     (sum, i) => sum + (i.result?.blob.size ?? 0),
     0,
-  )
-  const totalSaved = totalOriginal - totalCompressed
+  );
+  const totalSaved = totalOriginal - totalCompressed;
   const totalSavedPercent =
-    totalOriginal > 0 ? Math.round((totalSaved / totalOriginal) * 100) : 0
+    totalOriginal > 0 ? Math.round((totalSaved / totalOriginal) * 100) : 0;
 
-  const supportsQuality = format === "image/jpeg" || format === "image/webp"
+  const supportsQuality = format === "image/jpeg" || format === "image/webp";
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight">
-        Image Compressor
-      </h1>
+      <h1 className="text-2xl font-bold tracking-tight">Image Compressor</h1>
       <p className="text-muted-foreground mt-1">
         Drop images to compress them instantly. Download individually or as a
         ZIP.
@@ -248,8 +258,8 @@ export default function ImageCompressorPage() {
       {/* Drop zone */}
       <div
         onDragOver={(e) => {
-          e.preventDefault()
-          setDragOver(true)
+          e.preventDefault();
+          setDragOver(true);
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
@@ -280,9 +290,9 @@ export default function ImageCompressorPage() {
           multiple
           className="hidden"
           onChange={(e) => {
-            const files = e.target.files
-            if (files && files.length > 0) loadFiles(files)
-            e.target.value = ""
+            const files = e.target.files;
+            if (files && files.length > 0) loadFiles(files);
+            e.target.value = "";
           }}
         />
       </div>
@@ -374,7 +384,7 @@ export default function ImageCompressorPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function ImageItemCard({
@@ -382,17 +392,17 @@ function ImageItemCard({
   onRemove,
   onDownload,
 }: {
-  item: ImageItem
-  onRemove: () => void
-  onDownload: () => void
+  item: ImageItem;
+  onRemove: () => void;
+  onDownload: () => void;
 }) {
   const savedBytes = item.result
     ? item.sourceFileSize - item.result.blob.size
-    : 0
+    : 0;
   const savedPercent =
     item.result && item.sourceFileSize > 0
       ? Math.round((savedBytes / item.sourceFileSize) * 100)
-      : 0
+      : 0;
 
   return (
     <div className="rounded-lg border p-4">
@@ -457,9 +467,7 @@ function ImageItemCard({
       {/* Stats + download */}
       {item.status === "done" && item.result && (
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <Badge variant="secondary">
-            {formatBytes(item.sourceFileSize)}
-          </Badge>
+          <Badge variant="secondary">{formatBytes(item.sourceFileSize)}</Badge>
           <span className="text-muted-foreground text-xs">→</span>
           <Badge variant="secondary">
             {formatBytes(item.result.blob.size)}
@@ -488,5 +496,5 @@ function ImageItemCard({
         </div>
       )}
     </div>
-  )
+  );
 }

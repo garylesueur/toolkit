@@ -1,11 +1,12 @@
-import Link from "next/link"
-import { RiArrowLeftLine } from "@remixicon/react"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { RiArrowLeftLine } from "@remixicon/react";
+import Link from "next/link";
+
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function ToolsLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
@@ -21,5 +22,5 @@ export default function ToolsLayout({
       </nav>
       {children}
     </div>
-  )
+  );
 }

@@ -1,19 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { useState, useMemo } from "react";
+
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface RegexMatch {
-  index: number
-  text: string
-  groups: string[]
+  index: number;
+  text: string;
+  groups: string[];
 }
 
 interface RegexResult {
-  matches: RegexMatch[]
-  error: string | null
+  matches: RegexMatch[];
+  error: string | null;
 }
 
 const FLAG_OPTIONS: { flag: string; label: string }[] = [
@@ -22,52 +23,56 @@ const FLAG_OPTIONS: { flag: string; label: string }[] = [
   { flag: "m", label: "Multiline (m)" },
   { flag: "s", label: "Dotall (s)" },
   { flag: "u", label: "Unicode (u)" },
-]
+];
 
-function executeRegex(pattern: string, flags: string, testString: string): RegexResult {
+function executeRegex(
+  pattern: string,
+  flags: string,
+  testString: string,
+): RegexResult {
   if (!pattern) {
-    return { matches: [], error: null }
+    return { matches: [], error: null };
   }
 
   try {
-    const flagsWithGlobal = flags.includes("g") ? flags : `g${flags}`
-    const regex = new RegExp(pattern, flagsWithGlobal)
-    const matches: RegexMatch[] = []
+    const flagsWithGlobal = flags.includes("g") ? flags : `g${flags}`;
+    const regex = new RegExp(pattern, flagsWithGlobal);
+    const matches: RegexMatch[] = [];
 
-    let match: RegExpExecArray | null = regex.exec(testString)
+    let match: RegExpExecArray | null = regex.exec(testString);
     while (match !== null) {
       matches.push({
         index: match.index,
         text: match[0],
         groups: match.slice(1),
-      })
+      });
 
       if (match[0].length === 0) {
-        regex.lastIndex += 1
+        regex.lastIndex += 1;
       }
-      match = regex.exec(testString)
+      match = regex.exec(testString);
     }
 
-    return { matches, error: null }
+    return { matches, error: null };
   } catch (err) {
     const message =
-      err instanceof SyntaxError ? err.message : "Invalid regular expression"
-    return { matches: [], error: message }
+      err instanceof SyntaxError ? err.message : "Invalid regular expression";
+    return { matches: [], error: message };
   }
 }
 
 interface HighlightedTextProps {
-  text: string
-  matches: RegexMatch[]
+  text: string;
+  matches: RegexMatch[];
 }
 
 function HighlightedText({ text, matches }: HighlightedTextProps) {
   if (matches.length === 0) {
-    return <span>{text}</span>
+    return <span>{text}</span>;
   }
 
-  const parts: React.ReactNode[] = []
-  let lastIndex = 0
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
 
   for (const match of matches) {
     if (match.index > lastIndex) {
@@ -75,7 +80,7 @@ function HighlightedText({ text, matches }: HighlightedTextProps) {
         <span key={`text-${lastIndex}`}>
           {text.slice(lastIndex, match.index)}
         </span>,
-      )
+      );
     }
     parts.push(
       <mark
@@ -84,36 +89,32 @@ function HighlightedText({ text, matches }: HighlightedTextProps) {
       >
         {match.text}
       </mark>,
-    )
-    lastIndex = match.index + match.text.length
+    );
+    lastIndex = match.index + match.text.length;
   }
 
   if (lastIndex < text.length) {
-    parts.push(
-      <span key={`text-${lastIndex}`}>{text.slice(lastIndex)}</span>,
-    )
+    parts.push(<span key={`text-${lastIndex}`}>{text.slice(lastIndex)}</span>);
   }
 
-  return <>{parts}</>
+  return <>{parts}</>;
 }
 
 export default function RegexTesterPage() {
-  const [pattern, setPattern] = useState("")
-  const [flags, setFlags] = useState("g")
-  const [testString, setTestString] = useState("")
+  const [pattern, setPattern] = useState("");
+  const [flags, setFlags] = useState("g");
+  const [testString, setTestString] = useState("");
 
   const { matches, error } = useMemo(
     () => executeRegex(pattern, flags, testString),
     [pattern, flags, testString],
-  )
+  );
 
   const toggleFlag = (flag: string) => {
     setFlags((prev) =>
-      prev.includes(flag)
-        ? prev.replace(flag, "")
-        : prev + flag,
-    )
-  }
+      prev.includes(flag) ? prev.replace(flag, "") : prev + flag,
+    );
+  };
 
   return (
     <div>
@@ -209,5 +210,5 @@ export default function RegexTesterPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -1,52 +1,53 @@
-"use client"
+"use client";
 
-import { useState, useMemo, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { RiFileCopyLine, RiCheckLine, RiCloseLine } from "@remixicon/react";
+import { useState, useMemo, useCallback } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { RiFileCopyLine, RiCheckLine, RiCloseLine } from "@remixicon/react"
-import { csvToJson, jsonToCsv } from "@/lib/csv-json/convert"
-import type { CsvDelimiter, JsonIndentSize } from "@/lib/csv-json/types"
+} from "@/components/ui/tooltip";
+import { csvToJson, jsonToCsv } from "@/lib/csv-json/convert";
+import type { CsvDelimiter, JsonIndentSize } from "@/lib/csv-json/types";
 
-const COPY_RESET_MS = 2000
+const COPY_RESET_MS = 2000;
 
-type Direction = "csv-to-json" | "json-to-csv"
+type Direction = "csv-to-json" | "json-to-csv";
 
 const DELIMITER_OPTIONS: {
-  key: string
-  delimiter: CsvDelimiter
-  label: string
+  key: string;
+  delimiter: CsvDelimiter;
+  label: string;
 }[] = [
   { key: "comma", delimiter: ",", label: "Comma" },
   { key: "tab", delimiter: "\t", label: "Tab" },
   { key: "semicolon", delimiter: ";", label: "Semicolon" },
-]
+];
 
 function delimiterKeyFromValue(d: CsvDelimiter): string {
-  const found = DELIMITER_OPTIONS.find((o) => o.delimiter === d)
-  return found?.key ?? "comma"
+  const found = DELIMITER_OPTIONS.find((o) => o.delimiter === d);
+  return found?.key ?? "comma";
 }
 
 export default function CsvJsonConverterPage() {
-  const [direction, setDirection] = useState<Direction>("csv-to-json")
-  const [input, setInput] = useState("")
-  const [delimiter, setDelimiter] = useState<CsvDelimiter>(",")
-  const [firstRowHeaders, setFirstRowHeaders] = useState(true)
-  const [indent, setIndent] = useState<JsonIndentSize>(2)
-  const [copied, setCopied] = useState(false)
+  const [direction, setDirection] = useState<Direction>("csv-to-json");
+  const [input, setInput] = useState("");
+  const [delimiter, setDelimiter] = useState<CsvDelimiter>(",");
+  const [firstRowHeaders, setFirstRowHeaders] = useState(true);
+  const [indent, setIndent] = useState<JsonIndentSize>(2);
+  const [copied, setCopied] = useState(false);
 
   const { output, error } = useMemo(() => {
     if (direction === "csv-to-json") {
@@ -55,34 +56,33 @@ export default function CsvJsonConverterPage() {
         delimiter,
         firstRowHeaders,
         indent,
-      })
+      });
       if (result.error) {
-        return { output: "", error: result.error }
+        return { output: "", error: result.error };
       }
-      return { output: result.output, error: null as string | null }
+      return { output: result.output, error: null as string | null };
     }
-    const result = jsonToCsv({ json: input, delimiter })
+    const result = jsonToCsv({ json: input, delimiter });
     if (result.error) {
-      return { output: "", error: result.error }
+      return { output: "", error: result.error };
     }
-    return { output: result.output, error: null as string | null }
-  }, [direction, input, delimiter, firstRowHeaders, indent])
+    return { output: result.output, error: null as string | null };
+  }, [direction, input, delimiter, firstRowHeaders, indent]);
 
   const handleCopy = useCallback(async () => {
-    if (!output) return
-    await navigator.clipboard.writeText(output)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_RESET_MS)
-  }, [output])
+    if (!output) return;
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
+  }, [output]);
 
   const handleClear = useCallback(() => {
-    setInput("")
-  }, [])
+    setInput("");
+  }, []);
 
-  const inputLabel =
-    direction === "csv-to-json" ? "CSV input" : "JSON input"
+  const inputLabel = direction === "csv-to-json" ? "CSV input" : "JSON input";
   const outputLabel =
-    direction === "csv-to-json" ? "JSON output" : "CSV output"
+    direction === "csv-to-json" ? "JSON output" : "CSV output";
 
   return (
     <TooltipProvider>
@@ -117,14 +117,17 @@ export default function CsvJsonConverterPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Label htmlFor="delimiter" className="text-muted-foreground text-xs whitespace-nowrap">
+            <Label
+              htmlFor="delimiter"
+              className="text-muted-foreground text-xs whitespace-nowrap"
+            >
               Delimiter
             </Label>
             <Select
               value={delimiterKeyFromValue(delimiter)}
               onValueChange={(key) => {
-                const opt = DELIMITER_OPTIONS.find((o) => o.key === key)
-                if (opt) setDelimiter(opt.delimiter)
+                const opt = DELIMITER_OPTIONS.find((o) => o.key === key);
+                if (opt) setDelimiter(opt.delimiter);
               }}
             >
               <SelectTrigger id="delimiter" size="sm" className="w-[140px]">
@@ -164,7 +167,9 @@ export default function CsvJsonConverterPage() {
                       2-space JSON
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Pretty-print JSON with indentation</TooltipContent>
+                  <TooltipContent>
+                    Pretty-print JSON with indentation
+                  </TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -214,7 +219,10 @@ export default function CsvJsonConverterPage() {
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <div>
-            <label htmlFor="csv-json-input" className="mb-2 block text-sm font-medium">
+            <label
+              htmlFor="csv-json-input"
+              className="mb-2 block text-sm font-medium"
+            >
               {inputLabel}
             </label>
             <Textarea
@@ -230,7 +238,10 @@ export default function CsvJsonConverterPage() {
             />
           </div>
           <div>
-            <label htmlFor="csv-json-output" className="mb-2 block text-sm font-medium">
+            <label
+              htmlFor="csv-json-output"
+              className="mb-2 block text-sm font-medium"
+            >
               {outputLabel}
             </label>
             <Textarea
@@ -244,10 +255,8 @@ export default function CsvJsonConverterPage() {
           </div>
         </div>
 
-        {error && (
-          <p className="text-destructive mt-4 text-sm">{error}</p>
-        )}
+        {error && <p className="text-destructive mt-4 text-sm">{error}</p>}
       </div>
     </TooltipProvider>
-  )
+  );
 }

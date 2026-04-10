@@ -1,31 +1,33 @@
-import { downloadZip } from "client-zip"
-import { chromeExtensionIconTargets } from "./sizes"
+import { downloadZip } from "client-zip";
+
+import { chromeExtensionIconTargets } from "./sizes";
 
 function resizeImage(source: HTMLImageElement, size: number): Promise<Blob> {
-  const canvas = document.createElement("canvas")
-  canvas.width = size
-  canvas.height = size
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
 
-  const ctx = canvas.getContext("2d")!
-  ctx.imageSmoothingEnabled = true
-  ctx.imageSmoothingQuality = "high"
+  const ctx = canvas.getContext("2d")!;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
 
-  const srcW = source.naturalWidth
-  const srcH = source.naturalHeight
-  const scale = size / Math.max(srcW, srcH)
-  const drawW = Math.round(srcW * scale)
-  const drawH = Math.round(srcH * scale)
-  const offsetX = Math.round((size - drawW) / 2)
-  const offsetY = Math.round((size - drawH) / 2)
+  const srcW = source.naturalWidth;
+  const srcH = source.naturalHeight;
+  const scale = size / Math.max(srcW, srcH);
+  const drawW = Math.round(srcW * scale);
+  const drawH = Math.round(srcH * scale);
+  const offsetX = Math.round((size - drawW) / 2);
+  const offsetY = Math.round((size - drawH) / 2);
 
-  ctx.drawImage(source, offsetX, offsetY, drawW, drawH)
+  ctx.drawImage(source, offsetX, offsetY, drawW, drawH);
 
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error("Canvas export failed"))),
+      (blob) =>
+        blob ? resolve(blob) : reject(new Error("Canvas export failed")),
       "image/png",
-    )
-  })
+    );
+  });
 }
 
 /**
@@ -37,8 +39,8 @@ function resizeImage(source: HTMLImageElement, size: number): Promise<Blob> {
 export function buildManifestIconsSnippet(): string {
   const entries = chromeExtensionIconTargets.map(
     (t) => `    "${t.size}": "icons/${t.filename}"`,
-  )
-  return `"icons": {\n${entries.join(",\n")}\n}`
+  );
+  return `"icons": {\n${entries.join(",\n")}\n}`;
 }
 
 /**
@@ -55,7 +57,7 @@ export async function generateChromeExtensionIcons(
       target,
       blob: await resizeImage(source, target.size),
     })),
-  )
+  );
 
   const files = [
     ...pngEntries.map((e) => ({
@@ -76,7 +78,7 @@ export async function generateChromeExtensionIcons(
         { type: "text/plain" },
       ),
     },
-  ]
+  ];
 
-  return downloadZip(files).blob()
+  return downloadZip(files).blob();
 }

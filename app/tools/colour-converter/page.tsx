@@ -1,23 +1,24 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
-import { parseColour } from "@/lib/colour/parse"
-import { toAllFormats, rgbToHex } from "@/lib/colour/convert"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
 
-const COPY_RESET_MS = 2000
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toAllFormats, rgbToHex } from "@/lib/colour/convert";
+import { parseColour } from "@/lib/colour/parse";
+
+const COPY_RESET_MS = 2000;
 
 interface FormatRowProps {
-  label: string
-  value: string
-  copiedValue: string | null
-  onCopy: (value: string) => void
+  label: string;
+  value: string;
+  copiedValue: string | null;
+  onCopy: (value: string) => void;
 }
 
 function FormatRow({ label, value, copiedValue, onCopy }: FormatRowProps) {
-  const isCopied = copiedValue === value
+  const isCopied = copiedValue === value;
 
   return (
     <div className="flex items-center justify-between gap-4 rounded-md border bg-muted/30 px-3 py-2">
@@ -34,31 +35,31 @@ function FormatRow({ label, value, copiedValue, onCopy }: FormatRowProps) {
         {isCopied ? <RiCheckLine /> : <RiFileCopyLine />}
       </Button>
     </div>
-  )
+  );
 }
 
 const FORMAT_LABELS: { key: "hex" | "rgb" | "hsl"; label: string }[] = [
   { key: "hex", label: "Hex" },
   { key: "rgb", label: "RGB" },
   { key: "hsl", label: "HSL" },
-]
+];
 
 export default function ColourConverterPage() {
-  const [input, setInput] = useState("")
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [input, setInput] = useState("");
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
-  const rgb = useMemo(() => parseColour(input), [input])
-  const formats = useMemo(() => (rgb ? toAllFormats(rgb) : null), [rgb])
-  const swatchColour = useMemo(() => (rgb ? rgbToHex(rgb) : null), [rgb])
+  const rgb = useMemo(() => parseColour(input), [input]);
+  const formats = useMemo(() => (rgb ? toAllFormats(rgb) : null), [rgb]);
+  const swatchColour = useMemo(() => (rgb ? rgbToHex(rgb) : null), [rgb]);
 
   const handleCopy = useCallback(async (value: string) => {
-    await navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
-  const hasInput = input.trim().length > 0
-  const isInvalid = hasInput && !rgb
+  const hasInput = input.trim().length > 0;
+  const isInvalid = hasInput && !rgb;
 
   return (
     <div>
@@ -105,5 +106,5 @@ export default function ColourConverterPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

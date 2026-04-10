@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+
 import { visibleTools } from "@/lib/tools";
 
 const BASE_URL = "https://toolkit.lesueur.uk";

@@ -1,37 +1,38 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
-const COPY_RESET_MS = 2000
-const DEFAULT_MAX_LENGTH = 0
+const COPY_RESET_MS = 2000;
+const DEFAULT_MAX_LENGTH = 0;
 
-type Separator = "-" | "_" | ""
+type Separator = "-" | "_" | "";
 
-const NONE_SENTINEL = "none"
+const NONE_SENTINEL = "none";
 
 function separatorFromSelect(value: string): Separator {
-  if (value === NONE_SENTINEL) return ""
-  return value as Separator
+  if (value === NONE_SENTINEL) return "";
+  return value as Separator;
 }
 
 function separatorToSelect(sep: Separator): string {
-  return sep === "" ? NONE_SENTINEL : sep
+  return sep === "" ? NONE_SENTINEL : sep;
 }
 
 function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function generateSlug(
@@ -40,13 +41,13 @@ function generateSlug(
   maxLength: number,
   transliterate: boolean,
 ): string {
-  let slug = input.trim().toLowerCase()
+  let slug = input.trim().toLowerCase();
 
   if (transliterate) {
-    slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
-  slug = slug.replace(/[^a-z0-9]+/g, separator)
+  slug = slug.replace(/[^a-z0-9]+/g, separator);
 
   if (separator !== "") {
     slug = slug.replace(
@@ -55,43 +56,43 @@ function generateSlug(
         "g",
       ),
       "",
-    )
+    );
   }
 
   if (maxLength > 0 && slug.length > maxLength) {
-    slug = slug.slice(0, maxLength)
+    slug = slug.slice(0, maxLength);
     if (separator !== "") {
-      slug = slug.replace(new RegExp(`${escapeRegex(separator)}+$`), "")
+      slug = slug.replace(new RegExp(`${escapeRegex(separator)}+$`), "");
     }
   }
 
-  return slug
+  return slug;
 }
 
 export default function SlugGeneratorPage() {
-  const [input, setInput] = useState("")
-  const [separator, setSeparator] = useState<Separator>("-")
-  const [maxLengthInput, setMaxLengthInput] = useState("")
-  const [transliterate, setTransliterate] = useState(true)
-  const [copied, setCopied] = useState(false)
+  const [input, setInput] = useState("");
+  const [separator, setSeparator] = useState<Separator>("-");
+  const [maxLengthInput, setMaxLengthInput] = useState("");
+  const [transliterate, setTransliterate] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   const maxLength = useMemo(() => {
-    if (maxLengthInput.trim() === "") return DEFAULT_MAX_LENGTH
-    const n = parseInt(maxLengthInput, 10)
-    return Number.isFinite(n) && n >= 0 ? n : DEFAULT_MAX_LENGTH
-  }, [maxLengthInput])
+    if (maxLengthInput.trim() === "") return DEFAULT_MAX_LENGTH;
+    const n = parseInt(maxLengthInput, 10);
+    return Number.isFinite(n) && n >= 0 ? n : DEFAULT_MAX_LENGTH;
+  }, [maxLengthInput]);
 
   const slug = useMemo(
     () => generateSlug(input, separator, maxLength, transliterate),
     [input, separator, maxLength, transliterate],
-  )
+  );
 
   const handleCopy = useCallback(async () => {
-    if (!slug) return
-    await navigator.clipboard.writeText(slug)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_RESET_MS)
-  }, [slug])
+    if (!slug) return;
+    await navigator.clipboard.writeText(slug);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
+  }, [slug]);
 
   return (
     <div className="space-y-8">
@@ -187,5 +188,5 @@ export default function SlugGeneratorPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

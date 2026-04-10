@@ -1,40 +1,41 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RiFileCopyLine, RiCheckLine, RiDownload2Line } from "@remixicon/react"
+import { RiFileCopyLine, RiCheckLine, RiDownload2Line } from "@remixicon/react";
+import { useState, useRef, useEffect, useCallback } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   renderPlaceholder,
   downloadPlaceholderPng,
   getPlaceholderDataUrl,
-} from "@/lib/placeholder-image/generate"
+} from "@/lib/placeholder-image/generate";
 
-const COPY_RESET_MS = 2000
+const COPY_RESET_MS = 2000;
 
-const DEFAULT_WIDTH = 800
-const DEFAULT_HEIGHT = 600
-const DEFAULT_BG = "#cccccc"
-const DEFAULT_TEXT_COLOUR = "#666666"
-const DEFAULT_FONT_SIZE = 32
+const DEFAULT_WIDTH = 800;
+const DEFAULT_HEIGHT = 600;
+const DEFAULT_BG = "#cccccc";
+const DEFAULT_TEXT_COLOUR = "#666666";
+const DEFAULT_FONT_SIZE = 32;
 
 export default function PlaceholderImagePage() {
-  const [width, setWidth] = useState(DEFAULT_WIDTH)
-  const [height, setHeight] = useState(DEFAULT_HEIGHT)
-  const [backgroundColor, setBackgroundColor] = useState(DEFAULT_BG)
-  const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOUR)
-  const [overlayText, setOverlayText] = useState("")
-  const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE)
-  const [copied, setCopied] = useState(false)
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
+  const [height, setHeight] = useState(DEFAULT_HEIGHT);
+  const [backgroundColor, setBackgroundColor] = useState(DEFAULT_BG);
+  const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOUR);
+  const [overlayText, setOverlayText] = useState("");
+  const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE);
+  const [copied, setCopied] = useState(false);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const resolvedText = overlayText.trim() || `${width}×${height}`
+  const resolvedText = overlayText.trim() || `${width}×${height}`;
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
     renderPlaceholder(canvas, {
       width,
@@ -43,23 +44,23 @@ export default function PlaceholderImagePage() {
       textColor,
       text: resolvedText,
       fontSize,
-    })
-  }, [width, height, backgroundColor, textColor, resolvedText, fontSize])
+    });
+  }, [width, height, backgroundColor, textColor, resolvedText, fontSize]);
 
   const handleDownload = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    downloadPlaceholderPng(canvas, `placeholder-${width}x${height}.png`)
-  }, [width, height])
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    downloadPlaceholderPng(canvas, `placeholder-${width}x${height}.png`);
+  }, [width, height]);
 
   const handleCopyDataUrl = useCallback(async () => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const dataUrl = getPlaceholderDataUrl(canvas)
-    await navigator.clipboard.writeText(dataUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_RESET_MS)
-  }, [])
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dataUrl = getPlaceholderDataUrl(canvas);
+    await navigator.clipboard.writeText(dataUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
+  }, []);
 
   return (
     <div>
@@ -177,5 +178,5 @@ export default function PlaceholderImagePage() {
         </Button>
       </div>
     </div>
-  )
+  );
 }

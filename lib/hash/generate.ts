@@ -1,21 +1,21 @@
-export type HashAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512"
+export type HashAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 
 export const HASH_ALGORITHMS: HashAlgorithm[] = [
   "SHA-1",
   "SHA-256",
   "SHA-384",
   "SHA-512",
-]
+];
 
-export type HashResults = Record<HashAlgorithm, string>
+export type HashResults = Record<HashAlgorithm, string>;
 
 function bufferToHex(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer)
-  const hexParts: string[] = []
+  const bytes = new Uint8Array(buffer);
+  const hexParts: string[] = [];
   for (const byte of bytes) {
-    hexParts.push(byte.toString(16).padStart(2, "0"))
+    hexParts.push(byte.toString(16).padStart(2, "0"));
   }
-  return hexParts.join("")
+  return hexParts.join("");
 }
 
 /**
@@ -25,9 +25,9 @@ export async function computeHash(
   algorithm: HashAlgorithm,
   text: string,
 ): Promise<string> {
-  const encoded = new TextEncoder().encode(text)
-  const buffer = await crypto.subtle.digest(algorithm, encoded)
-  return bufferToHex(buffer)
+  const encoded = new TextEncoder().encode(text);
+  const buffer = await crypto.subtle.digest(algorithm, encoded);
+  return bufferToHex(buffer);
 }
 
 /**
@@ -36,9 +36,9 @@ export async function computeHash(
 export async function computeAllHashes(text: string): Promise<HashResults> {
   const entries = await Promise.all(
     HASH_ALGORITHMS.map(async (alg) => {
-      const hash = await computeHash(alg, text)
-      return [alg, hash] as const
+      const hash = await computeHash(alg, text);
+      return [alg, hash] as const;
     }),
-  )
-  return Object.fromEntries(entries) as HashResults
+  );
+  return Object.fromEntries(entries) as HashResults;
 }

@@ -1,27 +1,28 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+} from "@/components/ui/select";
 
-const COPY_RESET_MS = 2000
-const BITS_PER_BYTE = 8
+const COPY_RESET_MS = 2000;
+const BITS_PER_BYTE = 8;
 
 interface UnitDefinition {
-  key: string
-  label: string
-  abbreviation: string
+  key: string;
+  label: string;
+  abbreviation: string;
   /** Number of bytes this unit represents. */
-  bytes: number
+  bytes: number;
 }
 
 const SI_UNITS: ReadonlyArray<UnitDefinition> = [
@@ -31,7 +32,7 @@ const SI_UNITS: ReadonlyArray<UnitDefinition> = [
   { key: "gb", label: "Gigabytes", abbreviation: "GB", bytes: 1000 ** 3 },
   { key: "tb", label: "Terabytes", abbreviation: "TB", bytes: 1000 ** 4 },
   { key: "pb", label: "Petabytes", abbreviation: "PB", bytes: 1000 ** 5 },
-]
+];
 
 const BINARY_UNITS: ReadonlyArray<UnitDefinition> = [
   { key: "b", label: "Bytes", abbreviation: "B", bytes: 1 },
@@ -40,40 +41,46 @@ const BINARY_UNITS: ReadonlyArray<UnitDefinition> = [
   { key: "gib", label: "Gibibytes", abbreviation: "GiB", bytes: 1024 ** 3 },
   { key: "tib", label: "Tebibytes", abbreviation: "TiB", bytes: 1024 ** 4 },
   { key: "pib", label: "Pebibytes", abbreviation: "PiB", bytes: 1024 ** 5 },
-]
+];
 
 /**
  * All selectable input units — SI and binary combined (bytes only once),
  * plus bits.
  */
 const INPUT_UNITS: ReadonlyArray<UnitDefinition> = [
-  { key: "bits", label: "Bits", abbreviation: "bits", bytes: 1 / BITS_PER_BYTE },
+  {
+    key: "bits",
+    label: "Bits",
+    abbreviation: "bits",
+    bytes: 1 / BITS_PER_BYTE,
+  },
   ...SI_UNITS,
   ...BINARY_UNITS.filter((u) => u.key !== "b"),
-]
+];
 
 interface ConvertedRow {
-  label: string
-  abbreviation: string
-  value: string
+  label: string;
+  abbreviation: string;
+  value: string;
 }
 
 /**
  * Formats a number with reasonable precision, trimming trailing zeros.
  * Uses up to 10 significant digits so very small / large values stay readable.
  */
-const MAX_PRECISION = 10
+const MAX_PRECISION = 10;
 
 function formatNumber(n: number): string {
-  if (n === 0) return "0"
-  if (Number.isInteger(n) && Math.abs(n) < 1e15) return n.toLocaleString("en-GB")
+  if (n === 0) return "0";
+  if (Number.isInteger(n) && Math.abs(n) < 1e15)
+    return n.toLocaleString("en-GB");
   return parseFloat(n.toPrecision(MAX_PRECISION)).toLocaleString("en-GB", {
     maximumFractionDigits: 20,
-  })
+  });
 }
 
 function convertToBytes(value: number, unit: UnitDefinition): number {
-  return value * unit.bytes
+  return value * unit.bytes;
 }
 
 function convertFromBytes(
@@ -84,15 +91,15 @@ function convertFromBytes(
     label: unit.label,
     abbreviation: unit.abbreviation,
     value: formatNumber(bytes / unit.bytes),
-  }))
+  }));
 }
 
 interface CopyableRowProps {
-  label: string
-  abbreviation: string
-  value: string
-  copiedValue: string | null
-  onCopy: (value: string) => void
+  label: string;
+  abbreviation: string;
+  value: string;
+  copiedValue: string | null;
+  onCopy: (value: string) => void;
 }
 
 function CopyableRow({
@@ -102,8 +109,8 @@ function CopyableRow({
   copiedValue,
   onCopy,
 }: CopyableRowProps) {
-  const copyText = `${value} ${abbreviation}`
-  const isCopied = copiedValue === copyText
+  const copyText = `${value} ${abbreviation}`;
+  const isCopied = copiedValue === copyText;
 
   return (
     <div className="flex items-center justify-between gap-4 rounded-md border bg-muted/30 px-3 py-2">
@@ -123,53 +130,53 @@ function CopyableRow({
         {isCopied ? <RiCheckLine /> : <RiFileCopyLine />}
       </Button>
     </div>
-  )
+  );
 }
 
 export default function ByteConverterPage() {
-  const [inputValue, setInputValue] = useState("1")
-  const [selectedUnit, setSelectedUnit] = useState("gb")
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [inputValue, setInputValue] = useState("1");
+  const [selectedUnit, setSelectedUnit] = useState("gb");
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const handleCopy = useCallback(async (value: string) => {
-    await navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
   const numericValue = useMemo(() => {
-    const parsed = parseFloat(inputValue)
-    return Number.isFinite(parsed) ? parsed : null
-  }, [inputValue])
+    const parsed = parseFloat(inputValue);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, [inputValue]);
 
   const unit = useMemo(
     () => INPUT_UNITS.find((u) => u.key === selectedUnit) ?? INPUT_UNITS[0],
     [selectedUnit],
-  )
+  );
 
   const bytes = useMemo(() => {
-    if (numericValue === null) return null
-    return convertToBytes(numericValue, unit)
-  }, [numericValue, unit])
+    if (numericValue === null) return null;
+    return convertToBytes(numericValue, unit);
+  }, [numericValue, unit]);
 
   const bitsRow: ConvertedRow | null = useMemo(() => {
-    if (bytes === null) return null
+    if (bytes === null) return null;
     return {
       label: "Bits",
       abbreviation: "bits",
       value: formatNumber(bytes * BITS_PER_BYTE),
-    }
-  }, [bytes])
+    };
+  }, [bytes]);
 
   const siRows = useMemo(() => {
-    if (bytes === null) return null
-    return convertFromBytes(bytes, SI_UNITS)
-  }, [bytes])
+    if (bytes === null) return null;
+    return convertFromBytes(bytes, SI_UNITS);
+  }, [bytes]);
 
   const binaryRows = useMemo(() => {
-    if (bytes === null) return null
-    return convertFromBytes(bytes, BINARY_UNITS)
-  }, [bytes])
+    if (bytes === null) return null;
+    return convertFromBytes(bytes, BINARY_UNITS);
+  }, [bytes]);
 
   return (
     <div className="space-y-8">
@@ -268,5 +275,5 @@ export default function ByteConverterPage() {
         </p>
       )}
     </div>
-  )
+  );
 }

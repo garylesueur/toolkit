@@ -1,64 +1,77 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { usePdfDocument } from "@/hooks/use-pdf-document"
-import { rotatePdfPages } from "@/lib/pdf/rotate"
-import { downloadPdf } from "@/lib/pdf/download"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import type { RotationAngle } from "@/lib/pdf/constants"
 import {
   RiArrowGoBackLine,
   RiArrowGoForwardLine,
   RiDownload2Line,
   RiLoader4Line,
   RiDeleteBin6Line,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback } from "react";
+
+import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid";
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { usePdfDocument } from "@/hooks/use-pdf-document";
+import type { RotationAngle } from "@/lib/pdf/constants";
+import { downloadPdf } from "@/lib/pdf/download";
+import { rotatePdfPages } from "@/lib/pdf/rotate";
 
 export default function RotatePdfPage() {
-  const { pdfBytes, pageCount, thumbnails, fileName, loading, error, loadFile, reset } =
-    usePdfDocument()
-  const [rotations, setRotations] = useState<Map<number, RotationAngle>>(new Map())
-  const [saving, setSaving] = useState(false)
+  const {
+    pdfBytes,
+    pageCount,
+    thumbnails,
+    fileName,
+    loading,
+    error,
+    loadFile,
+    reset,
+  } = usePdfDocument();
+  const [rotations, setRotations] = useState<Map<number, RotationAngle>>(
+    new Map(),
+  );
+  const [saving, setSaving] = useState(false);
 
   const rotateAll = useCallback(
     (direction: 90 | 270) => {
       setRotations((prev) => {
-        const next = new Map(prev)
+        const next = new Map(prev);
         for (let i = 0; i < pageCount; i++) {
-          const current = next.get(i) ?? 0
-          next.set(i, ((current + direction) % 360) as RotationAngle)
+          const current = next.get(i) ?? 0;
+          next.set(i, ((current + direction) % 360) as RotationAngle);
         }
-        return next
-      })
+        return next;
+      });
     },
     [pageCount],
-  )
+  );
 
   const togglePage = useCallback((index: number) => {
     setRotations((prev) => {
-      const next = new Map(prev)
-      const current = next.get(index) ?? 0
-      next.set(index, ((current + 90) % 360) as RotationAngle)
-      return next
-    })
-  }, [])
+      const next = new Map(prev);
+      const current = next.get(index) ?? 0;
+      next.set(index, ((current + 90) % 360) as RotationAngle);
+      return next;
+    });
+  }, []);
 
   const handleSave = useCallback(async () => {
-    if (!pdfBytes || rotations.size === 0) return
-    setSaving(true)
+    if (!pdfBytes || rotations.size === 0) return;
+    setSaving(true);
     try {
-      const result = await rotatePdfPages(pdfBytes, rotations)
-      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "")
-      await downloadPdf(result, `${baseName}-rotated.pdf`)
+      const result = await rotatePdfPages(pdfBytes, rotations);
+      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
+      await downloadPdf(result, `${baseName}-rotated.pdf`);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [pdfBytes, rotations, fileName])
+  }, [pdfBytes, rotations, fileName]);
 
-  const changedCount = Array.from(rotations.values()).filter((r) => r !== 0).length
+  const changedCount = Array.from(rotations.values()).filter(
+    (r) => r !== 0,
+  ).length;
 
   return (
     <div>
@@ -69,7 +82,10 @@ export default function RotatePdfPage() {
       </p>
 
       <div className="mt-8">
-        <PdfDropZone onFiles={(files) => loadFile(files[0])} compact={!!pdfBytes} />
+        <PdfDropZone
+          onFiles={(files) => loadFile(files[0])}
+          compact={!!pdfBytes}
+        />
       </div>
 
       {loading && (
@@ -96,8 +112,8 @@ export default function RotatePdfPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                reset()
-                setRotations(new Map())
+                reset();
+                setRotations(new Map());
               }}
             >
               <RiDeleteBin6Line data-icon="inline-start" />
@@ -133,5 +149,5 @@ export default function RotatePdfPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

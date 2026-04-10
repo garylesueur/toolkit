@@ -1,7 +1,7 @@
 export type ChromeExtensionIconTarget = {
-  filename: string
-  size: number
-}
+  filename: string;
+  size: number;
+};
 
 /**
  * Standard icon sizes for Chrome extensions (Manifest V3).
@@ -18,4 +18,4 @@ export const chromeExtensionIconTargets: ChromeExtensionIconTarget[] = [
   { filename: "48.png", size: 48 },
   { filename: "96.png", size: 96 },
   { filename: "128.png", size: 128 },
-]
+];

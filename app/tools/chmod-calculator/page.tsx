@@ -1,101 +1,110 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback } from "react";
 
-const COPY_RESET_MS = 2000
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const READ = 4
-const WRITE = 2
-const EXECUTE = 1
+const COPY_RESET_MS = 2000;
 
-const NUMERIC_PATTERN = /^[0-7]{3}$/
+const READ = 4;
+const WRITE = 2;
+const EXECUTE = 1;
 
-type EntityLabel = "Owner" | "Group" | "Other"
+const NUMERIC_PATTERN = /^[0-7]{3}$/;
+
+type EntityLabel = "Owner" | "Group" | "Other";
 
 interface PermissionEntity {
-  label: EntityLabel
-  index: number
+  label: EntityLabel;
+  index: number;
 }
 
 const ENTITIES: ReadonlyArray<PermissionEntity> = [
   { label: "Owner", index: 0 },
   { label: "Group", index: 1 },
   { label: "Other", index: 2 },
-]
+];
 
 interface PermissionBit {
-  label: string
-  symbol: string
-  value: number
+  label: string;
+  symbol: string;
+  value: number;
 }
 
 const PERMISSION_BITS: ReadonlyArray<PermissionBit> = [
   { label: "Read", symbol: "r", value: READ },
   { label: "Write", symbol: "w", value: WRITE },
   { label: "Execute", symbol: "x", value: EXECUTE },
-]
+];
 
 /** Permissions as a 3-element tuple: [owner, group, other], each 0–7. */
-type PermissionTriple = [number, number, number]
+type PermissionTriple = [number, number, number];
 
 interface CommonPattern {
-  numeric: string
-  description: string
+  numeric: string;
+  description: string;
 }
 
 const COMMON_PATTERNS: ReadonlyArray<CommonPattern> = [
   { numeric: "777", description: "Everyone: full access" },
-  { numeric: "755", description: "Owner: full — Group & Other: read + execute" },
-  { numeric: "750", description: "Owner: full — Group: read + execute — Other: none" },
+  {
+    numeric: "755",
+    description: "Owner: full — Group & Other: read + execute",
+  },
+  {
+    numeric: "750",
+    description: "Owner: full — Group: read + execute — Other: none",
+  },
   { numeric: "700", description: "Owner: full — Group & Other: none" },
   { numeric: "666", description: "Everyone: read + write" },
-  { numeric: "644", description: "Owner: read + write — Group & Other: read only" },
-  { numeric: "640", description: "Owner: read + write — Group: read only — Other: none" },
+  {
+    numeric: "644",
+    description: "Owner: read + write — Group & Other: read only",
+  },
+  {
+    numeric: "640",
+    description: "Owner: read + write — Group: read only — Other: none",
+  },
   { numeric: "600", description: "Owner: read + write — Group & Other: none" },
   { numeric: "555", description: "Everyone: read + execute" },
   { numeric: "444", description: "Everyone: read only" },
   { numeric: "400", description: "Owner: read only — Group & Other: none" },
-]
+];
 
 function entityToSymbolic(value: number): string {
-  const r = value & READ ? "r" : "-"
-  const w = value & WRITE ? "w" : "-"
-  const x = value & EXECUTE ? "x" : "-"
-  return `${r}${w}${x}`
+  const r = value & READ ? "r" : "-";
+  const w = value & WRITE ? "w" : "-";
+  const x = value & EXECUTE ? "x" : "-";
+  return `${r}${w}${x}`;
 }
 
 function permissionsToSymbolic(perms: PermissionTriple): string {
-  return perms.map(entityToSymbolic).join("")
+  return perms.map(entityToSymbolic).join("");
 }
 
 function permissionsToNumeric(perms: PermissionTriple): string {
-  return perms.join("")
+  return perms.join("");
 }
 
 function parseNumericInput(input: string): PermissionTriple | null {
-  if (!NUMERIC_PATTERN.test(input)) return null
-  return [
-    Number(input[0]),
-    Number(input[1]),
-    Number(input[2]),
-  ]
+  if (!NUMERIC_PATTERN.test(input)) return null;
+  return [Number(input[0]), Number(input[1]), Number(input[2])];
 }
 
 function findCommonPattern(numeric: string): string | null {
-  const match = COMMON_PATTERNS.find((p) => p.numeric === numeric)
-  return match?.description ?? null
+  const match = COMMON_PATTERNS.find((p) => p.numeric === numeric);
+  return match?.description ?? null;
 }
 
 interface CopyableRowProps {
-  label: string
-  value: string
-  copiedKey: string | null
-  copyKey: string
-  onCopy: (key: string, text: string) => void
+  label: string;
+  value: string;
+  copiedKey: string | null;
+  copyKey: string;
+  onCopy: (key: string, text: string) => void;
 }
 
 function CopyableRow({
@@ -105,7 +114,7 @@ function CopyableRow({
   copyKey,
   onCopy,
 }: CopyableRowProps) {
-  const isCopied = copiedKey === copyKey
+  const isCopied = copiedKey === copyKey;
 
   return (
     <div className="flex items-center justify-between gap-4 rounded-md border bg-muted/30 px-3 py-2">
@@ -122,57 +131,54 @@ function CopyableRow({
         {isCopied ? <RiCheckLine /> : <RiFileCopyLine />}
       </Button>
     </div>
-  )
+  );
 }
 
-const DEFAULT_PERMISSIONS: PermissionTriple = [7, 5, 5]
+const DEFAULT_PERMISSIONS: PermissionTriple = [7, 5, 5];
 
 export default function ChmodCalculatorPage() {
-  const [permissions, setPermissions] = useState<PermissionTriple>(DEFAULT_PERMISSIONS)
+  const [permissions, setPermissions] =
+    useState<PermissionTriple>(DEFAULT_PERMISSIONS);
   const [numericInput, setNumericInput] = useState(
     permissionsToNumeric(DEFAULT_PERMISSIONS),
-  )
-  const [copiedKey, setCopiedKey] = useState<string | null>(null)
+  );
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const handleCopy = useCallback(async (key: string, text: string) => {
-    await navigator.clipboard.writeText(text)
-    setCopiedKey(key)
-    setTimeout(() => setCopiedKey(null), COPY_RESET_MS)
-  }, [])
+    await navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), COPY_RESET_MS);
+  }, []);
 
-  const toggleBit = useCallback(
-    (entityIndex: number, bitValue: number) => {
-      setPermissions((prev) => {
-        const next: PermissionTriple = [...prev]
-        next[entityIndex] = prev[entityIndex] ^ bitValue
-        const numeric = permissionsToNumeric(next)
-        setNumericInput(numeric)
-        return next
-      })
-    },
-    [],
-  )
+  const toggleBit = useCallback((entityIndex: number, bitValue: number) => {
+    setPermissions((prev) => {
+      const next: PermissionTriple = [...prev];
+      next[entityIndex] = prev[entityIndex] ^ bitValue;
+      const numeric = permissionsToNumeric(next);
+      setNumericInput(numeric);
+      return next;
+    });
+  }, []);
 
   const handleNumericChange = useCallback((value: string) => {
-    setNumericInput(value)
-    const parsed = parseNumericInput(value)
+    setNumericInput(value);
+    const parsed = parseNumericInput(value);
     if (parsed) {
-      setPermissions(parsed)
+      setPermissions(parsed);
     }
-  }, [])
+  }, []);
 
-  const numericStr = permissionsToNumeric(permissions)
-  const symbolic = permissionsToSymbolic(permissions)
-  const octalStr = `0${numericStr}`
-  const commonDescription = findCommonPattern(numericStr)
-  const isInputValid = NUMERIC_PATTERN.test(numericInput) || numericInput === ""
+  const numericStr = permissionsToNumeric(permissions);
+  const symbolic = permissionsToSymbolic(permissions);
+  const octalStr = `0${numericStr}`;
+  const commonDescription = findCommonPattern(numericStr);
+  const isInputValid =
+    NUMERIC_PATTERN.test(numericInput) || numericInput === "";
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          Chmod Calculator
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight">Chmod Calculator</h1>
         <p className="text-muted-foreground mt-1">
           Toggle permissions or enter a number to see the chmod breakdown.
         </p>
@@ -200,8 +206,7 @@ export default function ChmodCalculatorPage() {
                 <tr key={entity.label} className="border-b last:border-b-0">
                   <td className="px-4 py-2 font-medium">{entity.label}</td>
                   {PERMISSION_BITS.map((bit) => {
-                    const isSet =
-                      (permissions[entity.index] & bit.value) !== 0
+                    const isSet = (permissions[entity.index] & bit.value) !== 0;
                     return (
                       <td key={bit.symbol} className="px-4 py-2 text-center">
                         <input
@@ -211,7 +216,7 @@ export default function ChmodCalculatorPage() {
                           className="size-4 rounded border-border accent-primary"
                         />
                       </td>
-                    )
+                    );
                   })}
                 </tr>
               ))}
@@ -274,5 +279,5 @@ export default function ChmodCalculatorPage() {
         )}
       </section>
     </div>
-  )
+  );
 }

@@ -1,86 +1,87 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {
+  RiRefreshLine,
+  RiFileCopyLine,
+  RiCheckLine,
+  RiShieldCheckLine,
+} from "@remixicon/react";
+import { useState, useCallback, useEffect } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import {
-  RiRefreshLine,
-  RiFileCopyLine,
-  RiCheckLine,
-  RiShieldCheckLine,
-} from "@remixicon/react"
+} from "@/components/ui/select";
 
-type Encoding = "base64" | "base64url" | "hex"
+type Encoding = "base64" | "base64url" | "hex";
 
 type EncodingOption = {
-  value: Encoding
-  label: string
-}
+  value: Encoding;
+  label: string;
+};
 
 const ENCODING_OPTIONS: EncodingOption[] = [
   { value: "base64", label: "Base64" },
   { value: "base64url", label: "Base64-URL" },
   { value: "hex", label: "Hex" },
-]
+];
 
 type ByteLengthOption = {
-  value: number
-  label: string
-}
+  value: number;
+  label: string;
+};
 
 const BYTE_LENGTH_OPTIONS: ByteLengthOption[] = [
   { value: 16, label: "16 bytes (128-bit)" },
   { value: 32, label: "32 bytes (256-bit)" },
   { value: 64, label: "64 bytes (512-bit)" },
   { value: 128, label: "128 bytes (1024-bit)" },
-]
+];
 
-const DEFAULT_BYTE_LENGTH = 32
-const DEFAULT_ENCODING: Encoding = "base64"
-const DEFAULT_COUNT = 1
-const MIN_COUNT = 1
-const MAX_COUNT = 10
-const COPY_RESET_MS = 2000
+const DEFAULT_BYTE_LENGTH = 32;
+const DEFAULT_ENCODING: Encoding = "base64";
+const DEFAULT_COUNT = 1;
+const MIN_COUNT = 1;
+const MAX_COUNT = 10;
+const COPY_RESET_MS = 2000;
 
 function generateRandomBytes(byteLength: number): Uint8Array {
-  const bytes = new Uint8Array(byteLength)
-  crypto.getRandomValues(bytes)
-  return bytes
+  const bytes = new Uint8Array(byteLength);
+  crypto.getRandomValues(bytes);
+  return bytes;
 }
 
 function encodeBytes(bytes: Uint8Array, encoding: Encoding): string {
   switch (encoding) {
     case "base64": {
-      let binary = ""
+      let binary = "";
       for (const byte of bytes) {
-        binary += String.fromCharCode(byte)
+        binary += String.fromCharCode(byte);
       }
-      return btoa(binary)
+      return btoa(binary);
     }
     case "base64url": {
-      let binary = ""
+      let binary = "";
       for (const byte of bytes) {
-        binary += String.fromCharCode(byte)
+        binary += String.fromCharCode(byte);
       }
       return btoa(binary)
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
-        .replace(/=+$/, "")
+        .replace(/=+$/, "");
     }
     case "hex": {
-      let hex = ""
+      let hex = "";
       for (const byte of bytes) {
-        hex += byte.toString(16).padStart(2, "0")
+        hex += byte.toString(16).padStart(2, "0");
       }
-      return hex
+      return hex;
     }
   }
 }
@@ -90,56 +91,56 @@ function generateSecrets(
   byteLength: number,
   encoding: Encoding,
 ): string[] {
-  const secrets: string[] = []
+  const secrets: string[] = [];
   for (let i = 0; i < count; i++) {
-    const bytes = generateRandomBytes(byteLength)
-    secrets.push(encodeBytes(bytes, encoding))
+    const bytes = generateRandomBytes(byteLength);
+    secrets.push(encodeBytes(bytes, encoding));
   }
-  return secrets
+  return secrets;
 }
 
 export default function SecretGeneratorPage() {
-  const [byteLength, setByteLength] = useState(DEFAULT_BYTE_LENGTH)
-  const [encoding, setEncoding] = useState<Encoding>(DEFAULT_ENCODING)
-  const [count, setCount] = useState(DEFAULT_COUNT)
-  const [secrets, setSecrets] = useState<string[]>([])
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [byteLength, setByteLength] = useState(DEFAULT_BYTE_LENGTH);
+  const [encoding, setEncoding] = useState<Encoding>(DEFAULT_ENCODING);
+  const [count, setCount] = useState(DEFAULT_COUNT);
+  const [secrets, setSecrets] = useState<string[]>([]);
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const regenerate = useCallback(() => {
-    setSecrets(generateSecrets(count, byteLength, encoding))
-    setCopiedValue(null)
-  }, [count, byteLength, encoding])
+    setSecrets(generateSecrets(count, byteLength, encoding));
+    setCopiedValue(null);
+  }, [count, byteLength, encoding]);
 
   useEffect(() => {
-    regenerate()
-  }, [regenerate])
+    regenerate();
+  }, [regenerate]);
 
   const handleCopy = useCallback((value: string) => {
-    navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
   const handleCopyAll = useCallback(() => {
-    const joined = secrets.join("\n")
-    navigator.clipboard.writeText(joined)
-    setCopiedValue(joined)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [secrets])
+    const joined = secrets.join("\n");
+    navigator.clipboard.writeText(joined);
+    setCopiedValue(joined);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, [secrets]);
 
   const handleCountChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const raw = e.target.value
+      const raw = e.target.value;
       if (raw === "") {
-        setCount(MIN_COUNT)
-        return
+        setCount(MIN_COUNT);
+        return;
       }
-      const parsed = parseInt(raw, 10)
-      if (Number.isNaN(parsed)) return
-      setCount(Math.max(MIN_COUNT, Math.min(MAX_COUNT, parsed)))
+      const parsed = parseInt(raw, 10);
+      if (Number.isNaN(parsed)) return;
+      setCount(Math.max(MIN_COUNT, Math.min(MAX_COUNT, parsed)));
     },
     [],
-  )
+  );
 
   return (
     <div>
@@ -216,7 +217,7 @@ export default function SecretGeneratorPage() {
       {/* Output */}
       <div className="mt-6 space-y-2">
         {secrets.map((secret, index) => {
-          const isCopied = copiedValue === secret
+          const isCopied = copiedValue === secret;
           return (
             <div
               key={`${index}-${secret}`}
@@ -246,7 +247,7 @@ export default function SecretGeneratorPage() {
                 )}
               </Button>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -264,5 +265,5 @@ export default function SecretGeneratorPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

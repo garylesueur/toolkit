@@ -1,2 +1,2 @@
-export { formatDate, formatTime, formatDateTime, formatRelative } from "./date"
-export { uuid, shortId } from "./id"
+export { formatDate, formatTime, formatDateTime, formatRelative } from "./date";
+export { uuid, shortId } from "./id";

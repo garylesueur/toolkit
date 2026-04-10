@@ -1,17 +1,18 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+
+import { Button } from "@/components/ui/button";
 
 interface CopyableRowProps {
-  label: string
-  value: string
-  copiedValue: string | null
-  onCopy: (value: string) => void
+  label: string;
+  value: string;
+  copiedValue: string | null;
+  onCopy: (value: string) => void;
 }
 
 function CopyableRow({ label, value, copiedValue, onCopy }: CopyableRowProps) {
-  const isCopied = copiedValue === value
+  const isCopied = copiedValue === value;
 
   return (
     <div className="flex items-center justify-between gap-4 rounded-md border bg-muted/30 px-3 py-2">
@@ -29,8 +30,8 @@ function CopyableRow({ label, value, copiedValue, onCopy }: CopyableRowProps) {
         {isCopied ? <RiCheckLine /> : <RiFileCopyLine />}
       </Button>
     </div>
-  )
+  );
 }
 
-export { CopyableRow }
-export type { CopyableRowProps }
+export { CopyableRow };
+export type { CopyableRowProps };

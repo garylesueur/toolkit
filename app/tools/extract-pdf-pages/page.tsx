@@ -1,52 +1,61 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { usePdfDocument } from "@/hooks/use-pdf-document"
-import { extractPdfPages } from "@/lib/pdf/extract"
-import { downloadPdf } from "@/lib/pdf/download"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   RiDownload2Line,
   RiLoader4Line,
   RiDeleteBin6Line,
   RiCheckboxMultipleLine,
   RiCloseLine,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback } from "react";
+
+import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid";
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { usePdfDocument } from "@/hooks/use-pdf-document";
+import { downloadPdf } from "@/lib/pdf/download";
+import { extractPdfPages } from "@/lib/pdf/extract";
 
 export default function ExtractPdfPagesPage() {
-  const { pdfBytes, pageCount, thumbnails, fileName, loading, error, loadFile, reset } =
-    usePdfDocument()
-  const [selected, setSelected] = useState<Set<number>>(new Set())
-  const [saving, setSaving] = useState(false)
+  const {
+    pdfBytes,
+    pageCount,
+    thumbnails,
+    fileName,
+    loading,
+    error,
+    loadFile,
+    reset,
+  } = usePdfDocument();
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [saving, setSaving] = useState(false);
 
   const togglePage = useCallback((index: number) => {
     setSelected((prev) => {
-      const next = new Set(prev)
-      if (next.has(index)) next.delete(index)
-      else next.add(index)
-      return next
-    })
-  }, [])
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  }, []);
 
   const selectAll = useCallback(() => {
-    setSelected(new Set(Array.from({ length: pageCount }, (_, i) => i)))
-  }, [pageCount])
+    setSelected(new Set(Array.from({ length: pageCount }, (_, i) => i)));
+  }, [pageCount]);
 
   const handleSave = useCallback(async () => {
-    if (!pdfBytes || selected.size === 0) return
-    setSaving(true)
+    if (!pdfBytes || selected.size === 0) return;
+    setSaving(true);
     try {
-      const indices = Array.from(selected).sort((a, b) => a - b)
-      const result = await extractPdfPages(pdfBytes, indices)
-      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "")
-      await downloadPdf(result, `${baseName}-extracted.pdf`)
+      const indices = Array.from(selected).sort((a, b) => a - b);
+      const result = await extractPdfPages(pdfBytes, indices);
+      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
+      await downloadPdf(result, `${baseName}-extracted.pdf`);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [pdfBytes, selected, fileName])
+  }, [pdfBytes, selected, fileName]);
 
   return (
     <div>
@@ -57,7 +66,10 @@ export default function ExtractPdfPagesPage() {
       </p>
 
       <div className="mt-8">
-        <PdfDropZone onFiles={(files) => loadFile(files[0])} compact={!!pdfBytes} />
+        <PdfDropZone
+          onFiles={(files) => loadFile(files[0])}
+          compact={!!pdfBytes}
+        />
       </div>
 
       {loading && (
@@ -89,8 +101,8 @@ export default function ExtractPdfPagesPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                reset()
-                setSelected(new Set())
+                reset();
+                setSelected(new Set());
               }}
             >
               <RiDeleteBin6Line data-icon="inline-start" />
@@ -100,8 +112,8 @@ export default function ExtractPdfPagesPage() {
             <div className="ml-auto flex items-center gap-2">
               {selected.size > 0 && (
                 <Badge>
-                  {selected.size} of {pageCount} page{selected.size !== 1 ? "s" : ""}{" "}
-                  selected
+                  {selected.size} of {pageCount} page
+                  {selected.size !== 1 ? "s" : ""} selected
                 </Badge>
               )}
               <Button
@@ -127,5 +139,5 @@ export default function ExtractPdfPagesPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

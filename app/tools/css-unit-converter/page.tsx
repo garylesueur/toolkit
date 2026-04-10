@@ -1,30 +1,31 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   convertCssUnit,
   formatValue,
   CSS_UNITS,
   DEFAULT_CONFIG,
-} from "@/lib/css-units/convert"
-import type { CssUnit, ConversionConfig } from "@/lib/css-units/convert"
+} from "@/lib/css-units/convert";
+import type { CssUnit, ConversionConfig } from "@/lib/css-units/convert";
 
-const COPY_RESET_MS = 2000
+const COPY_RESET_MS = 2000;
 
 interface ResultRowProps {
-  unit: CssUnit
-  value: string
-  copiedValue: string | null
-  onCopy: (value: string) => void
+  unit: CssUnit;
+  value: string;
+  copiedValue: string | null;
+  onCopy: (value: string) => void;
 }
 
 function ResultRow({ unit, value, copiedValue, onCopy }: ResultRowProps) {
-  const display = `${value}${unit}`
-  const isCopied = copiedValue === display
+  const display = `${value}${unit}`;
+  const isCopied = copiedValue === display;
 
   return (
     <div className="flex items-center justify-between gap-4 rounded-md border bg-muted/30 px-3 py-2">
@@ -41,43 +42,41 @@ function ResultRow({ unit, value, copiedValue, onCopy }: ResultRowProps) {
         {isCopied ? <RiCheckLine /> : <RiFileCopyLine />}
       </Button>
     </div>
-  )
+  );
 }
 
 export default function CssUnitConverterPage() {
-  const [inputValue, setInputValue] = useState("16")
-  const [sourceUnit, setSourceUnit] = useState<CssUnit>("px")
-  const [config, setConfig] = useState<ConversionConfig>(DEFAULT_CONFIG)
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [inputValue, setInputValue] = useState("16");
+  const [sourceUnit, setSourceUnit] = useState<CssUnit>("px");
+  const [config, setConfig] = useState<ConversionConfig>(DEFAULT_CONFIG);
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const numericValue = useMemo(() => {
-    const parsed = parseFloat(inputValue)
-    return Number.isFinite(parsed) ? parsed : null
-  }, [inputValue])
+    const parsed = parseFloat(inputValue);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, [inputValue]);
 
   const results = useMemo(() => {
-    if (numericValue === null) return null
-    return convertCssUnit(numericValue, sourceUnit, config)
-  }, [numericValue, sourceUnit, config])
+    if (numericValue === null) return null;
+    return convertCssUnit(numericValue, sourceUnit, config);
+  }, [numericValue, sourceUnit, config]);
 
   const handleCopy = useCallback(async (value: string) => {
-    await navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
   const updateConfig = (key: keyof ConversionConfig, raw: string) => {
-    const parsed = parseFloat(raw)
+    const parsed = parseFloat(raw);
     if (Number.isFinite(parsed) && parsed > 0) {
-      setConfig((prev) => ({ ...prev, [key]: parsed }))
+      setConfig((prev) => ({ ...prev, [key]: parsed }));
     }
-  }
+  };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight">
-        CSS Unit Converter
-      </h1>
+      <h1 className="text-2xl font-bold tracking-tight">CSS Unit Converter</h1>
       <p className="text-muted-foreground mt-1">
         Convert between px, rem, em, vh, and vw.
       </p>
@@ -164,5 +163,5 @@ export default function CssUnitConverterPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

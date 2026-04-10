@@ -1,20 +1,21 @@
-"use client"
+"use client";
 
-import { PageThumbnail } from "./page-thumbnail"
-import type { RotationAngle } from "@/lib/pdf/constants"
+import type { RotationAngle } from "@/lib/pdf/constants";
+
+import { PageThumbnail } from "./page-thumbnail";
 
 type PageThumbnailGridProps = {
-  thumbnails: string[]
-  selectedPages?: Set<number>
-  rotations?: Map<number, RotationAngle>
-  onTogglePage?: (index: number) => void
-  overlay?: (index: number) => React.ReactNode
+  thumbnails: string[];
+  selectedPages?: Set<number>;
+  rotations?: Map<number, RotationAngle>;
+  onTogglePage?: (index: number) => void;
+  overlay?: (index: number) => React.ReactNode;
   /** Drag-and-drop reorder support */
-  draggable?: boolean
-  onDragStart?: (e: React.DragEvent, index: number) => void
-  onDragOver?: (e: React.DragEvent, index: number) => void
-  onDrop?: (e: React.DragEvent, index: number) => void
-}
+  draggable?: boolean;
+  onDragStart?: (e: React.DragEvent, index: number) => void;
+  onDragOver?: (e: React.DragEvent, index: number) => void;
+  onDrop?: (e: React.DragEvent, index: number) => void;
+};
 
 export function PageThumbnailGrid({
   thumbnails,
@@ -45,5 +46,5 @@ export function PageThumbnailGrid({
         />
       ))}
     </div>
-  )
+  );
 }

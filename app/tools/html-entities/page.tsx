@@ -1,13 +1,14 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback } from "react";
 
-type Direction = "encode" | "decode"
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
-const COPY_FEEDBACK_MS = 2000
+type Direction = "encode" | "decode";
+
+const COPY_FEEDBACK_MS = 2000;
 
 /** Encodes special characters to HTML entities. Replaces & first to avoid double-encoding. */
 function encodeHtmlEntities(text: string): string {
@@ -16,43 +17,46 @@ function encodeHtmlEntities(text: string): string {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;")
+    .replaceAll("'", "&#39;");
 }
 
 /** Decodes HTML entities using a textarea element (safe for client-side React). */
 function decodeHtmlEntities(text: string): string {
-  if (typeof document === "undefined") return text
-  const textarea = document.createElement("textarea")
-  textarea.innerHTML = text
-  return textarea.value
+  if (typeof document === "undefined") return text;
+  const textarea = document.createElement("textarea");
+  textarea.innerHTML = text;
+  return textarea.value;
 }
 
 export default function HtmlEntitiesPage() {
-  const [direction, setDirection] = useState<Direction>("encode")
-  const [inputText, setInputText] = useState("")
-  const [copied, setCopied] = useState(false)
+  const [direction, setDirection] = useState<Direction>("encode");
+  const [inputText, setInputText] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const output =
     direction === "encode"
       ? encodeHtmlEntities(inputText)
-      : decodeHtmlEntities(inputText)
+      : decodeHtmlEntities(inputText);
 
-  const handleDirectionChange = useCallback((newDirection: Direction) => {
-    if (newDirection === direction) return
+  const handleDirectionChange = useCallback(
+    (newDirection: Direction) => {
+      if (newDirection === direction) return;
 
-    const currentOutput =
-      newDirection === "decode"
-        ? encodeHtmlEntities(inputText)
-        : decodeHtmlEntities(inputText)
-    setInputText(currentOutput)
-    setDirection(newDirection)
-  }, [direction, inputText])
+      const currentOutput =
+        newDirection === "decode"
+          ? encodeHtmlEntities(inputText)
+          : decodeHtmlEntities(inputText);
+      setInputText(currentOutput);
+      setDirection(newDirection);
+    },
+    [direction, inputText],
+  );
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(output)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_FEEDBACK_MS)
-  }, [output])
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_FEEDBACK_MS);
+  }, [output]);
 
   return (
     <div>
@@ -134,5 +138,5 @@ export default function HtmlEntitiesPage() {
         </Button>
       </div>
     </div>
-  )
+  );
 }

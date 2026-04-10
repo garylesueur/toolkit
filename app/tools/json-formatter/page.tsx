@@ -1,81 +1,78 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo, useEffect, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { RiFileCopyLine, RiCheckLine, RiCloseLine } from "@remixicon/react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from "@/components/ui/tooltip"
-import {
-  RiFileCopyLine,
-  RiCheckLine,
-  RiCloseLine,
-} from "@remixicon/react"
-import { formatJson, getJsonStats } from "@/lib/json-formatter/format"
-import type { IndentSize } from "@/lib/json-formatter/types"
+} from "@/components/ui/tooltip";
+import { formatJson, getJsonStats } from "@/lib/json-formatter/format";
+import type { IndentSize } from "@/lib/json-formatter/types";
 
-const COPY_RESET_MS = 2000
+const COPY_RESET_MS = 2000;
 
-type Tab = "input" | "formatted"
+type Tab = "input" | "formatted";
 
 export default function JsonFormatterPage() {
-  const [input, setInput] = useState("")
-  const [activeTab, setActiveTab] = useState<Tab>("input")
-  const [indentSize, setIndentSize] = useState<IndentSize>(2)
-  const [copied, setCopied] = useState(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [input, setInput] = useState("");
+  const [activeTab, setActiveTab] = useState<Tab>("input");
+  const [indentSize, setIndentSize] = useState<IndentSize>(2);
+  const [copied, setCopied] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { formatted, error } = useMemo(
     () => formatJson(input, indentSize),
     [input, indentSize],
-  )
+  );
 
-  const stats = useMemo(
-    () => getJsonStats(formatted),
-    [formatted],
-  )
+  const stats = useMemo(() => getJsonStats(formatted), [formatted]);
 
   // Auto-switch to Formatted tab when valid JSON is detected
   useEffect(() => {
     if (formatted && !error && activeTab === "input") {
-      setActiveTab("formatted")
+      setActiveTab("formatted");
     }
-  }, [formatted, error, activeTab])
+  }, [formatted, error, activeTab]);
 
   const handleCopy = useCallback(async () => {
-    if (!formatted) return
-    await navigator.clipboard.writeText(formatted)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_RESET_MS)
-  }, [formatted])
+    if (!formatted) return;
+    await navigator.clipboard.writeText(formatted);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
+  }, [formatted]);
 
   const handleClear = useCallback(() => {
-    setInput("")
-    setActiveTab("input")
-    setIndentSize(2)
-  }, [])
+    setInput("");
+    setActiveTab("input");
+    setIndentSize(2);
+  }, []);
 
-  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    // Prevent auto-scroll on paste by maintaining scroll position
-    const textarea = e.currentTarget
-    const scrollTop = textarea.scrollTop
-    const scrollLeft = textarea.scrollLeft
-    const pageScrollY = window.scrollY
-    const pageScrollX = window.scrollX
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      // Prevent auto-scroll on paste by maintaining scroll position
+      const textarea = e.currentTarget;
+      const scrollTop = textarea.scrollTop;
+      const scrollLeft = textarea.scrollLeft;
+      const pageScrollY = window.scrollY;
+      const pageScrollX = window.scrollX;
 
-    // Let the paste happen, then restore scroll positions
-    requestAnimationFrame(() => {
-      textarea.scrollTop = scrollTop
-      textarea.scrollLeft = scrollLeft
-      window.scrollTo(pageScrollX, pageScrollY)
-    })
-  }, [])
+      // Let the paste happen, then restore scroll positions
+      requestAnimationFrame(() => {
+        textarea.scrollTop = scrollTop;
+        textarea.scrollLeft = scrollLeft;
+        window.scrollTo(pageScrollX, pageScrollY);
+      });
+    },
+    [],
+  );
 
-  const displayValue = activeTab === "input" ? input : formatted
-  const isReadOnly = activeTab === "formatted"
+  const displayValue = activeTab === "input" ? input : formatted;
+  const isReadOnly = activeTab === "formatted";
 
   return (
     <TooltipProvider>
@@ -190,9 +187,7 @@ export default function JsonFormatterPage() {
         </div>
 
         {/* Error message */}
-        {error && (
-          <p className="mt-4 text-sm text-destructive">{error}</p>
-        )}
+        {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
         {/* Stats line (only on Formatted tab) */}
         {activeTab === "formatted" && formatted && !error && (
@@ -203,5 +198,5 @@ export default function JsonFormatterPage() {
         )}
       </div>
     </TooltipProvider>
-  )
+  );
 }

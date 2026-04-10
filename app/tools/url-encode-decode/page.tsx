@@ -1,67 +1,68 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback } from "react";
 
-type Direction = "encode" | "decode"
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
-const INPUT_PLACEHOLDER_ENCODE = "Enter text to encode…"
-const INPUT_PLACEHOLDER_DECODE = "Paste encoded URL to decode…"
-const DECODE_ERROR_MESSAGE = "Malformed URI sequence"
+type Direction = "encode" | "decode";
+
+const INPUT_PLACEHOLDER_ENCODE = "Enter text to encode…";
+const INPUT_PLACEHOLDER_DECODE = "Paste encoded URL to decode…";
+const DECODE_ERROR_MESSAGE = "Malformed URI sequence";
 
 export default function UrlEncodeDecodePage() {
-  const [direction, setDirection] = useState<Direction>("encode")
-  const [inputText, setInputText] = useState("")
-  const [copied, setCopied] = useState(false)
+  const [direction, setDirection] = useState<Direction>("encode");
+  const [inputText, setInputText] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const handleSetDirection = useCallback(
     (newDirection: Direction) => {
-      if (newDirection === direction) return
+      if (newDirection === direction) return;
 
       if (direction === "encode") {
-        setInputText(encodeURIComponent(inputText))
+        setInputText(encodeURIComponent(inputText));
       } else {
         try {
-          setInputText(decodeURIComponent(inputText))
+          setInputText(decodeURIComponent(inputText));
         } catch {
           // Keep input as-is when decode fails
         }
       }
-      setDirection(newDirection)
+      setDirection(newDirection);
     },
     [direction, inputText],
-  )
+  );
 
-  let output = ""
-  let decodeError: string | null = null
+  let output = "";
+  let decodeError: string | null = null;
 
   if (direction === "encode") {
-    output = encodeURIComponent(inputText)
+    output = encodeURIComponent(inputText);
   } else {
     try {
-      output = decodeURIComponent(inputText)
+      output = decodeURIComponent(inputText);
     } catch {
-      decodeError = DECODE_ERROR_MESSAGE
+      decodeError = DECODE_ERROR_MESSAGE;
     }
   }
 
   const handleCopy = useCallback(async () => {
-    if (!output) return
-    await navigator.clipboard.writeText(output)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }, [output])
+    if (!output) return;
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [output]);
 
   const placeholder =
-    direction === "encode" ? INPUT_PLACEHOLDER_ENCODE : INPUT_PLACEHOLDER_DECODE
+    direction === "encode"
+      ? INPUT_PLACEHOLDER_ENCODE
+      : INPUT_PLACEHOLDER_DECODE;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight">
-        URL Encode / Decode
-      </h1>
+      <h1 className="text-2xl font-bold tracking-tight">URL Encode / Decode</h1>
       <p className="text-muted-foreground mt-1">
         Percent-encode text for use in URLs, or decode encoded strings back to
         readable text.
@@ -99,11 +100,7 @@ export default function UrlEncodeDecodePage() {
 
       {/* Output */}
       <div className="mt-4">
-        <Textarea
-          value={output}
-          readOnly
-          className="min-h-32 resize-none"
-        />
+        <Textarea value={output} readOnly className="min-h-32 resize-none" />
       </div>
 
       {decodeError && (
@@ -122,5 +119,5 @@ export default function UrlEncodeDecodePage() {
         </Button>
       </div>
     </div>
-  )
+  );
 }

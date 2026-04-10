@@ -1,6 +1,6 @@
 export interface HiddenCharEntry {
-  codePoint: number
-  label: string
+  codePoint: number;
+  label: string;
 }
 
 /**
@@ -75,19 +75,19 @@ const HIDDEN_CHAR_MAP: Map<number, string> = new Map([
   [0xfffa, "IAS"],
   [0xfffb, "IAT"],
   [0xfffc, "OBJ"],
-])
+]);
 
 /**
  * Returns the label for a hidden character, or `null` if the character
  * is not considered hidden/invisible.
  */
 export function getHiddenCharLabel(codePoint: number): string | null {
-  return HIDDEN_CHAR_MAP.get(codePoint) ?? null
+  return HIDDEN_CHAR_MAP.get(codePoint) ?? null;
 }
 
 export interface TextSegment {
-  text: string
-  hidden: HiddenCharEntry | null
+  text: string;
+  hidden: HiddenCharEntry | null;
 }
 
 /**
@@ -95,45 +95,45 @@ export interface TextSegment {
  * markers. Each hidden character gets its own segment with a label.
  */
 export function analyseText(input: string): TextSegment[] {
-  if (!input) return []
+  if (!input) return [];
 
-  const segments: TextSegment[] = []
-  let visibleBuffer = ""
+  const segments: TextSegment[] = [];
+  let visibleBuffer = "";
 
   const flushVisible = () => {
     if (visibleBuffer) {
-      segments.push({ text: visibleBuffer, hidden: null })
-      visibleBuffer = ""
+      segments.push({ text: visibleBuffer, hidden: null });
+      visibleBuffer = "";
     }
-  }
+  };
 
   for (const char of input) {
-    const codePoint = char.codePointAt(0)
-    if (codePoint === undefined) continue
+    const codePoint = char.codePointAt(0);
+    if (codePoint === undefined) continue;
 
-    const label = getHiddenCharLabel(codePoint)
+    const label = getHiddenCharLabel(codePoint);
     if (label) {
-      flushVisible()
+      flushVisible();
       segments.push({
         text: char,
         hidden: { codePoint, label },
-      })
+      });
     } else {
-      visibleBuffer += char
+      visibleBuffer += char;
     }
   }
 
-  flushVisible()
-  return segments
+  flushVisible();
+  return segments;
 }
 
 /**
  * Counts the total number of hidden characters in the given segments.
  */
 export function countHidden(segments: TextSegment[]): number {
-  let count = 0
+  let count = 0;
   for (const segment of segments) {
-    if (segment.hidden) count++
+    if (segment.hidden) count++;
   }
-  return count
+  return count;
 }

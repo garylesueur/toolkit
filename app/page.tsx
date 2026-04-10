@@ -1,9 +1,10 @@
-import { Suspense } from "react"
-import { RiToolsFill } from "@remixicon/react"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { ToolsExplorer } from "@/components/tools-explorer"
-import { ToolsGrid } from "@/components/tools-grid"
-import { ToolsSearch } from "@/components/tools-search"
+import { RiToolsFill } from "@remixicon/react";
+import { Suspense } from "react";
+
+import { ThemeToggle } from "@/components/theme-toggle";
+import { ToolsExplorer } from "@/components/tools-explorer";
+import { ToolsGrid } from "@/components/tools-grid";
+import { ToolsSearch } from "@/components/tools-search";
 
 export default function Page() {
   return (
@@ -15,9 +16,7 @@ export default function Page() {
               <RiToolsFill className="size-4" />
             </div>
             <div>
-              <h1 className="text-sm font-semibold tracking-tight">
-                Toolkit
-              </h1>
+              <h1 className="text-sm font-semibold tracking-tight">Toolkit</h1>
               <p className="text-muted-foreground text-xs">
                 Developer utilities by Gary Le Sueur
               </p>
@@ -56,5 +55,5 @@ export default function Page() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

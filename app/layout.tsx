@@ -1,12 +1,14 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
+
 import { ThemeProvider } from "@/components/theme-provider";
+
 import "./globals.css";
 
 export const revalidate = 31536000; // 1 year
 
-const publicSans = Public_Sans({subsets:['latin'],variable:'--font-sans'});
+const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

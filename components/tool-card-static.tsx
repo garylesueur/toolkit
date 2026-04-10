@@ -1,10 +1,11 @@
-import Link from "next/link"
-import { RiArrowRightLine } from "@remixicon/react"
-import type { Tool } from "@/lib/tools"
+import { RiArrowRightLine } from "@remixicon/react";
+import Link from "next/link";
+
+import type { Tool } from "@/lib/tools";
 
 type ToolCardStaticProps = {
-  tool: Tool
-}
+  tool: Tool;
+};
 
 export function ToolCardStatic({ tool }: ToolCardStaticProps) {
   return (
@@ -35,5 +36,5 @@ export function ToolCardStatic({ tool }: ToolCardStaticProps) {
         </div>
       </Link>
     </div>
-  )
+  );
 }

@@ -1,48 +1,47 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { flattenPdf } from "@/lib/pdf/flatten"
-import { downloadPdf } from "@/lib/pdf/download"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   RiDownload2Line,
   RiLoader4Line,
   RiDeleteBin6Line,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback } from "react";
+
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { downloadPdf } from "@/lib/pdf/download";
+import { flattenPdf } from "@/lib/pdf/flatten";
 
 export default function FlattenPdfPage() {
-  const [file, setFile] = useState<File | null>(null)
-  const [saving, setSaving] = useState(false)
-  const [done, setDone] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFiles = useCallback((files: File[]) => {
-    setFile(files[0])
-    setDone(false)
-    setError(null)
-  }, [])
+    setFile(files[0]);
+    setDone(false);
+    setError(null);
+  }, []);
 
   const handleFlatten = useCallback(async () => {
-    if (!file) return
-    setSaving(true)
-    setError(null)
+    if (!file) return;
+    setSaving(true);
+    setError(null);
     try {
-      const buffer = await file.arrayBuffer()
-      const bytes = new Uint8Array(buffer)
-      const result = await flattenPdf(bytes)
-      const baseName = file.name.replace(/\.pdf$/i, "")
-      await downloadPdf(result, `${baseName}-flattened.pdf`)
-      setDone(true)
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      const result = await flattenPdf(bytes);
+      const baseName = file.name.replace(/\.pdf$/i, "");
+      await downloadPdf(result, `${baseName}-flattened.pdf`);
+      setDone(true);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to flatten PDF.",
-      )
+      setError(err instanceof Error ? err.message : "Failed to flatten PDF.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [file])
+  }, [file]);
 
   return (
     <div>
@@ -72,9 +71,9 @@ export default function FlattenPdfPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                setFile(null)
-                setDone(false)
-                setError(null)
+                setFile(null);
+                setDone(false);
+                setError(null);
               }}
             >
               <RiDeleteBin6Line data-icon="inline-start" />
@@ -96,5 +95,5 @@ export default function FlattenPdfPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

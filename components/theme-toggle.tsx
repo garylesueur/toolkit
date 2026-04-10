@@ -1,41 +1,42 @@
-"use client"
+"use client";
 
-import { useTheme } from "next-themes"
-import { useState, useEffect } from "react"
-import { RiSunLine, RiMoonLine, RiComputerLine } from "@remixicon/react"
-import { Button } from "@/components/ui/button"
+import { RiSunLine, RiMoonLine, RiComputerLine } from "@remixicon/react";
+import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
+
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-type ThemeOption = "light" | "dark" | "system"
+type ThemeOption = "light" | "dark" | "system";
 
 interface ThemeEntry {
-  value: ThemeOption
-  label: string
-  icon: typeof RiSunLine
+  value: ThemeOption;
+  label: string;
+  icon: typeof RiSunLine;
 }
 
 const THEME_OPTIONS: ThemeEntry[] = [
   { value: "light", label: "Light", icon: RiSunLine },
   { value: "dark", label: "Dark", icon: RiMoonLine },
   { value: "system", label: "System", icon: RiComputerLine },
-]
+];
 
 /**
  * Dropdown toggle for switching between light, dark, and system themes.
  * Renders a skeleton-sized placeholder until mounted to avoid hydration mismatch.
  */
 export function ThemeToggle() {
-  const { setTheme, theme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const { setTheme, theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   return (
     <DropdownMenu>
@@ -64,5 +65,5 @@ export function ThemeToggle() {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

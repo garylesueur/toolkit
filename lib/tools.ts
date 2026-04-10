@@ -1,4 +1,4 @@
-import type { RemixiconComponentType } from "@remixicon/react"
+import type { RemixiconComponentType } from "@remixicon/react";
 import {
   RiAccessibilityLine,
   RiAspectRatioLine,
@@ -53,20 +53,21 @@ import {
   RiTableLine,
   RiTextBlock,
   RiTimeLine,
-} from "@remixicon/react"
+} from "@remixicon/react";
 
 export type Tool = {
-  name: string
-  description: string
-  href: string
-  icon: RemixiconComponentType
-  devOnly?: boolean
-}
+  name: string;
+  description: string;
+  href: string;
+  icon: RemixiconComponentType;
+  devOnly?: boolean;
+};
 
 export const tools: Tool[] = [
   {
     name: "ID Generator",
-    description: "Generate UUIDs, short IDs, NanoIDs, and ULIDs with one click.",
+    description:
+      "Generate UUIDs, short IDs, NanoIDs, and ULIDs with one click.",
     href: "/tools/id-generator",
     icon: RiFingerprintLine,
   },
@@ -90,7 +91,8 @@ export const tools: Tool[] = [
   },
   {
     name: "Lorem Ipsum Generator",
-    description: "Generate placeholder text in paragraphs, sentences, or words.",
+    description:
+      "Generate placeholder text in paragraphs, sentences, or words.",
     href: "/tools/lorem-ipsum",
     icon: RiTextBlock,
   },
@@ -102,25 +104,29 @@ export const tools: Tool[] = [
   },
   {
     name: "Character & Word Counter",
-    description: "Count characters, words, sentences, lines, and bytes in your text.",
+    description:
+      "Count characters, words, sentences, lines, and bytes in your text.",
     href: "/tools/character-counter",
     icon: RiCharacterRecognitionLine,
   },
   {
     name: "Favicon Generator",
-    description: "Upload a square PNG and get every favicon size your site needs.",
+    description:
+      "Upload a square PNG and get every favicon size your site needs.",
     href: "/tools/favicon-generator",
     icon: RiImageFill,
   },
   {
     name: "Chrome Extension Icons",
-    description: "Upload a PNG and get every icon size a Chrome extension needs.",
+    description:
+      "Upload a PNG and get every icon size a Chrome extension needs.",
     href: "/tools/chrome-extension-icons",
     icon: RiPuzzleLine,
   },
   {
     name: "OG Preview",
-    description: "Inspect Open Graph tags and preview how your link looks on social platforms.",
+    description:
+      "Inspect Open Graph tags and preview how your link looks on social platforms.",
     href: "/tools/og-preview",
     icon: RiGlobalLine,
   },
@@ -138,7 +144,8 @@ export const tools: Tool[] = [
   },
   {
     name: "Colour Converter",
-    description: "Convert colours between hex, RGB, and HSL with a live preview.",
+    description:
+      "Convert colours between hex, RGB, and HSL with a live preview.",
     href: "/tools/colour-converter",
     icon: RiPaletteLine,
   },
@@ -151,31 +158,36 @@ export const tools: Tool[] = [
   },
   {
     name: "Hash Generator",
-    description: "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text.",
+    description:
+      "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text.",
     href: "/tools/hash-generator",
     icon: RiShieldKeyholeLine,
   },
   {
     name: "Regex Tester",
-    description: "Test regular expressions with live match highlighting and capture groups.",
+    description:
+      "Test regular expressions with live match highlighting and capture groups.",
     href: "/tools/regex-tester",
     icon: RiFindReplaceLine,
   },
   {
     name: "Diff Viewer",
-    description: "Compare two blocks of text and see additions and deletions highlighted.",
+    description:
+      "Compare two blocks of text and see additions and deletions highlighted.",
     href: "/tools/diff-viewer",
     icon: RiGitMergeLine,
   },
   {
     name: "CSS Unit Converter",
-    description: "Convert between px, rem, em, vh, and vw with configurable base values.",
+    description:
+      "Convert between px, rem, em, vh, and vw with configurable base values.",
     href: "/tools/css-unit-converter",
     icon: RiRulerLine,
   },
   {
     name: "Hidden Character Revealer",
-    description: "Spot invisible and non-printing characters hiding in your text.",
+    description:
+      "Spot invisible and non-printing characters hiding in your text.",
     href: "/tools/hidden-characters",
     icon: RiEyeLine,
   },
@@ -187,13 +199,15 @@ export const tools: Tool[] = [
   },
   {
     name: "Image Compressor",
-    description: "Batch compress images with side-by-side preview and ZIP download.",
+    description:
+      "Batch compress images with side-by-side preview and ZIP download.",
     href: "/tools/image-compressor",
     icon: RiCollapseDiagonalLine,
   },
   {
     name: "Cron Expression Explainer",
-    description: "Decode cron expressions into plain English and preview upcoming run times.",
+    description:
+      "Decode cron expressions into plain English and preview upcoming run times.",
     href: "/tools/cron-explainer",
     icon: RiCalendarScheduleLine,
   },
@@ -219,92 +233,107 @@ export const tools: Tool[] = [
   },
   {
     name: "QR Code Generator",
-    description: "Enter text or a URL to generate a QR code. Download as SVG or PNG.",
+    description:
+      "Enter text or a URL to generate a QR code. Download as SVG or PNG.",
     href: "/tools/qr-code-generator",
     icon: RiQrCodeLine,
   },
   {
     name: "Tailwind Class Sorter",
-    description: "Paste a className string and get it back sorted in the recommended Tailwind order.",
+    description:
+      "Paste a className string and get it back sorted in the recommended Tailwind order.",
     href: "/tools/tailwind-sorter",
     icon: RiSortAsc,
   },
   {
     name: "Placeholder Image Generator",
-    description: "Pick dimensions, colours, and overlay text — get a downloadable placeholder PNG or a data URL.",
+    description:
+      "Pick dimensions, colours, and overlay text — get a downloadable placeholder PNG or a data URL.",
     href: "/tools/placeholder-image",
     icon: RiImageAddLine,
   },
   {
     name: "LinkedIn Banner Generator",
-    description: "Create a custom LinkedIn profile banner with gradients, logos, and text. Designed to avoid the profile photo overlay.",
+    description:
+      "Create a custom LinkedIn profile banner with gradients, logos, and text. Designed to avoid the profile photo overlay.",
     href: "/tools/linkedin-banner",
     icon: RiImageAddLine,
     devOnly: true,
   },
   {
     name: "Date / Time Formatter",
-    description: "Enter a date and see it formatted in ISO 8601, RFC 2822, SQL, relative, and more.",
+    description:
+      "Enter a date and see it formatted in ISO 8601, RFC 2822, SQL, relative, and more.",
     href: "/tools/date-formatter",
     icon: RiCalendarLine,
   },
   {
     name: "Time Zone Converter",
-    description: "Pick a date and time, then see it displayed across multiple time zones.",
+    description:
+      "Pick a date and time, then see it displayed across multiple time zones.",
     href: "/tools/timezone-converter",
     icon: RiEarthLine,
   },
   {
     name: "Duration Calculator",
-    description: "Calculate the duration between two dates, or add a duration to find an end date.",
+    description:
+      "Calculate the duration between two dates, or add a duration to find an end date.",
     href: "/tools/duration-calculator",
     icon: RiHourglassLine,
   },
   {
     name: "Relative Date Calculator",
-    description: "Add or subtract days, weeks, months, or business days from any date.",
+    description:
+      "Add or subtract days, weeks, months, or business days from any date.",
     href: "/tools/relative-date-calculator",
     icon: RiCalendarEventLine,
   },
   {
     name: "Week Number Lookup",
-    description: "Find the ISO week number for a date, or look up the date range for a given week.",
+    description:
+      "Find the ISO week number for a date, or look up the date range for a given week.",
     href: "/tools/week-number",
     icon: RiCalendar2Line,
   },
   {
     name: "Epoch Batch Converter",
-    description: "Paste text containing Unix timestamps and see them converted to dates inline.",
+    description:
+      "Paste text containing Unix timestamps and see them converted to dates inline.",
     href: "/tools/epoch-batch-converter",
     icon: RiFileListLine,
   },
   {
     name: "Number Base Converter",
-    description: "Convert between decimal, hexadecimal, octal, and binary. Supports large integers.",
+    description:
+      "Convert between decimal, hexadecimal, octal, and binary. Supports large integers.",
     href: "/tools/number-base-converter",
     icon: RiHashtag,
   },
   {
     name: "Byte / Bit Size Converter",
-    description: "Convert between bytes, kilobytes, megabytes, and more — in both SI and binary units.",
+    description:
+      "Convert between bytes, kilobytes, megabytes, and more — in both SI and binary units.",
     href: "/tools/byte-converter",
     icon: RiDatabase2Line,
   },
   {
     name: "Aspect Ratio Calculator",
-    description: "Calculate aspect ratios from dimensions, or find a missing dimension from a ratio.",
+    description:
+      "Calculate aspect ratios from dimensions, or find a missing dimension from a ratio.",
     href: "/tools/aspect-ratio",
     icon: RiAspectRatioLine,
   },
   {
     name: "Chmod Calculator",
-    description: "Toggle permissions or enter a number to see the chmod breakdown.",
+    description:
+      "Toggle permissions or enter a number to see the chmod breakdown.",
     href: "/tools/chmod-calculator",
     icon: RiLockLine,
   },
   {
     name: "CIDR / Subnet Calculator",
-    description: "Enter CIDR notation to see the network details, host range, and subnet mask.",
+    description:
+      "Enter CIDR notation to see the network details, host range, and subnet mask.",
     href: "/tools/cidr-calculator",
     icon: RiRouterLine,
   },
@@ -316,102 +345,120 @@ export const tools: Tool[] = [
   },
   {
     name: "Case Converter",
-    description: "Convert text between camelCase, PascalCase, snake_case, kebab-case, and more.",
+    description:
+      "Convert text between camelCase, PascalCase, snake_case, kebab-case, and more.",
     href: "/tools/case-converter",
     icon: RiFontSize,
   },
   {
     name: "HTTP Status Code Reference",
-    description: "A searchable reference of all HTTP status codes with descriptions and use cases.",
+    description:
+      "A searchable reference of all HTTP status codes with descriptions and use cases.",
     href: "/tools/http-status-codes",
     icon: RiServerLine,
   },
   {
     name: "Password Generator",
-    description: "Generate secure random passwords with configurable length and character sets.",
+    description:
+      "Generate secure random passwords with configurable length and character sets.",
     href: "/tools/password-generator",
     icon: RiLockPasswordLine,
   },
   {
     name: "Secret / Token Generator",
-    description: "Generate cryptographically random secrets and tokens for API keys, JWT secrets, and more.",
+    description:
+      "Generate cryptographically random secrets and tokens for API keys, JWT secrets, and more.",
     href: "/tools/secret-generator",
     icon: RiShieldKeyholeLine,
   },
   {
     name: "Browser Info",
-    description: "See everything your browser reveals — user agent, screen, GPU, network, and more.",
+    description:
+      "See everything your browser reveals — user agent, screen, GPU, network, and more.",
     href: "/tools/browser-info",
     icon: RiComputerLine,
   },
   {
     name: "ASCII / Char Code Viewer",
-    description: "Paste a string to see each character with its numeric code point underneath.",
+    description:
+      "Paste a string to see each character with its numeric code point underneath.",
     href: "/tools/ascii-char-codes",
     icon: RiHashtag,
   },
   {
     name: "Merge PDF",
-    description: "Combine multiple PDF files into a single document — all in the browser.",
+    description:
+      "Combine multiple PDF files into a single document — all in the browser.",
     href: "/tools/merge-pdf",
     icon: RiMergeCellsVertical,
   },
   {
     name: "Split PDF",
-    description: "Split a PDF into individual pages or custom ranges. Download as a ZIP.",
+    description:
+      "Split a PDF into individual pages or custom ranges. Download as a ZIP.",
     href: "/tools/split-pdf",
     icon: RiScissorsCutLine,
   },
   {
     name: "Rearrange PDF Pages",
-    description: "Drag and drop to reorder pages in your PDF, then download the result.",
+    description:
+      "Drag and drop to reorder pages in your PDF, then download the result.",
     href: "/tools/rearrange-pdf",
     icon: RiDragMove2Line,
   },
   {
     name: "Delete PDF Pages",
-    description: "Select and remove unwanted pages from a PDF — all in the browser.",
+    description:
+      "Select and remove unwanted pages from a PDF — all in the browser.",
     href: "/tools/delete-pdf-pages",
     icon: RiDeleteBin6Line,
   },
   {
     name: "Extract PDF Pages",
-    description: "Pick specific pages from a PDF and download them as a new file.",
+    description:
+      "Pick specific pages from a PDF and download them as a new file.",
     href: "/tools/extract-pdf-pages",
     icon: RiFileReduceLine,
   },
   {
     name: "Rotate PDF",
-    description: "Rotate individual pages or all pages in a PDF by 90°, 180°, or 270°.",
+    description:
+      "Rotate individual pages or all pages in a PDF by 90°, 180°, or 270°.",
     href: "/tools/rotate-pdf",
     icon: RiRotateLockLine,
   },
   {
     name: "Resize PDF Pages",
-    description: "Change the page size of your PDF to A4, Letter, or custom dimensions.",
+    description:
+      "Change the page size of your PDF to A4, Letter, or custom dimensions.",
     href: "/tools/resize-pdf",
     icon: RiFullscreenLine,
   },
   {
     name: "Compress PDF",
-    description: "Reduce PDF file size by re-saving and stripping unused objects — all in the browser.",
+    description:
+      "Reduce PDF file size by re-saving and stripping unused objects — all in the browser.",
     href: "/tools/compress-pdf",
     icon: RiCollapseDiagonalLine,
   },
   {
     name: "Flatten PDF",
-    description: "Bake form fields and annotations into page content, making them permanent.",
+    description:
+      "Bake form fields and annotations into page content, making them permanent.",
     href: "/tools/flatten-pdf",
     icon: RiFileShieldLine,
   },
   {
     name: "PDF Metadata Editor",
-    description: "View, edit, or strip metadata (title, author, keywords) from a PDF.",
+    description:
+      "View, edit, or strip metadata (title, author, keywords) from a PDF.",
     href: "/tools/pdf-metadata",
     icon: RiFileInfoLine,
   },
-]
+];
 
-const isDevelopment = process.env.NODE_ENV === "development"
+const isDevelopment = process.env.NODE_ENV === "development";
 
-export const visibleTools = tools.filter((tool) => !tool.devOnly || isDevelopment)
+export const visibleTools = tools.filter(
+  (tool) => !tool.devOnly || isDevelopment,
+);

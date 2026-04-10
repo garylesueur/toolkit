@@ -1,88 +1,102 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { usePdfDocument } from "@/hooks/use-pdf-document"
-import { splitPdfByPages, splitPdfByRanges } from "@/lib/pdf/split"
-import { downloadPdfBytes } from "@/lib/pdf/download"
-import { parsePageRanges } from "@/components/pdf/pdf-page-range-input"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   RiDownload2Line,
   RiLoader4Line,
   RiDeleteBin6Line,
-} from "@remixicon/react"
-import { downloadZip } from "client-zip"
+} from "@remixicon/react";
+import { downloadZip } from "client-zip";
+import { useState, useCallback } from "react";
 
-type SplitMode = "all" | "ranges"
+import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid";
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { parsePageRanges } from "@/components/pdf/pdf-page-range-input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { usePdfDocument } from "@/hooks/use-pdf-document";
+import { downloadPdfBytes } from "@/lib/pdf/download";
+import { splitPdfByPages, splitPdfByRanges } from "@/lib/pdf/split";
+
+type SplitMode = "all" | "ranges";
 
 export default function SplitPdfPage() {
-  const { pdfBytes, pageCount, thumbnails, fileName, loading, error, loadFile, reset } =
-    usePdfDocument()
-  const [mode, setMode] = useState<SplitMode>("all")
-  const [rangeInput, setRangeInput] = useState("")
-  const [rangeError, setRangeError] = useState<string | null>(null)
-  const [saving, setSaving] = useState(false)
+  const {
+    pdfBytes,
+    pageCount,
+    thumbnails,
+    fileName,
+    loading,
+    error,
+    loadFile,
+    reset,
+  } = usePdfDocument();
+  const [mode, setMode] = useState<SplitMode>("all");
+  const [rangeInput, setRangeInput] = useState("");
+  const [rangeError, setRangeError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const baseName = (fileName ?? "document").replace(/\.pdf$/i, "")
+  const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
 
   const handleSplit = useCallback(async () => {
-    if (!pdfBytes) return
-    setSaving(true)
+    if (!pdfBytes) return;
+    setSaving(true);
     try {
-      let results: { name: string; bytes: Uint8Array }[]
+      let results: { name: string; bytes: Uint8Array }[];
 
       if (mode === "all") {
-        results = await splitPdfByPages(pdfBytes, baseName)
+        results = await splitPdfByPages(pdfBytes, baseName);
       } else {
         // Parse comma-separated ranges into groups
-        const parts = rangeInput.split(";").map((s) => s.trim()).filter(Boolean)
+        const parts = rangeInput
+          .split(";")
+          .map((s) => s.trim())
+          .filter(Boolean);
         if (parts.length === 0) {
-          setRangeError("Enter at least one range (separate groups with semicolons).")
-          setSaving(false)
-          return
+          setRangeError(
+            "Enter at least one range (separate groups with semicolons).",
+          );
+          setSaving(false);
+          return;
         }
 
-        const ranges: number[][] = []
+        const ranges: number[][] = [];
         for (const part of parts) {
-          const result = parsePageRanges(part, pageCount)
+          const result = parsePageRanges(part, pageCount);
           if (result.error) {
-            setRangeError(result.error)
-            setSaving(false)
-            return
+            setRangeError(result.error);
+            setSaving(false);
+            return;
           }
-          ranges.push(result.pages)
+          ranges.push(result.pages);
         }
 
-        results = await splitPdfByRanges(pdfBytes, ranges, baseName)
+        results = await splitPdfByRanges(pdfBytes, ranges, baseName);
       }
 
       if (results.length === 1) {
-        downloadPdfBytes(results[0].bytes, results[0].name)
+        downloadPdfBytes(results[0].bytes, results[0].name);
       } else {
         // Download as ZIP
         const files = results.map((r) => ({
           name: r.name,
           input: r.bytes,
-        }))
-        const blob = await downloadZip(files).blob()
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = `${baseName}-split.zip`
-        a.click()
-        URL.revokeObjectURL(url)
+        }));
+        const blob = await downloadZip(files).blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${baseName}-split.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
       }
     } catch (err) {
-      setRangeError(err instanceof Error ? err.message : "Split failed.")
+      setRangeError(err instanceof Error ? err.message : "Split failed.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [pdfBytes, mode, rangeInput, pageCount, baseName])
+  }, [pdfBytes, mode, rangeInput, pageCount, baseName]);
 
   return (
     <div>
@@ -92,7 +106,10 @@ export default function SplitPdfPage() {
       </p>
 
       <div className="mt-8">
-        <PdfDropZone onFiles={(files) => loadFile(files[0])} compact={!!pdfBytes} />
+        <PdfDropZone
+          onFiles={(files) => loadFile(files[0])}
+          compact={!!pdfBytes}
+        />
       </div>
 
       {loading && (
@@ -114,8 +131,8 @@ export default function SplitPdfPage() {
                   variant={mode === "all" ? "default" : "outline"}
                   size="sm"
                   onClick={() => {
-                    setMode("all")
-                    setRangeError(null)
+                    setMode("all");
+                    setRangeError(null);
                   }}
                 >
                   Every page
@@ -136,8 +153,8 @@ export default function SplitPdfPage() {
                 <Input
                   value={rangeInput}
                   onChange={(e) => {
-                    setRangeInput(e.target.value)
-                    setRangeError(null)
+                    setRangeInput(e.target.value);
+                    setRangeError(null);
                   }}
                   placeholder="e.g. 1-3; 4-6; 7"
                   className="mt-1.5"
@@ -154,9 +171,9 @@ export default function SplitPdfPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                reset()
-                setRangeInput("")
-                setRangeError(null)
+                reset();
+                setRangeInput("");
+                setRangeError(null);
               }}
             >
               <RiDeleteBin6Line data-icon="inline-start" />
@@ -182,5 +199,5 @@ export default function SplitPdfPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -1,21 +1,22 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RiCalendarLine } from "@remixicon/react"
-import { CopyableRow } from "@/components/copyable-row"
-import { formatDateForInput } from "@/lib/shared/date"
+import { RiCalendarLine } from "@remixicon/react";
+import { useState, useCallback } from "react";
 
-const COPY_RESET_MS = 2000
+import { CopyableRow } from "@/components/copyable-row";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { formatDateForInput } from "@/lib/shared/date";
 
-const ISO_MONDAY = 1
-const ISO_SUNDAY = 7
-const DAYS_PER_WEEK = 7
-const MS_PER_DAY = 86_400_000
-const MIN_WEEK = 1
-const MAX_WEEK = 53
+const COPY_RESET_MS = 2000;
+
+const ISO_MONDAY = 1;
+const ISO_SUNDAY = 7;
+const DAYS_PER_WEEK = 7;
+const MS_PER_DAY = 86_400_000;
+const MIN_WEEK = 1;
+const MAX_WEEK = 53;
 
 const DAY_NAMES: Record<number, string> = {
   1: "Monday",
@@ -25,40 +26,48 @@ const DAY_NAMES: Record<number, string> = {
   5: "Friday",
   6: "Saturday",
   7: "Sunday",
-}
+};
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "long",
   year: "numeric",
-})
+});
 
 function getIsoWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || ISO_SUNDAY))
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  return Math.ceil(((d.getTime() - yearStart.getTime()) / MS_PER_DAY + 1) / DAYS_PER_WEEK)
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  );
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || ISO_SUNDAY));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil(
+    ((d.getTime() - yearStart.getTime()) / MS_PER_DAY + 1) / DAYS_PER_WEEK,
+  );
 }
 
 function getIsoWeekYear(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || ISO_SUNDAY))
-  return d.getUTCFullYear()
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  );
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || ISO_SUNDAY));
+  return d.getUTCFullYear();
 }
 
 interface WeekDateRange {
-  monday: Date
-  sunday: Date
+  monday: Date;
+  sunday: Date;
 }
 
 function getDateRangeForIsoWeek(week: number, year: number): WeekDateRange {
-  const jan4 = new Date(Date.UTC(year, 0, 4))
-  const dayOfWeek = jan4.getUTCDay() || ISO_SUNDAY
-  const monday = new Date(jan4)
-  monday.setUTCDate(jan4.getUTCDate() - dayOfWeek + ISO_MONDAY + (week - 1) * DAYS_PER_WEEK)
-  const sunday = new Date(monday)
-  sunday.setUTCDate(monday.getUTCDate() + 6)
-  return { monday, sunday }
+  const jan4 = new Date(Date.UTC(year, 0, 4));
+  const dayOfWeek = jan4.getUTCDay() || ISO_SUNDAY;
+  const monday = new Date(jan4);
+  monday.setUTCDate(
+    jan4.getUTCDate() - dayOfWeek + ISO_MONDAY + (week - 1) * DAYS_PER_WEEK,
+  );
+  const sunday = new Date(monday);
+  sunday.setUTCDate(monday.getUTCDate() + 6);
+  return { monday, sunday };
 }
 
 /**
@@ -66,57 +75,62 @@ function getDateRangeForIsoWeek(week: number, year: number): WeekDateRange {
  * `Date.getDay()` returns 0 for Sunday, so we remap it.
  */
 function getIsoDayOfWeek(date: Date): number {
-  return date.getDay() || ISO_SUNDAY
+  return date.getDay() || ISO_SUNDAY;
 }
 
 interface DateToWeekResult {
-  weekNumber: number
-  weekYear: number
-  dayName: string
-  isoDayNumber: number
+  weekNumber: number;
+  weekYear: number;
+  dayName: string;
+  isoDayNumber: number;
 }
 
 function computeDateToWeek(date: Date): DateToWeekResult {
-  const isoDayNumber = getIsoDayOfWeek(date)
+  const isoDayNumber = getIsoDayOfWeek(date);
   return {
     weekNumber: getIsoWeekNumber(date),
     weekYear: getIsoWeekYear(date),
     dayName: DAY_NAMES[isoDayNumber] ?? "",
     isoDayNumber,
-  }
+  };
 }
 
 export default function WeekNumberPage() {
-  const [dateInput, setDateInput] = useState("")
-  const [weekInput, setWeekInput] = useState("")
-  const [yearInput, setYearInput] = useState(() => new Date().getFullYear().toString())
-  const [copiedValue, setCopiedValue] = useState<string | null>(null)
+  const [dateInput, setDateInput] = useState("");
+  const [weekInput, setWeekInput] = useState("");
+  const [yearInput, setYearInput] = useState(() =>
+    new Date().getFullYear().toString(),
+  );
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const handleCopy = useCallback(async (value: string) => {
-    if (!value) return
-    await navigator.clipboard.writeText(value)
-    setCopiedValue(value)
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS)
-  }, [])
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
+  }, []);
 
   const handleToday = useCallback(() => {
-    setDateInput(formatDateForInput(new Date()))
-  }, [])
+    setDateInput(formatDateForInput(new Date()));
+  }, []);
 
-  const parsedDate = dateInput.trim() !== "" ? new Date(dateInput) : null
-  const isDateValid = parsedDate !== null && !Number.isNaN(parsedDate.getTime())
-  const dateResult = isDateValid ? computeDateToWeek(parsedDate) : null
+  const parsedDate = dateInput.trim() !== "" ? new Date(dateInput) : null;
+  const isDateValid =
+    parsedDate !== null && !Number.isNaN(parsedDate.getTime());
+  const dateResult = isDateValid ? computeDateToWeek(parsedDate) : null;
 
-  const weekNum = weekInput.trim() !== "" ? Number(weekInput) : null
-  const yearNum = yearInput.trim() !== "" ? Number(yearInput) : null
+  const weekNum = weekInput.trim() !== "" ? Number(weekInput) : null;
+  const yearNum = yearInput.trim() !== "" ? Number(yearInput) : null;
   const isWeekValid =
     weekNum !== null &&
     yearNum !== null &&
     Number.isInteger(weekNum) &&
     Number.isInteger(yearNum) &&
     weekNum >= MIN_WEEK &&
-    weekNum <= MAX_WEEK
-  const weekRange = isWeekValid ? getDateRangeForIsoWeek(weekNum, yearNum) : null
+    weekNum <= MAX_WEEK;
+  const weekRange = isWeekValid
+    ? getDateRangeForIsoWeek(weekNum, yearNum)
+    : null;
 
   return (
     <div className="space-y-8">
@@ -125,8 +139,8 @@ export default function WeekNumberPage() {
           Week Number Lookup
         </h1>
         <p className="text-muted-foreground mt-1">
-          Find the ISO week number for any date, or look up the date range for
-          a given week.
+          Find the ISO week number for any date, or look up the date range for a
+          given week.
         </p>
       </div>
 
@@ -227,5 +241,5 @@ export default function WeekNumberPage() {
         )}
       </section>
     </div>
-  )
+  );
 }

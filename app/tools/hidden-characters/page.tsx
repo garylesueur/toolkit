@@ -1,13 +1,14 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { analyseText, countHidden } from "@/lib/hidden-characters/detect"
-import type { TextSegment } from "@/lib/hidden-characters/detect"
+import { useState, useMemo } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { analyseText, countHidden } from "@/lib/hidden-characters/detect";
+import type { TextSegment } from "@/lib/hidden-characters/detect";
 
 interface AnnotatedTextProps {
-  segments: TextSegment[]
+  segments: TextSegment[];
 }
 
 function AnnotatedText({ segments }: AnnotatedTextProps) {
@@ -15,7 +16,7 @@ function AnnotatedText({ segments }: AnnotatedTextProps) {
     <div className="whitespace-pre-wrap rounded-md border bg-muted/50 p-4 font-mono text-sm">
       {segments.map((segment, idx) => {
         if (segment.hidden) {
-          const hex = `U+${segment.hidden.codePoint.toString(16).toUpperCase().padStart(4, "0")}`
+          const hex = `U+${segment.hidden.codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
           return (
             <span
               key={idx}
@@ -24,21 +25,21 @@ function AnnotatedText({ segments }: AnnotatedTextProps) {
             >
               {segment.hidden.label}
             </span>
-          )
+          );
         }
-        return <span key={idx}>{segment.text}</span>
+        return <span key={idx}>{segment.text}</span>;
       })}
     </div>
-  )
+  );
 }
 
 export default function HiddenCharactersPage() {
-  const [input, setInput] = useState("")
+  const [input, setInput] = useState("");
 
-  const segments = useMemo(() => analyseText(input), [input])
-  const hiddenCount = useMemo(() => countHidden(segments), [segments])
+  const segments = useMemo(() => analyseText(input), [input]);
+  const hiddenCount = useMemo(() => countHidden(segments), [segments]);
 
-  const hasInput = input.length > 0
+  const hasInput = input.length > 0;
 
   return (
     <div>
@@ -66,7 +67,8 @@ export default function HiddenCharactersPage() {
         <div className="mt-6 space-y-4">
           <div className="flex items-center gap-2">
             <Badge variant={hiddenCount > 0 ? "destructive" : "secondary"}>
-              {hiddenCount} hidden {hiddenCount === 1 ? "character" : "characters"} found
+              {hiddenCount} hidden{" "}
+              {hiddenCount === 1 ? "character" : "characters"} found
             </Badge>
           </div>
 
@@ -74,5 +76,5 @@ export default function HiddenCharactersPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

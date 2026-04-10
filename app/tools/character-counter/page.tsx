@@ -1,42 +1,41 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Textarea } from "@/components/ui/textarea"
+import { useState, useMemo } from "react";
+
+import { Textarea } from "@/components/ui/textarea";
 
 interface CharacterStats {
-  characters: number
-  charactersNoSpaces: number
-  words: number
-  sentences: number
-  lines: number
-  paragraphs: number
-  bytes: number
+  characters: number;
+  charactersNoSpaces: number;
+  words: number;
+  sentences: number;
+  lines: number;
+  paragraphs: number;
+  bytes: number;
 }
 
 interface StatCardProps {
-  value: number
-  label: string
+  value: number;
+  label: string;
 }
 
 function computeCharacterStats(text: string): CharacterStats {
-  const trimmed = text.trim()
-  const isEmpty = trimmed.length === 0
+  const trimmed = text.trim();
+  const isEmpty = trimmed.length === 0;
 
   const words = isEmpty
     ? 0
-    : trimmed
-        .split(/\s+/)
-        .filter((w) => w.length > 0).length
+    : trimmed.split(/\s+/).filter((w) => w.length > 0).length;
 
-  const sentences = isEmpty
-    ? 0
-    : (text.match(/[.!?]/g) ?? []).length
+  const sentences = isEmpty ? 0 : (text.match(/[.!?]/g) ?? []).length;
 
-  const lineParts = text.split("\n")
-  const lines = isEmpty ? 0 : Math.max(1, lineParts.length)
+  const lineParts = text.split("\n");
+  const lines = isEmpty ? 0 : Math.max(1, lineParts.length);
 
-  const paragraphParts = text.split(/\n\s*\n/).filter((p) => p.trim().length > 0)
-  const paragraphs = isEmpty ? 0 : paragraphParts.length
+  const paragraphParts = text
+    .split(/\n\s*\n/)
+    .filter((p) => p.trim().length > 0);
+  const paragraphs = isEmpty ? 0 : paragraphParts.length;
 
   return {
     characters: text.length,
@@ -46,7 +45,7 @@ function computeCharacterStats(text: string): CharacterStats {
     lines,
     paragraphs,
     bytes: new TextEncoder().encode(text).length,
-  }
+  };
 }
 
 function StatCard({ value, label }: StatCardProps) {
@@ -55,7 +54,7 @@ function StatCard({ value, label }: StatCardProps) {
       <span className="text-2xl font-bold tabular-nums">{value}</span>
       <span className="text-muted-foreground text-xs">{label}</span>
     </div>
-  )
+  );
 }
 
 const STAT_CARDS: { key: keyof CharacterStats; label: string }[] = [
@@ -66,12 +65,12 @@ const STAT_CARDS: { key: keyof CharacterStats; label: string }[] = [
   { key: "lines", label: "Lines" },
   { key: "paragraphs", label: "Paragraphs" },
   { key: "bytes", label: "Bytes (UTF-8)" },
-]
+];
 
 export default function CharacterCounterPage() {
-  const [text, setText] = useState("")
+  const [text, setText] = useState("");
 
-  const stats = useMemo(() => computeCharacterStats(text), [text])
+  const stats = useMemo(() => computeCharacterStats(text), [text]);
 
   return (
     <div>
@@ -101,5 +100,5 @@ export default function CharacterCounterPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }

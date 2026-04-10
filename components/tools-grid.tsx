@@ -1,5 +1,5 @@
-import { ToolCardStatic } from "@/components/tool-card-static"
-import { visibleTools } from "@/lib/tools"
+import { ToolCardStatic } from "@/components/tool-card-static";
+import { visibleTools } from "@/lib/tools";
 
 /**
  * Server-rendered tool grid. Always present in the initial HTML so
@@ -8,12 +8,15 @@ import { visibleTools } from "@/lib/tools"
  */
 export function ToolsGrid() {
   return (
-    <section id="static-tools-grid" className="mx-auto max-w-5xl px-6 pt-8 pb-24">
+    <section
+      id="static-tools-grid"
+      className="mx-auto max-w-5xl px-6 pt-8 pb-24"
+    >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visibleTools.map((tool) => (
           <ToolCardStatic key={tool.href} tool={tool} />
         ))}
       </div>
     </section>
-  )
+  );
 }

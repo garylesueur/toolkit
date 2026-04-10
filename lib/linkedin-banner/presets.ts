@@ -1,4 +1,4 @@
-import type { GradientPreset } from "./types"
+import type { GradientPreset } from "./types";
 
 export const GRADIENT_PRESETS: GradientPreset[] = [
   {
@@ -43,6 +43,6 @@ export const GRADIENT_PRESETS: GradientPreset[] = [
     angle: 135,
     type: "linear",
   },
-]
+];
 
-export const DEFAULT_PRESET = GRADIENT_PRESETS[0]
+export const DEFAULT_PRESET = GRADIENT_PRESETS[0];

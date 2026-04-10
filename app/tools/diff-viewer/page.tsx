@@ -1,22 +1,27 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { diffLines, diffWords } from "diff"
-import type { Change } from "diff"
+import { diffLines, diffWords } from "diff";
+import type { Change } from "diff";
+import { useState, useMemo } from "react";
 
-type DiffMode = "lines" | "words"
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
-function computeDiff(original: string, modified: string, mode: DiffMode): Change[] {
-  if (!original && !modified) return []
-  if (mode === "words") return diffWords(original, modified)
-  return diffLines(original, modified)
+type DiffMode = "lines" | "words";
+
+function computeDiff(
+  original: string,
+  modified: string,
+  mode: DiffMode,
+): Change[] {
+  if (!original && !modified) return [];
+  if (mode === "words") return diffWords(original, modified);
+  return diffLines(original, modified);
 }
 
 interface DiffOutputProps {
-  changes: Change[]
+  changes: Change[];
 }
 
 function DiffOutput({ changes }: DiffOutputProps) {
@@ -25,7 +30,7 @@ function DiffOutput({ changes }: DiffOutputProps) {
       <p className="text-muted-foreground text-sm">
         Enter text in both fields to see the diff.
       </p>
-    )
+    );
   }
 
   return (
@@ -33,43 +38,49 @@ function DiffOutput({ changes }: DiffOutputProps) {
       {changes.map((change, idx) => {
         if (change.added) {
           return (
-            <span key={idx} className="bg-green-500/20 text-green-700 dark:text-green-400">
+            <span
+              key={idx}
+              className="bg-green-500/20 text-green-700 dark:text-green-400"
+            >
               {change.value}
             </span>
-          )
+          );
         }
         if (change.removed) {
           return (
-            <span key={idx} className="bg-red-500/20 text-red-700 line-through dark:text-red-400">
+            <span
+              key={idx}
+              className="bg-red-500/20 text-red-700 line-through dark:text-red-400"
+            >
               {change.value}
             </span>
-          )
+          );
         }
-        return <span key={idx}>{change.value}</span>
+        return <span key={idx}>{change.value}</span>;
       })}
     </pre>
-  )
+  );
 }
 
 export default function DiffViewerPage() {
-  const [original, setOriginal] = useState("")
-  const [modified, setModified] = useState("")
-  const [mode, setMode] = useState<DiffMode>("lines")
+  const [original, setOriginal] = useState("");
+  const [modified, setModified] = useState("");
+  const [mode, setMode] = useState<DiffMode>("lines");
 
   const changes = useMemo(
     () => computeDiff(original, modified, mode),
     [original, modified, mode],
-  )
+  );
 
   const stats = useMemo(() => {
-    let additions = 0
-    let deletions = 0
+    let additions = 0;
+    let deletions = 0;
     for (const change of changes) {
-      if (change.added) additions++
-      if (change.removed) deletions++
+      if (change.added) additions++;
+      if (change.removed) deletions++;
     }
-    return { additions, deletions }
-  }, [changes])
+    return { additions, deletions };
+  }, [changes]);
 
   return (
     <div>
@@ -137,5 +148,5 @@ export default function DiffViewerPage() {
         <DiffOutput changes={changes} />
       </div>
     </div>
-  )
+  );
 }

@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
+import { useState, useMemo } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 const LABELS: Record<number, string> = {
   0: "NUL",
@@ -21,27 +22,27 @@ const LABELS: Record<number, string> = {
   8204: "ZWNJ",
   8205: "ZWJ",
   65279: "BOM",
-}
+};
 
 function isNonPrintable(code: number): boolean {
-  return code <= 32 || code === 127 || code === 160 || code in LABELS
+  return code <= 32 || code === 127 || code === 160 || code in LABELS;
 }
 
 function formatCode(code: number, hex: boolean): string {
-  return hex ? `0x${code.toString(16).toUpperCase()}` : String(code)
+  return hex ? `0x${code.toString(16).toUpperCase()}` : String(code);
 }
 
 export default function AsciiCharCodesPage() {
-  const [input, setInput] = useState("")
-  const [hex, setHex] = useState(false)
+  const [input, setInput] = useState("");
+  const [hex, setHex] = useState(false);
 
   const chars = useMemo(() => {
     return Array.from(input).map((char) => {
-      const code = char.codePointAt(0)!
-      const label = LABELS[code]
-      return { char, code, label }
-    })
-  }, [input])
+      const code = char.codePointAt(0)!;
+      const label = LABELS[code];
+      return { char, code, label };
+    });
+  }, [input]);
 
   return (
     <div>
@@ -86,9 +87,7 @@ export default function AsciiCharCodesPage() {
               <div
                 key={i}
                 className={`flex flex-col items-center px-1.5 py-1 ${
-                  isNonPrintable(c.code)
-                    ? "rounded bg-destructive/10"
-                    : ""
+                  isNonPrintable(c.code) ? "rounded bg-destructive/10" : ""
                 }`}
               >
                 <span className="text-base leading-tight">
@@ -103,5 +102,5 @@ export default function AsciiCharCodesPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -1,78 +1,88 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useRef } from "react"
-import { usePdfDocument } from "@/hooks/use-pdf-document"
-import { rearrangePdfPages } from "@/lib/pdf/rearrange"
-import { downloadPdf } from "@/lib/pdf/download"
-import { PdfDropZone } from "@/components/pdf/pdf-drop-zone"
-import { PageThumbnail } from "@/components/pdf/page-thumbnail"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   RiDownload2Line,
   RiLoader4Line,
   RiDeleteBin6Line,
   RiArrowGoBackLine,
-} from "@remixicon/react"
+} from "@remixicon/react";
+import { useState, useCallback, useRef } from "react";
+
+import { PageThumbnail } from "@/components/pdf/page-thumbnail";
+import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { usePdfDocument } from "@/hooks/use-pdf-document";
+import { downloadPdf } from "@/lib/pdf/download";
+import { rearrangePdfPages } from "@/lib/pdf/rearrange";
 
 export default function RearrangePdfPage() {
-  const { pdfBytes, pageCount, thumbnails, fileName, loading, error, loadFile, reset } =
-    usePdfDocument()
-  const [order, setOrder] = useState<number[]>([])
-  const [saving, setSaving] = useState(false)
-  const dragIndexRef = useRef<number | null>(null)
+  const {
+    pdfBytes,
+    pageCount,
+    thumbnails,
+    fileName,
+    loading,
+    error,
+    loadFile,
+    reset,
+  } = usePdfDocument();
+  const [order, setOrder] = useState<number[]>([]);
+  const [saving, setSaving] = useState(false);
+  const dragIndexRef = useRef<number | null>(null);
 
   // Initialize order when thumbnails load
   const handleLoad = useCallback(
     async (files: File[]) => {
-      await loadFile(files[0])
+      await loadFile(files[0]);
     },
     [loadFile],
-  )
+  );
 
   // Set initial order when page count changes
   const effectiveOrder =
-    order.length === pageCount ? order : Array.from({ length: pageCount }, (_, i) => i)
+    order.length === pageCount
+      ? order
+      : Array.from({ length: pageCount }, (_, i) => i);
 
   const handleDragStart = useCallback((_e: React.DragEvent, index: number) => {
-    dragIndexRef.current = index
-  }, [])
+    dragIndexRef.current = index;
+  }, []);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-  }, [])
+    e.preventDefault();
+  }, []);
 
   const handleDrop = useCallback(
     (_e: React.DragEvent, dropIndex: number) => {
-      const dragIndex = dragIndexRef.current
-      if (dragIndex === null || dragIndex === dropIndex) return
+      const dragIndex = dragIndexRef.current;
+      if (dragIndex === null || dragIndex === dropIndex) return;
 
       setOrder(() => {
-        const next = [...effectiveOrder]
-        const [dragged] = next.splice(dragIndex, 1)
-        next.splice(dropIndex, 0, dragged)
-        return next
-      })
-      dragIndexRef.current = null
+        const next = [...effectiveOrder];
+        const [dragged] = next.splice(dragIndex, 1);
+        next.splice(dropIndex, 0, dragged);
+        return next;
+      });
+      dragIndexRef.current = null;
     },
     [effectiveOrder],
-  )
+  );
 
   const handleSave = useCallback(async () => {
-    if (!pdfBytes) return
-    setSaving(true)
+    if (!pdfBytes) return;
+    setSaving(true);
     try {
-      const result = await rearrangePdfPages(pdfBytes, effectiveOrder)
-      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "")
-      await downloadPdf(result, `${baseName}-rearranged.pdf`)
+      const result = await rearrangePdfPages(pdfBytes, effectiveOrder);
+      const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
+      await downloadPdf(result, `${baseName}-rearranged.pdf`);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [pdfBytes, effectiveOrder, fileName])
+  }, [pdfBytes, effectiveOrder, fileName]);
 
   const isReordered =
-    effectiveOrder.length > 0 &&
-    effectiveOrder.some((v, i) => v !== i)
+    effectiveOrder.length > 0 && effectiveOrder.some((v, i) => v !== i);
 
   return (
     <div>
@@ -100,7 +110,9 @@ export default function RearrangePdfPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setOrder(Array.from({ length: pageCount }, (_, i) => i))}
+              onClick={() =>
+                setOrder(Array.from({ length: pageCount }, (_, i) => i))
+              }
               disabled={!isReordered}
             >
               <RiArrowGoBackLine data-icon="inline-start" />
@@ -110,8 +122,8 @@ export default function RearrangePdfPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                reset()
-                setOrder([])
+                reset();
+                setOrder([]);
               }}
             >
               <RiDeleteBin6Line data-icon="inline-start" />
@@ -151,5 +163,5 @@ export default function RearrangePdfPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

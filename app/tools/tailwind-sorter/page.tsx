@@ -1,28 +1,29 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
-import { sortTailwindClasses } from "@/lib/tailwind-sorter/sort"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { useState, useCallback, useMemo } from "react";
 
-const COPY_RESET_MS = 2000
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { sortTailwindClasses } from "@/lib/tailwind-sorter/sort";
+
+const COPY_RESET_MS = 2000;
 
 const EXAMPLE_INPUT =
-  "text-white p-4 flex hover:bg-blue-600 items-center bg-blue-500 rounded-lg shadow-md font-bold text-lg mb-4 justify-between w-full"
+  "text-white p-4 flex hover:bg-blue-600 items-center bg-blue-500 rounded-lg shadow-md font-bold text-lg mb-4 justify-between w-full";
 
 export default function TailwindSorterPage() {
-  const [input, setInput] = useState(EXAMPLE_INPUT)
-  const [copied, setCopied] = useState(false)
+  const [input, setInput] = useState(EXAMPLE_INPUT);
+  const [copied, setCopied] = useState(false);
 
-  const sorted = useMemo(() => sortTailwindClasses(input), [input])
+  const sorted = useMemo(() => sortTailwindClasses(input), [input]);
 
   const handleCopy = useCallback(async () => {
-    if (!sorted) return
-    await navigator.clipboard.writeText(sorted)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_RESET_MS)
-  }, [sorted])
+    if (!sorted) return;
+    await navigator.clipboard.writeText(sorted);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
+  }, [sorted]);
 
   return (
     <div>
@@ -49,10 +50,7 @@ export default function TailwindSorterPage() {
         </div>
 
         <div>
-          <label
-            htmlFor="tw-output"
-            className="mb-2 block text-sm font-medium"
-          >
+          <label htmlFor="tw-output" className="mb-2 block text-sm font-medium">
             Sorted output
           </label>
           <Textarea
@@ -79,5 +77,5 @@ export default function TailwindSorterPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

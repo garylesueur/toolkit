@@ -4,8 +4,9 @@
  * Produces human-readable summaries from raw browser API values.
  */
 
-import Bowser from "bowser"
-import type { BrowserInfo, DecodedSummary, GpuInfo } from "./types"
+import Bowser from "bowser";
+
+import type { BrowserInfo, DecodedSummary, GpuInfo } from "./types";
 
 /** macOS version to codename mapping (major version). */
 const MACOS_VERSION_NAMES: Record<string, string> = {
@@ -18,7 +19,7 @@ const MACOS_VERSION_NAMES: Record<string, string> = {
   "14": "Sonoma",
   "15": "Sequoia",
   "16": "Tahoe",
-}
+};
 
 /** High-entropy hint names to request from getHighEntropyValues(). */
 const HIGH_ENTROPY_HINTS = [
@@ -26,22 +27,22 @@ const HIGH_ENTROPY_HINTS = [
   "architecture",
   "bitness",
   "fullVersionList",
-] as const
+] as const;
 
 /**
  * Merged Client Hints type: low-entropy (sync) + high-entropy (async).
  * Bowser expects this shape.
  */
 interface MergedClientHints {
-  brands?: Array<{ brand: string; version: string }>
-  mobile?: boolean
-  platform?: string
-  platformVersion?: string
-  architecture?: string
-  bitness?: string
-  fullVersionList?: Array<{ brand: string; version: string }>
-  model?: string
-  wow64?: boolean
+  brands?: Array<{ brand: string; version: string }>;
+  mobile?: boolean;
+  platform?: string;
+  platformVersion?: string;
+  architecture?: string;
+  bitness?: string;
+  fullVersionList?: Array<{ brand: string; version: string }>;
+  model?: string;
+  wow64?: boolean;
 }
 
 /**
@@ -52,32 +53,32 @@ interface MergedClientHints {
 /** Navigator with User-Agent Client Hints (Chromium). */
 interface NavigatorWithUAData extends Navigator {
   userAgentData?: {
-    brands?: Array<{ brand: string; version: string }>
-    mobile?: boolean
-    platform?: string
-    getHighEntropyValues?: (hints: string[]) => Promise<MergedClientHints>
-  }
+    brands?: Array<{ brand: string; version: string }>;
+    mobile?: boolean;
+    platform?: string;
+    getHighEntropyValues?: (hints: string[]) => Promise<MergedClientHints>;
+  };
 }
 
 async function fetchHighEntropyHints(): Promise<MergedClientHints | null> {
-  if (typeof navigator === "undefined") return null
+  if (typeof navigator === "undefined") return null;
 
-  const uaData = (navigator as NavigatorWithUAData).userAgentData
+  const uaData = (navigator as NavigatorWithUAData).userAgentData;
   if (!uaData || typeof uaData.getHighEntropyValues !== "function") {
-    return null
+    return null;
   }
 
   try {
-    const high = await uaData.getHighEntropyValues([...HIGH_ENTROPY_HINTS])
+    const high = await uaData.getHighEntropyValues([...HIGH_ENTROPY_HINTS]);
     const merged: MergedClientHints = {
       brands: uaData.brands ?? undefined,
       mobile: uaData.mobile ?? undefined,
       platform: uaData.platform ?? undefined,
       ...high,
-    }
-    return merged
+    };
+    return merged;
   } catch {
-    return null
+    return null;
   }
 }
 
@@ -87,106 +88,111 @@ async function fetchHighEntropyHints(): Promise<MergedClientHints | null> {
  * Heuristic: "Apple" vendor + "Apple M1" (or M2, M3, etc.) in renderer, but not "Apple GPU" (Intel).
  */
 function detectAppleSiliconFromGpu(gpu: GpuInfo | null): boolean | null {
-  if (!gpu?.renderer) return null
+  if (!gpu?.renderer) return null;
 
-  const renderer = gpu.renderer
-  const vendor = gpu.vendor ?? ""
+  const renderer = gpu.renderer;
+  const vendor = gpu.vendor ?? "";
 
   // Apple Silicon: renderer contains "Apple M1", "Apple M2", "Apple M3", "Apple M4", etc.
-  if (/Apple M\d+/i.test(renderer)) return true
+  if (/Apple M\d+/i.test(renderer)) return true;
 
   // Apple GPU without M-series = Intel Mac integrated graphics
-  if (/Apple/i.test(vendor) && /Apple GPU/i.test(renderer)) return false
+  if (/Apple/i.test(vendor) && /Apple GPU/i.test(renderer)) return false;
 
   // ANGLE on macOS reports "ANGLE (Apple, Apple M1, ...)" for Apple Silicon
-  if (/ANGLE\s*\([^)]*Apple\s+M\d+/i.test(renderer)) return true
+  if (/ANGLE\s*\([^)]*Apple\s+M\d+/i.test(renderer)) return true;
 
   // Fallback: Apple vendor + renderer mentions Apple but not "Intel"
-  if (/Apple/i.test(vendor) && !/Intel/i.test(renderer) && /Apple/i.test(renderer)) {
+  if (
+    /Apple/i.test(vendor) &&
+    !/Intel/i.test(renderer) &&
+    /Apple/i.test(renderer)
+  ) {
     // Could be Apple Silicon or older Intel; prefer Apple Silicon on modern Macs
-    return null
+    return null;
   }
 
-  return null
+  return null;
 }
 
 /**
  * Maps a macOS version string to its codename (e.g. "15.3" -> "Sequoia").
  */
-function getMacOSVersionName(version: string | null | undefined): string | null {
-  if (!version || typeof version !== "string") return null
+function getMacOSVersionName(
+  version: string | null | undefined,
+): string | null {
+  if (!version || typeof version !== "string") return null;
 
-  const trimmed = version.trim()
-  const major = trimmed.split(".")[0]
-  if (!major) return null
+  const trimmed = version.trim();
+  const major = trimmed.split(".")[0];
+  if (!major) return null;
 
-  return MACOS_VERSION_NAMES[major] ?? null
+  return MACOS_VERSION_NAMES[major] ?? null;
 }
 
 /**
  * Extracts a short GPU chip description from the WebGL renderer string.
  * e.g. "ANGLE (Apple, Apple M1, OpenGL 4.1)" -> "Apple M1"
  */
-function extractGpuChipName(renderer: string | null | undefined): string | null {
-  if (!renderer) return null
+function extractGpuChipName(
+  renderer: string | null | undefined,
+): string | null {
+  if (!renderer) return null;
 
-  const appleMatch = renderer.match(/Apple M(\d+)/i)
-  if (appleMatch) return `Apple M${appleMatch[1]}`
+  const appleMatch = renderer.match(/Apple M(\d+)/i);
+  if (appleMatch) return `Apple M${appleMatch[1]}`;
 
-  const amdMatch = renderer.match(/(?:AMD|Radeon)\s+([^(]+)/i)
-  if (amdMatch) return amdMatch[1].trim() || null
+  const amdMatch = renderer.match(/(?:AMD|Radeon)\s+([^(]+)/i);
+  if (amdMatch) return amdMatch[1].trim() || null;
 
-  const nvidiaMatch = renderer.match(/(?:NVIDIA|GeForce)\s+([^(]+)/i)
-  if (nvidiaMatch) return nvidiaMatch[1].trim() || null
+  const nvidiaMatch = renderer.match(/(?:NVIDIA|GeForce)\s+([^(]+)/i);
+  if (nvidiaMatch) return nvidiaMatch[1].trim() || null;
 
-  const intelMatch = renderer.match(/Intel[^\s]*\s+([^(]+)/i)
-  if (intelMatch) return intelMatch[1].trim() || null
+  const intelMatch = renderer.match(/Intel[^\s]*\s+([^(]+)/i);
+  if (intelMatch) return intelMatch[1].trim() || null;
 
-  return null
+  return null;
 }
 
 /**
  * Returns a note about device memory when the browser caps it (e.g. at 8GB).
  */
 function getDeviceMemoryNote(
-  deviceMemory: number | null | undefined
+  deviceMemory: number | null | undefined,
 ): string | null {
-  if (deviceMemory === null || deviceMemory === undefined) return null
+  if (deviceMemory === null || deviceMemory === undefined) return null;
 
   // Browsers cap deviceMemory at 8; actual RAM may be higher
   if (deviceMemory >= 8) {
-    return "Browser-reported maximum; actual RAM may be higher"
+    return "Browser-reported maximum; actual RAM may be higher";
   }
 
-  return null
+  return null;
 }
 
 /**
  * Finds the first real browser brand in Client Hints, skipping "Not:A-Brand" placeholders.
  */
 function findRealBrand(
-  entries: Array<{ brand: string; version: string }> | undefined
+  entries: Array<{ brand: string; version: string }> | undefined,
 ): { brand: string; version: string } | null {
-  if (!entries || entries.length === 0) return null
+  if (!entries || entries.length === 0) return null;
   const entry = entries.find(
-    (e) =>
-      e?.brand &&
-      typeof e.brand === "string" &&
-      e.brand !== "Not:A-Brand"
-  )
-  return entry ?? null
+    (e) => e?.brand && typeof e.brand === "string" && e.brand !== "Not:A-Brand",
+  );
+  return entry ?? null;
 }
 
 /**
  * Normalises architecture string from Client Hints (x86, amd64, arm) to display form.
  */
 function normaliseArchitecture(arch: string | null | undefined): string | null {
-  if (!arch || typeof arch !== "string") return null
+  if (!arch || typeof arch !== "string") return null;
 
-  const lower = arch.toLowerCase()
-  if (lower === "x86" || lower === "amd64") return "x64"
-  if (lower === "arm") return "arm64"
-  return arch
+  const lower = arch.toLowerCase();
+  if (lower === "x86" || lower === "amd64") return "x64";
+  if (lower === "arm") return "arm64";
+  return arch;
 }
 
 /**
@@ -194,10 +200,10 @@ function normaliseArchitecture(arch: string | null | undefined): string | null {
  * Calls getHighEntropyValues() when available (Chromium); otherwise falls back to bowser + heuristics.
  */
 export async function decodeFromBrowserInfo(
-  info: BrowserInfo
+  info: BrowserInfo,
 ): Promise<DecodedSummary> {
-  const { browserIdentity, operatingSystem, hardware } = info
-  const ua = browserIdentity.userAgent
+  const { browserIdentity, operatingSystem, hardware } = info;
+  const ua = browserIdentity.userAgent;
 
   if (!ua || ua === "Not available") {
     return {
@@ -209,60 +215,58 @@ export async function decodeFromBrowserInfo(
       deviceMemoryNote: null,
       gpuChipName: null,
       clientHintsAvailable: false,
-    }
+    };
   }
 
-  const highEntropyHints = await fetchHighEntropyHints()
-  const clientHintsAvailable = highEntropyHints !== null
+  const highEntropyHints = await fetchHighEntropyHints();
+  const clientHintsAvailable = highEntropyHints !== null;
 
-  const clientHintsForBowser: MergedClientHints | null = highEntropyHints
+  const clientHintsForBowser: MergedClientHints | null = highEntropyHints;
 
-  const parser = Bowser.getParser(ua, false, clientHintsForBowser ?? undefined)
-  const bowserResult = parser.getResult()
+  const parser = Bowser.getParser(ua, false, clientHintsForBowser ?? undefined);
+  const bowserResult = parser.getResult();
 
-  const browser = bowserResult.browser ?? {}
-  const engine = bowserResult.engine ?? {}
-  const os = bowserResult.os ?? {}
-  const platform = bowserResult.platform ?? {}
+  const browser = bowserResult.browser ?? {};
+  const engine = bowserResult.engine ?? {};
+  const os = bowserResult.os ?? {};
+  const platform = bowserResult.platform ?? {};
 
-  let osVersion = os.version ?? operatingSystem.version
-  let osVersionName = os.versionName ?? null
+  let osVersion = os.version ?? operatingSystem.version;
+  let osVersionName = os.versionName ?? null;
 
   if (highEntropyHints?.platformVersion) {
-    osVersion = highEntropyHints.platformVersion
-    osVersionName = getMacOSVersionName(osVersion) ?? osVersionName
+    osVersion = highEntropyHints.platformVersion;
+    osVersionName = getMacOSVersionName(osVersion) ?? osVersionName;
   } else if (osVersion && os.name?.toLowerCase() === "macos") {
-    osVersionName = getMacOSVersionName(osVersion) ?? osVersionName
+    osVersionName = getMacOSVersionName(osVersion) ?? osVersionName;
   }
 
   const architecture = normaliseArchitecture(
-    highEntropyHints?.architecture ??
-      operatingSystem.architecture ??
-      undefined
-  )
+    highEntropyHints?.architecture ?? operatingSystem.architecture ?? undefined,
+  );
   const bitness = highEntropyHints?.bitness
     ? `${highEntropyHints.bitness}-bit`
-    : null
+    : null;
 
-  let appleSilicon: boolean | null = null
+  let appleSilicon: boolean | null = null;
   if (architecture === "arm64" && os.name?.toLowerCase() === "macos") {
-    appleSilicon = true
+    appleSilicon = true;
   } else if (architecture === "x64" && os.name?.toLowerCase() === "macos") {
-    appleSilicon = false
+    appleSilicon = false;
   } else {
-    appleSilicon = detectAppleSiliconFromGpu(hardware.gpu)
+    appleSilicon = detectAppleSiliconFromGpu(hardware.gpu);
   }
 
-  const deviceMemoryNote = getDeviceMemoryNote(hardware.deviceMemory)
-  const gpuChipName = extractGpuChipName(hardware.gpu?.renderer)
+  const deviceMemoryNote = getDeviceMemoryNote(hardware.deviceMemory);
+  const gpuChipName = extractGpuChipName(hardware.gpu?.renderer);
 
   // Prioritize Client Hints brand information when available
   const realBrand =
     findRealBrand(highEntropyHints?.fullVersionList) ??
-    findRealBrand(highEntropyHints?.brands)
-  const browserName = realBrand?.brand ?? browser.name ?? null
-  const versionStr = realBrand?.version ?? browser.version ?? null
-  const major = versionStr ? versionStr.split(".")[0] ?? null : null
+    findRealBrand(highEntropyHints?.brands);
+  const browserName = realBrand?.brand ?? browser.name ?? null;
+  const versionStr = realBrand?.version ?? browser.version ?? null;
+  const major = versionStr ? (versionStr.split(".")[0] ?? null) : null;
 
   return {
     browser: {
@@ -292,5 +296,5 @@ export async function decodeFromBrowserInfo(
     deviceMemoryNote,
     gpuChipName,
     clientHintsAvailable,
-  }
+  };
 }

@@ -1,13 +1,14 @@
-"use client"
+"use client";
 
-import { useState, useMemo, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { RiFileCopyLine, RiCheckLine } from "@remixicon/react"
-import { marked } from "marked"
+import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { marked } from "marked";
+import { useState, useMemo, useCallback } from "react";
 
-const COPY_RESET_MS = 2000
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
+const COPY_RESET_MS = 2000;
 
 const SAMPLE_MARKDOWN = `# Hello, Markdown!
 
@@ -31,20 +32,20 @@ console.log(greeting);
 | Bold    | ✓      |
 | Italic  | ✓      |
 | Code    | ✓      |
-`
+`;
 
 export default function MarkdownPreviewPage() {
-  const [input, setInput] = useState(SAMPLE_MARKDOWN)
-  const [copied, setCopied] = useState(false)
+  const [input, setInput] = useState(SAMPLE_MARKDOWN);
+  const [copied, setCopied] = useState(false);
 
-  const html = useMemo(() => marked.parse(input) as string, [input])
+  const html = useMemo(() => marked.parse(input) as string, [input]);
 
   const handleCopy = useCallback(async () => {
-    if (!html) return
-    await navigator.clipboard.writeText(html)
-    setCopied(true)
-    setTimeout(() => setCopied(false), COPY_RESET_MS)
-  }, [html])
+    if (!html) return;
+    await navigator.clipboard.writeText(html);
+    setCopied(true);
+    setTimeout(() => setCopied(false), COPY_RESET_MS);
+  }, [html]);
 
   return (
     <div>
@@ -91,5 +92,5 @@ export default function MarkdownPreviewPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
