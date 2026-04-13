@@ -53,6 +53,7 @@ import {
   RiTableLine,
   RiTextBlock,
   RiTimeLine,
+  RiShape2Line,
 } from "@remixicon/react";
 
 export type Tool = {
@@ -454,6 +455,13 @@ export const tools: Tool[] = [
       "View, edit, or strip metadata (title, author, keywords) from a PDF.",
     href: "/tools/pdf-metadata",
     icon: RiFileInfoLine,
+  },
+  {
+    name: "Perspective Mockup",
+    description:
+      "Place an image onto any surface with 3D perspective. Map a second image onto a four-point quad for realistic composites.",
+    href: "/tools/perspective-mockup",
+    icon: RiShape2Line,
   },
 ];
 
