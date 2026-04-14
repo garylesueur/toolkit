@@ -6,13 +6,19 @@ import {
   RiRefreshLine,
   RiUploadCloud2Line,
 } from "@remixicon/react";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import type { Point2D, Quad } from "@/lib/perspective-mockup/types";
 import { renderPerspectiveImage } from "@/lib/perspective-mockup/transform";
+import type { Point2D, Quad } from "@/lib/perspective-mockup/types";
 import { cn } from "@/lib/utils";
 
 const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp"];
@@ -81,28 +87,26 @@ export default function PerspectiveMockupPage() {
   }, []);
 
   // Compute canvas display dimensions
-  const canvasW =
-    primary
-      ? Math.round(
-          primary.element.naturalWidth *
-            Math.min(
-              containerWidth / primary.element.naturalWidth,
-              MAX_CANVAS_HEIGHT / primary.element.naturalHeight,
-              1,
-            ),
-        )
-      : 0;
-  const canvasH =
-    primary
-      ? Math.round(
-          primary.element.naturalHeight *
-            Math.min(
-              containerWidth / primary.element.naturalWidth,
-              MAX_CANVAS_HEIGHT / primary.element.naturalHeight,
-              1,
-            ),
-        )
-      : 0;
+  const canvasW = primary
+    ? Math.round(
+        primary.element.naturalWidth *
+          Math.min(
+            containerWidth / primary.element.naturalWidth,
+            MAX_CANVAS_HEIGHT / primary.element.naturalHeight,
+            1,
+          ),
+      )
+    : 0;
+  const canvasH = primary
+    ? Math.round(
+        primary.element.naturalHeight *
+          Math.min(
+            containerWidth / primary.element.naturalWidth,
+            MAX_CANVAS_HEIGHT / primary.element.naturalHeight,
+            1,
+          ),
+      )
+    : 0;
 
   // --- Drawing ---
 
@@ -266,7 +270,10 @@ export default function PerspectiveMockupPage() {
   );
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>, target: "primary" | "secondary") => {
+    (
+      e: React.ChangeEvent<HTMLInputElement>,
+      target: "primary" | "secondary",
+    ) => {
       const file = e.target.files?.[0];
       if (file) handleFile(file, target);
       e.target.value = "";
@@ -326,7 +333,12 @@ export default function PerspectiveMockupPage() {
       y: c.y * ph,
     })) as Quad;
 
-    renderPerspectiveImage(ctx, secondary.element, fullCorners, EXPORT_SUBDIVISIONS);
+    renderPerspectiveImage(
+      ctx,
+      secondary.element,
+      fullCorners,
+      EXPORT_SUBDIVISIONS,
+    );
 
     offscreen.toBlob((blob) => {
       if (!blob) return;
@@ -346,8 +358,8 @@ export default function PerspectiveMockupPage() {
       <div>
         <h1 className="text-2xl font-bold">Perspective Mockup</h1>
         <p className="text-muted-foreground mt-1">
-          Place an image onto any surface with realistic 3D perspective. Upload a
-          background photo, then map a second image onto a four-point quad.
+          Place an image onto any surface with realistic 3D perspective. Upload
+          a background photo, then map a second image onto a four-point quad.
         </p>
         <PrivacyBanner>
           Your files are processed entirely in your browser. Nothing is stored,
@@ -474,10 +486,7 @@ export default function PerspectiveMockupPage() {
             ref={canvasRef}
             className="mx-auto block rounded-lg shadow-md"
             style={{
-              cursor:
-                dragging !== null
-                  ? "grabbing"
-                  : "crosshair",
+              cursor: dragging !== null ? "grabbing" : "crosshair",
               touchAction: "none",
             }}
             onPointerDown={(e) => handlePointerDown(e.clientX, e.clientY)}
@@ -494,10 +503,7 @@ export default function PerspectiveMockupPage() {
             <RiDownload2Line className="mr-1.5 size-4" />
             Download
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => setCorners(DEFAULT_CORNERS)}
-          >
+          <Button variant="outline" onClick={() => setCorners(DEFAULT_CORNERS)}>
             <RiRefreshLine className="mr-1.5 size-4" />
             Reset Points
           </Button>

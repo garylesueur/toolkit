@@ -80,8 +80,8 @@ export default function HashGeneratorPage() {
         Enter text to compute SHA-1, SHA-256, SHA-384, and SHA-512 hashes.
       </p>
       <PrivacyBanner>
-        Your data is hashed entirely in your browser. Nothing is stored,
-        logged, or sent to a server.
+        Your data is hashed entirely in your browser. Nothing is stored, logged,
+        or sent to a server.
       </PrivacyBanner>
 
       <div className="mt-8">

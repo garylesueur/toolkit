@@ -9,9 +9,9 @@ import { downloadZip } from "client-zip";
 import { useState, useCallback } from "react";
 
 import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid";
-import { PrivacyBanner } from "@/components/privacy-banner";
 import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
 import { parsePageRanges } from "@/components/pdf/pdf-page-range-input";
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

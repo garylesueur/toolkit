@@ -28,11 +28,7 @@ function emitChange(key: string) {
   }
 }
 
-function readStorage<T>(
-  key: string,
-  version: number,
-  defaultState: T,
-): T {
+function readStorage<T>(key: string, version: number, defaultState: T): T {
   if (typeof window === "undefined") return defaultState;
   try {
     const raw = localStorage.getItem(key);
@@ -67,10 +63,7 @@ export function usePersistedState<T>(
 ): [T, SetState<T>] {
   const defaultRef = useRef(defaultState);
 
-  const getSnapshot = useCallback(
-    () => localStorage.getItem(key) ?? "",
-    [key],
-  );
+  const getSnapshot = useCallback(() => localStorage.getItem(key) ?? "", [key]);
 
   const getServerSnapshot = useCallback(() => "", []);
 
@@ -112,9 +105,10 @@ export function usePersistedState<T>(
   const setState: SetState<T> = useCallback(
     (update) => {
       const current = readStorage(key, version, defaultRef.current);
-      const next = typeof update === "function"
-        ? (update as (prev: T) => T)(current)
-        : update;
+      const next =
+        typeof update === "function"
+          ? (update as (prev: T) => T)(current)
+          : update;
       writeStorage(key, version, next);
     },
     [key, version],

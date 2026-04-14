@@ -13,28 +13,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  COLOR_PRESETS,
-  FONT_OPTIONS,
-  TEXT_COLOR_SWATCHES,
-} from "@/lib/logo-generator/presets";
+import { usePersistedState } from "@/hooks/use-persisted-state";
 import {
   downloadIco,
   downloadPng,
   downloadSvg,
   downloadZipBundle,
 } from "@/lib/logo-generator/export";
-import {
-  generateLogoSvg,
-  generateIconLogoSvg,
-  googleFontUrl,
-} from "@/lib/logo-generator/svg";
 import { ICON_ENTRIES } from "@/lib/logo-generator/icons";
-import type {
-  ColorPreset,
-  FontOption,
-  GradientDirection,
-} from "@/lib/logo-generator/types";
+import {
+  COLOR_PRESETS,
+  FONT_OPTIONS,
+  TEXT_COLOR_SWATCHES,
+} from "@/lib/logo-generator/presets";
 import {
   DEFAULT_LOGO_SETTINGS,
   LOGO_STATE_VERSION,
@@ -42,7 +33,16 @@ import {
   resolvePreset,
 } from "@/lib/logo-generator/state";
 import type { LogoGeneratorSettings } from "@/lib/logo-generator/state";
-import { usePersistedState } from "@/hooks/use-persisted-state";
+import {
+  generateLogoSvg,
+  generateIconLogoSvg,
+  googleFontUrl,
+} from "@/lib/logo-generator/svg";
+import type {
+  ColorPreset,
+  FontOption,
+  GradientDirection,
+} from "@/lib/logo-generator/types";
 import { cn } from "@/lib/utils";
 
 const RADIUS_OPTIONS = [
@@ -165,7 +165,9 @@ export default function LogoGeneratorPage() {
     ? settings.letters
     : settings.iconName.toLowerCase();
 
-  const canExport = isLettersMode ? settings.letters.length > 0 : !!settings.iconName;
+  const canExport = isLettersMode
+    ? settings.letters.length > 0
+    : !!settings.iconName;
 
   const handleDownloadSvg = useCallback(() => {
     downloadSvg(svgString, exportPrefix);
@@ -401,9 +403,7 @@ export default function LogoGeneratorPage() {
                   min={PADDING_MIN}
                   max={PADDING_MAX}
                   value={settings.bottomPadding}
-                  onChange={(e) =>
-                    set("bottomPadding", Number(e.target.value))
-                  }
+                  onChange={(e) => set("bottomPadding", Number(e.target.value))}
                   className="accent-primary w-full"
                 />
               </div>
@@ -411,9 +411,7 @@ export default function LogoGeneratorPage() {
               {/* Horizontal position slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="horizontal-offset">
-                    Horizontal position
-                  </Label>
+                  <Label htmlFor="horizontal-offset">Horizontal position</Label>
                   <span className="text-muted-foreground text-sm">
                     {settings.horizontalOffset === 0
                       ? "centre"
@@ -586,7 +584,6 @@ export default function LogoGeneratorPage() {
                   </div>
                 )}
               </div>
-
             </>
           )}
 

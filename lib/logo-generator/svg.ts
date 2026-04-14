@@ -28,7 +28,12 @@ interface BackgroundColors {
 }
 
 interface BackgroundConfig {
-  preset: { color1: string; color2: string; direction: GradientDirection; mode: string };
+  preset: {
+    color1: string;
+    color2: string;
+    direction: GradientDirection;
+    mode: string;
+  };
   useCustomColors: boolean;
   customColor1: string;
   customColor2: string;
@@ -119,7 +124,8 @@ export function generateLogoSvg(config: LogoConfig): string {
 export function generateIconLogoSvg(config: IconLogoConfig): string {
   const { defs, rect } = renderBackground(config);
   const icon = resolveIcon(config.iconName);
-  const pathData = config.iconVariant === "fill" ? icon.fillPath : icon.linePath;
+  const pathData =
+    config.iconVariant === "fill" ? icon.fillPath : icon.linePath;
 
   // Scale the 24x24 icon to fit within the padded area
   const availableSize =

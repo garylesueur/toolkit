@@ -107,8 +107,8 @@ export default function QrCodeGeneratorPage() {
         Enter text or a URL to generate a QR code. Download as SVG or PNG.
       </p>
       <PrivacyBanner>
-        Your QR codes are generated entirely in your browser. Nothing is
-        stored, logged, or sent to a server.
+        Your QR codes are generated entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
       </PrivacyBanner>
 
       <div className="mt-8">
