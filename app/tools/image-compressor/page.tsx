@@ -10,6 +10,7 @@ import {
 } from "@remixicon/react";
 import { useState, useCallback, useEffect, useRef } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -254,6 +255,10 @@ export default function ImageCompressorPage() {
         Drop images to compress them instantly. Download individually or as a
         ZIP.
       </p>
+      <PrivacyBanner>
+        Your files are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       {/* Drop zone */}
       <div

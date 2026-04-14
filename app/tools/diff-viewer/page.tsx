@@ -4,6 +4,7 @@ import { diffLines, diffWords } from "diff";
 import type { Change } from "diff";
 import { useState, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -88,6 +89,10 @@ export default function DiffViewerPage() {
       <p className="text-muted-foreground mt-1">
         Compare two blocks of text and see additions and deletions highlighted.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">

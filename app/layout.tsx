@@ -41,6 +41,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
   },
+  manifest: "/site.webmanifest",
   robots: {
     index: true,
     follow: true,

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { analyseText, countHidden } from "@/lib/hidden-characters/detect";
@@ -49,6 +50,10 @@ export default function HiddenCharactersPage() {
       <p className="text-muted-foreground mt-1">
         Paste text to spot invisible and non-printing characters.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <label htmlFor="hidden-char-input" className="sr-only">

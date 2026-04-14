@@ -4,6 +4,7 @@ import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { marked } from "marked";
 import { useState, useMemo, useCallback } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -53,6 +54,10 @@ export default function MarkdownPreviewPage() {
       <p className="text-muted-foreground mt-1">
         Write Markdown and see a live rendered preview side by side.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-6 flex justify-end">
         <Button

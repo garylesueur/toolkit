@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useCallback } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -67,6 +68,10 @@ export default function UrlEncodeDecodePage() {
         Percent-encode text for use in URLs, or decode encoded strings back to
         readable text.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       {/* Direction toggle */}
       <div className="mt-8 inline-flex overflow-hidden rounded-md border border-border">

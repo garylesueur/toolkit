@@ -9,6 +9,7 @@ import {
 import { useState, useCallback, useEffect } from "react";
 
 import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,6 +105,10 @@ export default function PdfMetadataPage() {
         View and edit PDF metadata — title, author, subject, keywords — or strip
         it all.
       </p>
+      <PrivacyBanner>
+        Your PDFs are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <PdfDropZone onFiles={handleFiles} compact={!!file} />

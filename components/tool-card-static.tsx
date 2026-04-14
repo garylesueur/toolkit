@@ -1,7 +1,7 @@
 import { RiArrowRightLine } from "@remixicon/react";
 import Link from "next/link";
 
-import type { Tool } from "@/lib/tools";
+import { type Tool, isNewTool } from "@/lib/tools";
 
 type ToolCardStaticProps = {
   tool: Tool;
@@ -25,7 +25,14 @@ export function ToolCardStatic({ tool }: ToolCardStaticProps) {
           )}
         </div>
         <div className="flex flex-1 flex-col gap-1">
-          <h3 className="text-sm font-semibold">{tool.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold">{tool.name}</h3>
+            {isNewTool(tool) && (
+              <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none text-emerald-600 dark:text-emerald-500">
+                New
+              </span>
+            )}
+          </div>
           <p className="text-muted-foreground text-sm leading-relaxed">
             {tool.description}
           </p>

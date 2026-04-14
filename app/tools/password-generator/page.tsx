@@ -3,6 +3,7 @@
 import { RiRefreshLine, RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useCallback, useEffect, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -139,6 +140,10 @@ export default function PasswordGeneratorPage() {
         Generate a secure random password with configurable length and character
         sets.
       </p>
+      <PrivacyBanner>
+        Your passwords are generated entirely in your browser. Nothing is
+        stored, logged, or sent to a server.
+      </PrivacyBanner>
 
       {/* Generated password */}
       <div className="mt-8 flex items-center gap-3 rounded-lg border bg-card px-4 py-3">

@@ -4,10 +4,10 @@ import {
   RiRefreshLine,
   RiFileCopyLine,
   RiCheckLine,
-  RiShieldCheckLine,
 } from "@remixicon/react";
 import { useState, useCallback, useEffect } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -152,13 +152,10 @@ export default function SecretGeneratorPage() {
         encryption keys, and more.
       </p>
 
-      <div className="mt-3 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5">
-        <RiShieldCheckLine className="mt-0.5 size-4 shrink-0 text-primary" />
-        <p className="text-xs leading-relaxed text-primary">
-          Your secrets are generated entirely in your browser using the Web
-          Crypto API. Nothing is stored, logged, or sent to a server.
-        </p>
-      </div>
+      <PrivacyBanner>
+        Your secrets are generated entirely in your browser using the Web
+        Crypto API. Nothing is stored, logged, or sent to a server.
+      </PrivacyBanner>
 
       {/* Controls */}
       <div className="mt-8 flex flex-wrap items-end gap-4">

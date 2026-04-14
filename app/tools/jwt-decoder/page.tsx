@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useCallback, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -51,6 +52,10 @@ export default function JwtDecoderPage() {
       <p className="text-muted-foreground mt-1">
         Paste a JSON Web Token to decode its header and payload.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <label htmlFor="jwt-input" className="sr-only">

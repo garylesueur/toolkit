@@ -3,6 +3,7 @@
 import { RiDownload2Line } from "@remixicon/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -168,6 +169,10 @@ export default function LinkedInBannerPage() {
         The left portion is typically covered by your profile photo, so design
         accordingly.
       </p>
+      <PrivacyBanner>
+        Your files are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-2">
         {/* Left column - Controls */}

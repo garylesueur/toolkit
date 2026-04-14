@@ -3,6 +3,7 @@
 import { RiDownload2Line } from "@remixicon/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -105,6 +106,10 @@ export default function QrCodeGeneratorPage() {
       <p className="text-muted-foreground mt-1">
         Enter text or a URL to generate a QR code. Download as SVG or PNG.
       </p>
+      <PrivacyBanner>
+        Your QR codes are generated entirely in your browser. Nothing is
+        stored, logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <label htmlFor="qr-input" className="sr-only">

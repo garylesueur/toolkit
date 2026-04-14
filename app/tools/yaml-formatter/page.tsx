@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine, RiCloseLine } from "@remixicon/react";
 import { useState, useMemo, useCallback } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -69,6 +70,10 @@ export default function YamlFormatterPage() {
           Pretty-print YAML, validate syntax, or convert between YAML and JSON.
           Everything stays in your browser.
         </p>
+        <PrivacyBanner>
+          Your data is processed entirely in your browser. Nothing is stored,
+          logged, or sent to a server.
+        </PrivacyBanner>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">

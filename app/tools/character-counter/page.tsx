@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Textarea } from "@/components/ui/textarea";
 
 interface CharacterStats {
@@ -80,6 +81,10 @@ export default function CharacterCounterPage() {
       <p className="text-muted-foreground mt-1">
         Paste or type text to see live statistics.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <label htmlFor="character-counter-input" className="sr-only">

@@ -8,6 +8,7 @@ import {
 } from "@remixicon/react";
 import { useState, useRef, useCallback } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -189,6 +190,10 @@ export default function SvgConverterPage() {
         Drop an SVG file, pick an output size and format, and download a
         rasterised PNG or JPEG.
       </p>
+      <PrivacyBanner>
+        Your files are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       {/* Drop zone */}
       <div

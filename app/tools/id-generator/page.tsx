@@ -3,6 +3,7 @@
 import { RiRefreshLine, RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useEffect, useCallback } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { shortId } from "@/lib/shared/id";
@@ -115,6 +116,10 @@ export default function IdGeneratorPage() {
             Generate unique identifiers in various formats. Click any value to
             copy it.
           </p>
+          <PrivacyBanner>
+            Your IDs are generated entirely in your browser. Nothing is stored,
+            logged, or sent to a server.
+          </PrivacyBanner>
         </div>
         <Button variant="outline" onClick={regenerate}>
           <RiRefreshLine data-icon="inline-start" />

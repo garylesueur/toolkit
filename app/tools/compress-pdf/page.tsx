@@ -8,6 +8,7 @@ import {
 import { useState, useCallback } from "react";
 
 import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { compressPdf } from "@/lib/pdf/compress";
@@ -71,6 +72,10 @@ export default function CompressPdfPage() {
         Re-save your PDF to strip unused objects and reduce file size. Works
         best on PDFs that have been edited many times.
       </p>
+      <PrivacyBanner>
+        Your PDFs are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <PdfDropZone onFiles={handleFiles} compact={!!file} />
