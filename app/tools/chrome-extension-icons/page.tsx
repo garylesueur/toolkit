@@ -8,6 +8,7 @@ import {
 } from "@remixicon/react";
 import { useState, useRef, useCallback } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -164,6 +165,10 @@ export default function ChromeExtensionIconsPage() {
         extension needs. Non-square images are centred on a transparent
         background.
       </p>
+      <PrivacyBanner>
+        Your files are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       {/* Drop zone */}
       <div

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -123,6 +124,10 @@ export default function RegexTesterPage() {
         Test regular expressions with live match highlighting and capture
         groups.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8 space-y-4">
         <div className="space-y-2">

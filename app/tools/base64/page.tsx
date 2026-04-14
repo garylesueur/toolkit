@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useCallback, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -68,6 +69,10 @@ export default function Base64Page() {
       <p className="text-muted-foreground mt-1">
         Encode text to Base64 or decode Base64 back to text.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       {/* Direction toggle */}
       <div className="mt-8 flex gap-0 rounded-md border p-0.5">

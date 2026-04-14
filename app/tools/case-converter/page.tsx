@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 
 import { CopyableRow } from "@/components/copyable-row";
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Textarea } from "@/components/ui/textarea";
 
 const COPY_RESET_MS = 2000;
@@ -103,6 +104,10 @@ export default function CaseConverterPage() {
         Paste text and convert between camelCase, PascalCase, snake_case,
         kebab-case, and more.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8 space-y-2">
         <Textarea

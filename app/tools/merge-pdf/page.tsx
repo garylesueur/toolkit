@@ -11,6 +11,7 @@ import {
 import { useState, useCallback } from "react";
 
 import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { downloadPdf } from "@/lib/pdf/download";
@@ -72,6 +73,10 @@ export default function MergePdfPage() {
         Combine multiple PDFs into a single file. Drag to reorder before
         merging.
       </p>
+      <PrivacyBanner>
+        Your PDFs are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <PdfDropZone

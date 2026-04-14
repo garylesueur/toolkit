@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -53,6 +54,10 @@ export default function AsciiCharCodesPage() {
         Paste a string to see each character with its numeric code point
         underneath.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <label htmlFor="ascii-input" className="sr-only">

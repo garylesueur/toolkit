@@ -10,6 +10,7 @@ import {
 import { useState, useCallback } from "react";
 
 import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid";
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,10 @@ export default function ExtractPdfPagesPage() {
         Select the pages you want to keep and download a new PDF with just those
         pages.
       </p>
+      <PrivacyBanner>
+        Your PDFs are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <PdfDropZone

@@ -1,6 +1,7 @@
 import { RiArrowLeftLine } from "@remixicon/react";
 import Link from "next/link";
 
+import { RelatedTools } from "@/components/related-tools";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function ToolsLayout({
@@ -21,6 +22,7 @@ export default function ToolsLayout({
         <ThemeToggle />
       </nav>
       {children}
+      <RelatedTools />
     </div>
   );
 }

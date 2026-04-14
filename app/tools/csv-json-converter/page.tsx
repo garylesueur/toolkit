@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine, RiCloseLine } from "@remixicon/react";
 import { useState, useMemo, useCallback } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -95,6 +96,10 @@ export default function CsvJsonConverterPage() {
           expects an array of objects (with headers from keys) or an array of
           string arrays (rows).
         </p>
+        <PrivacyBanner>
+          Your data is processed entirely in your browser. Nothing is stored,
+          logged, or sent to a server.
+        </PrivacyBanner>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <div className="flex gap-0 rounded-md border p-0.5">

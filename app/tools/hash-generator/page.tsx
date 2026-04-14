@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useCallback, useEffect } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { computeAllHashes, HASH_ALGORITHMS } from "@/lib/hash/generate";
@@ -78,6 +79,10 @@ export default function HashGeneratorPage() {
       <p className="text-muted-foreground mt-1">
         Enter text to compute SHA-1, SHA-256, SHA-384, and SHA-512 hashes.
       </p>
+      <PrivacyBanner>
+        Your data is hashed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <label htmlFor="hash-input" className="sr-only">

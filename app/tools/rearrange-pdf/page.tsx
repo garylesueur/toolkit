@@ -9,6 +9,7 @@ import {
 import { useState, useCallback, useRef } from "react";
 
 import { PageThumbnail } from "@/components/pdf/page-thumbnail";
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,10 @@ export default function RearrangePdfPage() {
       <p className="text-muted-foreground mt-1">
         Drag and drop pages to reorder them, then download the result.
       </p>
+      <PrivacyBanner>
+        Your PDFs are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <PdfDropZone onFiles={handleLoad} compact={!!pdfBytes} />

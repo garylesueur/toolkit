@@ -8,6 +8,7 @@ import {
 } from "@remixicon/react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { Point2D, Quad } from "@/lib/perspective-mockup/types";
@@ -348,6 +349,10 @@ export default function PerspectiveMockupPage() {
           Place an image onto any surface with realistic 3D perspective. Upload a
           background photo, then map a second image onto a four-point quad.
         </p>
+        <PrivacyBanner>
+          Your files are processed entirely in your browser. Nothing is stored,
+          logged, or sent to a server.
+        </PrivacyBanner>
       </div>
 
       {/* Upload zones */}

@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useCallback, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -85,6 +86,10 @@ export default function EpochBatchConverterPage() {
         Paste text containing Unix timestamps and see them converted to
         human-readable dates inline.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8 space-y-4">
         <Textarea

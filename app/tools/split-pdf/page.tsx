@@ -9,6 +9,7 @@ import { downloadZip } from "client-zip";
 import { useState, useCallback } from "react";
 
 import { PageThumbnailGrid } from "@/components/pdf/page-thumbnail-grid";
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
 import { parsePageRanges } from "@/components/pdf/pdf-page-range-input";
 import { Badge } from "@/components/ui/badge";
@@ -104,6 +105,10 @@ export default function SplitPdfPage() {
       <p className="text-muted-foreground mt-1">
         Split a PDF into individual pages or custom ranges. Downloads as a ZIP.
       </p>
+      <PrivacyBanner>
+        Your PDFs are processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8">
         <PdfDropZone

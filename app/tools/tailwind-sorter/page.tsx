@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useCallback, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { sortTailwindClasses } from "@/lib/tailwind-sorter/sort";
@@ -34,6 +35,10 @@ export default function TailwindSorterPage() {
         Paste a className string and get it back sorted in the recommended
         Tailwind order.
       </p>
+      <PrivacyBanner>
+        Your data is processed entirely in your browser. Nothing is stored,
+        logged, or sent to a server.
+      </PrivacyBanner>
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         <div>

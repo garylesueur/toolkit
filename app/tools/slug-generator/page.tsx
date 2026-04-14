@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useCallback, useMemo } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -101,6 +102,10 @@ export default function SlugGeneratorPage() {
         <p className="text-muted-foreground mt-1">
           Paste a title or sentence to generate a URL-friendly slug.
         </p>
+        <PrivacyBanner>
+          Your data is processed entirely in your browser. Nothing is stored,
+          logged, or sent to a server.
+        </PrivacyBanner>
       </div>
 
       <section className="space-y-4">

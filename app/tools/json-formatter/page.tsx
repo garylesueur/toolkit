@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine, RiCloseLine } from "@remixicon/react";
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -81,6 +82,10 @@ export default function JsonFormatterPage() {
         <p className="text-muted-foreground mt-1">
           Paste JSON to pretty-print and validate it.
         </p>
+        <PrivacyBanner>
+          Your data is processed entirely in your browser. Nothing is stored,
+          logged, or sent to a server.
+        </PrivacyBanner>
 
         {/* Tab bar with actions */}
         <div className="mt-8 flex items-center gap-2">
