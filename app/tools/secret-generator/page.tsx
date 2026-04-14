@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  RiRefreshLine,
-  RiFileCopyLine,
-  RiCheckLine,
-} from "@remixicon/react";
+import { RiRefreshLine, RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { useState, useCallback, useEffect } from "react";
 
 import { PrivacyBanner } from "@/components/privacy-banner";
@@ -153,8 +149,8 @@ export default function SecretGeneratorPage() {
       </p>
 
       <PrivacyBanner>
-        Your secrets are generated entirely in your browser using the Web
-        Crypto API. Nothing is stored, logged, or sent to a server.
+        Your secrets are generated entirely in your browser using the Web Crypto
+        API. Nothing is stored, logged, or sent to a server.
       </PrivacyBanner>
 
       {/* Controls */}

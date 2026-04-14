@@ -167,7 +167,10 @@ const CURATED_ICONS: { name: string; keywords: string[] }[] = [
   { name: "ArrowRightUp", keywords: ["direction", "pointer", "arrow"] },
   { name: "Sparkling", keywords: ["magic", "ai", "sparkle", "star"] },
   { name: "Magic", keywords: ["wand", "ai", "auto"] },
-  { name: "LightbulbFlash", keywords: ["bolt", "fast", "power", "electric", "lightning", "idea"] },
+  {
+    name: "LightbulbFlash",
+    keywords: ["bolt", "fast", "power", "electric", "lightning", "idea"],
+  },
   { name: "Recycle", keywords: ["refresh", "reuse", "green"] },
   { name: "Infinity", keywords: ["loop", "forever", "unlimited"] },
 
@@ -196,7 +199,10 @@ const CURATED_ICONS: { name: string; keywords: string[] }[] = [
   { name: "Ghost", keywords: ["spooky", "halloween", "spirit"] },
   { name: "Skull", keywords: ["danger", "death", "pirate"] },
   { name: "Vip", keywords: ["premium", "exclusive", "special"] },
-  { name: "VipCrown", keywords: ["king", "queen", "royal", "premium", "crown"] },
+  {
+    name: "VipCrown",
+    keywords: ["king", "queen", "royal", "premium", "crown"],
+  },
   { name: "Gift", keywords: ["present", "reward", "surprise"] },
   { name: "Clapperboard", keywords: ["movie", "film", "action"] },
   { name: "Anchor", keywords: ["link", "marine", "stable"] },
@@ -213,7 +219,14 @@ const UNIQUE_ICONS = CURATED_ICONS.filter((icon) => {
 });
 
 function extractPath(
-  mod: Record<string, (props: Record<string, unknown>) => { props: { children: { props: { d: string } } | Array<{ props: { d: string } }> } }>,
+  mod: Record<
+    string,
+    (props: Record<string, unknown>) => {
+      props: {
+        children: { props: { d: string } } | Array<{ props: { d: string } }>;
+      };
+    }
+  >,
   componentName: string,
 ): string | null {
   const Component = mod[componentName];

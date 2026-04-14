@@ -93,8 +93,7 @@ function drawTexturedTriangle(
   dx2: number,
   dy2: number,
 ): void {
-  const det =
-    sx0 * (sy1 - sy2) - sy0 * (sx1 - sx2) + (sx1 * sy2 - sx2 * sy1);
+  const det = sx0 * (sy1 - sy2) - sy0 * (sx1 - sx2) + (sx1 * sy2 - sx2 * sy1);
   if (Math.abs(det) < 1e-10) return;
 
   ctx.save();
@@ -169,14 +168,34 @@ export function renderPerspectiveImage(
       drawTexturedTriangle(
         ctx,
         srcImage,
-        u0, v0, u1, v0, u0, v1,
-        d00.x, d00.y, d10.x, d10.y, d01.x, d01.y,
+        u0,
+        v0,
+        u1,
+        v0,
+        u0,
+        v1,
+        d00.x,
+        d00.y,
+        d10.x,
+        d10.y,
+        d01.x,
+        d01.y,
       );
       drawTexturedTriangle(
         ctx,
         srcImage,
-        u1, v0, u1, v1, u0, v1,
-        d10.x, d10.y, d11.x, d11.y, d01.x, d01.y,
+        u1,
+        v0,
+        u1,
+        v1,
+        u0,
+        v1,
+        d10.x,
+        d10.y,
+        d11.x,
+        d11.y,
+        d01.x,
+        d01.y,
       );
     }
   }

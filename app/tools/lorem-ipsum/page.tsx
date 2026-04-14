@@ -133,7 +133,7 @@ function generateLorem(
   // paragraphs: 4–6 sentences each, first paragraph starts with Lorem ipsum
   const result: string[] = [];
   let sentenceIndex = 0;
-  const shuffledRest = shuffle([...sentences.slice(1)]);
+  const shuffledRest = shuffle(sentences.slice(1));
 
   for (let p = 0; p < count; p++) {
     const sentencesInPara = 4 + Math.floor(Math.random() * 3); // 4, 5, or 6

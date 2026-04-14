@@ -138,10 +138,7 @@ function png(
 // Platform folder builders
 // ---------------------------------------------------------------------------
 
-function faviconFiles(
-  cache: Map<number, Blob>,
-  icoBlob: Blob,
-): ZipEntry[] {
+function faviconFiles(cache: Map<number, Blob>, icoBlob: Blob): ZipEntry[] {
   return [
     { name: "favicon/favicon.ico", input: icoBlob },
     png(cache, "favicon", 16, "favicon-16x16.png"),
@@ -173,10 +170,30 @@ function pwaFiles(cache: Map<number, Blob>): ZipEntry[] {
       name: "",
       short_name: "",
       icons: [
-        { src: "/icon-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
-        { src: "/icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-        { src: "/icon-192x192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
-        { src: "/icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        {
+          src: "/icon-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "/icon-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "/icon-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "maskable",
+        },
+        {
+          src: "/icon-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "maskable",
+        },
       ],
     },
     null,
@@ -287,11 +304,7 @@ export async function downloadIco(svgString: string, prefix: string) {
  *   chrome-extension/ — 16, 32, 48, 128 + manifest snippet
  *   windows/       — 70, 150, 310 + browserconfig.xml
  */
-export async function downloadZipBundle(
-  svgString: string,
-  prefix: string,
-) {
-
+export async function downloadZipBundle(svgString: string, prefix: string) {
   // Render every unique size once
   const cache = new Map<number, Blob>();
   await Promise.all(

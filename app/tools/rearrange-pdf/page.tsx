@@ -9,8 +9,8 @@ import {
 import { useState, useCallback, useRef } from "react";
 
 import { PageThumbnail } from "@/components/pdf/page-thumbnail";
-import { PrivacyBanner } from "@/components/privacy-banner";
 import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
+import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePdfDocument } from "@/hooks/use-pdf-document";

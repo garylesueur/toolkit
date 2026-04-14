@@ -1,11 +1,11 @@
+import { ICON_ENTRIES } from "./icons";
+import type { IconEntry } from "./icons";
 import {
   COLOR_PRESETS,
   DEFAULT_FONT,
   DEFAULT_PRESET,
   FONT_OPTIONS,
 } from "./presets";
-import { ICON_ENTRIES } from "./icons";
-import type { IconEntry } from "./icons";
 import type {
   ColorPreset,
   FontOption,
