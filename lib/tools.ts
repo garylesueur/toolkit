@@ -599,6 +599,15 @@ export const tools: Tool[] = [
     tags: ["image", "generation", "colour"],
     dateAdded: "2026-04-14",
   },
+  {
+    name: "PDF to Markdown",
+    description:
+      "Extract text from a PDF and convert it to Markdown — headings, paragraphs, and lists detected automatically.",
+    href: "/tools/pdf-to-markdown",
+    icon: RiMarkdownLine,
+    tags: ["pdf", "conversion", "text"],
+    dateAdded: "2026-04-23",
+  },
 ];
 
 const isDevelopment = process.env.NODE_ENV === "development";
