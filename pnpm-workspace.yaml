@@ -1,3 +1,22 @@
+allowBuilds:
+  msw: set this to true or false
+  sharp: set this to true or false
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
+
+minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - postcss@8.5.10
+  - ip-address@10.1.1
+  - fast-uri@3.1.1
+  - fast-uri@3.1.2
+  - hono@4.12.18
+minimumReleaseAgeStrict: false
+overrides:
+  fast-uri@<=3.1.0: ^3.1.1
+  fast-uri@<=3.1.1: ^3.1.2
+  hono@<4.12.18: ^4.12.18
+  ip-address@<=10.1.0: ^10.1.1
+  postcss@<8.5.10: ^8.5.10
+resolutionMode: time-based
