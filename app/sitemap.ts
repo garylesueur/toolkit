@@ -1,19 +1,20 @@
 import type { MetadataRoute } from "next";
 
+import { getSiteUrl } from "@/lib/site";
 import { visibleTools } from "@/lib/tools";
 
-const BASE_URL = "https://toolkit.lesueur.uk";
-
 export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = getSiteUrl();
+
   const toolEntries: MetadataRoute.Sitemap = visibleTools.map((tool) => ({
-    url: `${BASE_URL}${tool.href}`,
+    url: `${baseUrl}${tool.href}`,
     changeFrequency: "weekly",
     priority: 0.8,
   }));
 
   return [
     {
-      url: BASE_URL,
+      url: baseUrl,
       changeFrequency: "weekly",
       priority: 1.0,
     },

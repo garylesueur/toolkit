@@ -1,13 +1,15 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://toolkit.lesueur.uk";
+import { getSiteUrl, isPreviewDeployment } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = getSiteUrl();
+
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-    },
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    rules: isPreviewDeployment()
+      ? { userAgent: "*", disallow: "/" }
+      : { userAgent: "*", allow: "/" },
+    sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl.replace(/^https?:\/\//, ""),
   };
 }
