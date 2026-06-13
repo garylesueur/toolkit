@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 
 import { JsonLd } from "@/components/json-ld";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ROOT_OG_IMAGE } from "@/lib/seo/root-og-image";
 import { createWebSiteJsonLd } from "@/lib/seo/website-json-ld";
 import { canonicalPath, getSiteUrl, isPreviewDeployment } from "@/lib/site";
 
@@ -46,11 +47,13 @@ export const metadata: Metadata = {
     title: "Toolkit — Developer Utilities",
     description: SITE_DESCRIPTION,
     url: canonicalPath("/"),
+    images: [ROOT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Toolkit — Developer Utilities",
     description: SITE_DESCRIPTION,
+    images: [ROOT_OG_IMAGE.url],
   },
   manifest: "/site.webmanifest",
   themeColor: "#09090b",
