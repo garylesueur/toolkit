@@ -1,6 +1,7 @@
 {
   "name": "Toolkit",
   "short_name": "Toolkit",
+  "start_url": "/",
   "icons": [
     {
       "src": "/icon-192x192.png",

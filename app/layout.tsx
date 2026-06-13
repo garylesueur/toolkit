@@ -2,7 +2,10 @@ import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 
+import { JsonLd } from "@/components/json-ld";
 import { ThemeProvider } from "@/components/theme-provider";
+import { createWebSiteJsonLd } from "@/lib/seo/website-json-ld";
+import { canonicalPath, getSiteUrl, isPreviewDeployment } from "@/lib/site";
 
 import "./globals.css";
 
@@ -23,29 +26,40 @@ const geistMono = Geist_Mono({
 const SITE_DESCRIPTION =
   "A growing collection of handy developer utilities — no sign-ups, no nonsense. By Gary Le Sueur.";
 
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION;
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://toolkit.lesueur.uk"),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     template: "%s | Toolkit",
     default: "Toolkit — Developer Utilities",
   },
   description: SITE_DESCRIPTION,
   authors: [{ name: "Gary Le Sueur" }],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     siteName: "Toolkit",
     locale: "en_GB",
     title: "Toolkit — Developer Utilities",
     description: SITE_DESCRIPTION,
+    url: canonicalPath("/"),
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
+    title: "Toolkit — Developer Utilities",
+    description: SITE_DESCRIPTION,
   },
   manifest: "/site.webmanifest",
-  robots: {
-    index: true,
-    follow: true,
-  },
+  themeColor: "#09090b",
+  robots: isPreviewDeployment()
+    ? { index: false, follow: false }
+    : { index: true, follow: true },
+  ...(googleSiteVerification
+    ? { verification: { google: googleSiteVerification } }
+    : {}),
 };
 
 export default function RootLayout({
@@ -54,10 +68,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={publicSans.variable} suppressHydrationWarning>
+    <html lang="en-GB" className={publicSans.variable} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <JsonLd data={createWebSiteJsonLd()} />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

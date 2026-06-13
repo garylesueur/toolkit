@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
+import { canonicalPath } from "@/lib/site";
 import { tools } from "@/lib/tools";
-
-const BASE_URL = "https://toolkit.lesueur.uk";
 
 /** Path to the segment Open Graph image (`app/tools/opengraph-image.tsx`). */
 const TOOL_OPENGRAPH_IMAGE_PATH = "/tools/opengraph-image";
@@ -29,7 +28,7 @@ export function createToolMetadata(slug: string): Metadata {
       openGraph: {
         title: "Tool not found",
         description: "That toolkit page does not exist.",
-        url: BASE_URL,
+        url: canonicalPath("/"),
         images: [TOOL_OPENGRAPH_IMAGE],
       },
       twitter: {
@@ -39,12 +38,10 @@ export function createToolMetadata(slug: string): Metadata {
         images: [TOOL_OPENGRAPH_IMAGE_PATH],
       },
       alternates: {
-        canonical: BASE_URL,
+        canonical: "/",
       },
     };
   }
-
-  const url = `${BASE_URL}${tool.href}`;
 
   return {
     title: tool.name,
@@ -52,7 +49,7 @@ export function createToolMetadata(slug: string): Metadata {
     openGraph: {
       title: tool.name,
       description: tool.description,
-      url,
+      url: canonicalPath(tool.href),
       images: [TOOL_OPENGRAPH_IMAGE],
     },
     twitter: {
@@ -62,7 +59,7 @@ export function createToolMetadata(slug: string): Metadata {
       images: [TOOL_OPENGRAPH_IMAGE_PATH],
     },
     alternates: {
-      canonical: url,
+      canonical: tool.href,
     },
   };
 }

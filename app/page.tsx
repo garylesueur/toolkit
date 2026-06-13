@@ -1,6 +1,7 @@
 import { RiToolsFill } from "@remixicon/react";
 import { Suspense } from "react";
 
+import { HomeFaq } from "@/components/home-faq";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ToolsExplorer } from "@/components/tools-explorer";
 import { ToolsGrid } from "@/components/tools-grid";
@@ -37,6 +38,8 @@ export default function Page() {
           <ToolsExplorer />
         </Suspense>
       </main>
+
+      <HomeFaq />
 
       <footer className="border-t border-border/60">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
