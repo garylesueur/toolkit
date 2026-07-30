@@ -1,7 +1,7 @@
 "use client";
 
 import { RiTimeLine, RiAddLine, RiCloseLine } from "@remixicon/react";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,9 @@ const AVAILABLE_ZONES = [
   "Australia/Sydney",
   "Pacific/Auckland",
 ] as const;
+
+/** Stable pre-render value — see `sourceZone` below. */
+const FALLBACK_ZONE = "UTC";
 
 const DEFAULT_ZONES: ReadonlyArray<string> = [
   "UTC",
@@ -86,13 +89,25 @@ function formatInZone(date: Date, zone: string): string {
 
 export default function TimezoneConverterPage() {
   const [dateTimeInput, setDateTimeInput] = useState("");
-  const [sourceZone, setSourceZone] = useState(
-    Intl.DateTimeFormat().resolvedOptions().timeZone,
-  );
+  /**
+   * Starts at UTC rather than the visitor's zone: reading `resolvedOptions()`
+   * during render resolves to the server's zone while pre-rendering and the
+   * visitor's on hydration, which mismatches for anyone not already on UTC.
+   */
+  const [sourceZone, setSourceZone] = useState<string>(FALLBACK_ZONE);
   const [selectedZones, setSelectedZones] = useState<string[]>([
     ...DEFAULT_ZONES,
   ]);
   const [addZoneValue, setAddZoneValue] = useState("");
+
+  useEffect(() => {
+    const local = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // The picker only offers the zones in `AVAILABLE_ZONES`; selecting one
+    // outside that list would leave the trigger showing nothing.
+    if ((AVAILABLE_ZONES as ReadonlyArray<string>).includes(local)) {
+      setSourceZone(local);
+    }
+  }, []);
 
   const handleNow = useCallback(() => {
     setDateTimeInput(formatDateTimeLocalForInput(new Date()));

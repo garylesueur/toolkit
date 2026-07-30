@@ -52,7 +52,6 @@ function buildAlphabet(charsets: CharsetState): string {
 function generatePassword(length: number, alphabet: string): string {
   if (alphabet.length === 0 || length <= 0) return "";
 
-  const mask = alphabet.length - 1;
   const bitsNeeded = Math.ceil(Math.log2(alphabet.length)) || 1;
   const bytesPerChar = Math.ceil(bitsNeeded / 8);
   const maxValid =

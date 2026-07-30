@@ -10,6 +10,8 @@ import {
   renderPlaceholder,
   downloadPlaceholderPng,
   getPlaceholderDataUrl,
+  isSupportedSize,
+  MAX_DIMENSION,
 } from "@/lib/placeholder-image/generate";
 
 const COPY_RESET_MS = 2000;
@@ -29,13 +31,24 @@ export default function PlaceholderImagePage() {
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE);
   const [copied, setCopied] = useState(false);
 
+  const [sizeError, setSizeError] = useState<string | null>(null);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const resolvedText = overlayText.trim() || `${width}×${height}`;
+  const sizeSupported = isSupportedSize(width, height);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    if (!sizeSupported) {
+      setSizeError(
+        `Maximum size is ${MAX_DIMENSION}×${MAX_DIMENSION}px — larger canvases fail to render in some browsers.`,
+      );
+      return;
+    }
+    setSizeError(null);
 
     renderPlaceholder(canvas, {
       width,
@@ -45,12 +58,30 @@ export default function PlaceholderImagePage() {
       text: resolvedText,
       fontSize,
     });
-  }, [width, height, backgroundColor, textColor, resolvedText, fontSize]);
+  }, [
+    width,
+    height,
+    backgroundColor,
+    textColor,
+    resolvedText,
+    fontSize,
+    sizeSupported,
+  ]);
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    downloadPlaceholderPng(canvas, `placeholder-${width}x${height}.png`);
+    try {
+      await downloadPlaceholderPng(
+        canvas,
+        `placeholder-${width}x${height}.png`,
+      );
+      setSizeError(null);
+    } catch (err) {
+      setSizeError(
+        err instanceof Error ? err.message : "Could not create the image.",
+      );
+    }
   }, [width, height]);
 
   const handleCopyDataUrl = useCallback(async () => {
@@ -79,6 +110,7 @@ export default function PlaceholderImagePage() {
             id="ph-width"
             type="number"
             min={1}
+            max={MAX_DIMENSION}
             value={width}
             onChange={(e) => setWidth(Number(e.target.value) || 1)}
           />
@@ -90,6 +122,7 @@ export default function PlaceholderImagePage() {
             id="ph-height"
             type="number"
             min={1}
+            max={MAX_DIMENSION}
             value={height}
             onChange={(e) => setHeight(Number(e.target.value) || 1)}
           />
@@ -163,12 +196,20 @@ export default function PlaceholderImagePage() {
         </div>
       </div>
 
+      {sizeError && (
+        <p className="text-destructive mt-4 text-sm">{sizeError}</p>
+      )}
+
       <div className="mt-6 flex gap-3">
-        <Button onClick={handleDownload}>
+        <Button onClick={handleDownload} disabled={!sizeSupported}>
           <RiDownload2Line data-icon="inline-start" />
           Download PNG
         </Button>
-        <Button variant="outline" onClick={handleCopyDataUrl}>
+        <Button
+          variant="outline"
+          onClick={handleCopyDataUrl}
+          disabled={!sizeSupported}
+        >
           {copied ? (
             <RiCheckLine data-icon="inline-start" />
           ) : (

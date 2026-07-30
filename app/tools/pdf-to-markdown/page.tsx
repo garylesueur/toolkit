@@ -173,9 +173,7 @@ export default function PdfToMarkdownPage() {
           {loading && (
             <div className="flex items-center justify-center gap-2 py-8">
               <RiLoader4Line className="text-muted-foreground size-5 animate-spin" />
-              <span className="text-muted-foreground text-sm">
-                Converting…
-              </span>
+              <span className="text-muted-foreground text-sm">Converting…</span>
             </div>
           )}
 

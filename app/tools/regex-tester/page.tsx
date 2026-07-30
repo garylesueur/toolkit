@@ -1,22 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
-interface RegexMatch {
-  index: number;
-  text: string;
-  groups: string[];
-}
-
-interface RegexResult {
-  matches: RegexMatch[];
-  error: string | null;
-}
+import { useRegexMatches } from "@/hooks/use-regex-matches";
+import type { RegexMatch } from "@/lib/regex-tester/types";
 
 const FLAG_OPTIONS: { flag: string; label: string }[] = [
   { flag: "g", label: "Global (g)" },
@@ -25,42 +16,6 @@ const FLAG_OPTIONS: { flag: string; label: string }[] = [
   { flag: "s", label: "Dotall (s)" },
   { flag: "u", label: "Unicode (u)" },
 ];
-
-function executeRegex(
-  pattern: string,
-  flags: string,
-  testString: string,
-): RegexResult {
-  if (!pattern) {
-    return { matches: [], error: null };
-  }
-
-  try {
-    const flagsWithGlobal = flags.includes("g") ? flags : `g${flags}`;
-    const regex = new RegExp(pattern, flagsWithGlobal);
-    const matches: RegexMatch[] = [];
-
-    let match: RegExpExecArray | null = regex.exec(testString);
-    while (match !== null) {
-      matches.push({
-        index: match.index,
-        text: match[0],
-        groups: match.slice(1),
-      });
-
-      if (match[0].length === 0) {
-        regex.lastIndex += 1;
-      }
-      match = regex.exec(testString);
-    }
-
-    return { matches, error: null };
-  } catch (err) {
-    const message =
-      err instanceof SyntaxError ? err.message : "Invalid regular expression";
-    return { matches: [], error: message };
-  }
-}
 
 interface HighlightedTextProps {
   text: string;
@@ -106,10 +61,7 @@ export default function RegexTesterPage() {
   const [flags, setFlags] = useState("g");
   const [testString, setTestString] = useState("");
 
-  const { matches, error } = useMemo(
-    () => executeRegex(pattern, flags, testString),
-    [pattern, flags, testString],
-  );
+  const { matches, error } = useRegexMatches(pattern, flags, testString);
 
   const toggleFlag = (flag: string) => {
     setFlags((prev) =>
@@ -180,7 +132,7 @@ export default function RegexTesterPage() {
             </div>
           </div>
 
-          {matches.length > 0 && matches.some((m) => m.groups.length > 0) && (
+          {matches.some((m) => m.groups.length > 0) && (
             <div>
               <h2 className="text-sm font-semibold">Capture Groups</h2>
               <div className="mt-2 space-y-2">

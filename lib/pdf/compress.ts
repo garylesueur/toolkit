@@ -1,5 +1,7 @@
 import { PDFDocument } from "pdf-lib";
 
+import { loadPdfBytes } from "./load";
+
 export type CompressResult = {
   pdfDoc: PDFDocument;
   originalSize: number;
@@ -16,7 +18,7 @@ export async function compressPdf(
   sourceBytes: Uint8Array,
   options: { stripMetadata?: boolean } = {},
 ): Promise<CompressResult> {
-  const pdfDoc = await PDFDocument.load(sourceBytes);
+  const pdfDoc = await loadPdfBytes(sourceBytes);
 
   if (options.stripMetadata) {
     pdfDoc.setTitle("");
@@ -29,7 +31,7 @@ export async function compressPdf(
 
   const saved = await pdfDoc.save();
   // Reload to get clean document for potential further use
-  const result = await PDFDocument.load(saved);
+  const result = await loadPdfBytes(saved);
 
   return {
     pdfDoc: result,

@@ -14,11 +14,44 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3004](http://localhost:3004) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## MCP server
+
+The Markdown → PDF tool is also exposed over the Model Context Protocol at
+`/api/mcp`, so Claude can generate PDFs directly. It is a stateless streamable
+HTTP server with one tool, `markdown_to_pdf`, which typesets the Markdown it is
+given and returns a download URL.
+
+### Environment variables
+
+| Variable                | Required for | Purpose                                                                             |
+| ----------------------- | ------------ | ----------------------------------------------------------------------------------- |
+| `MCP_AUTH_TOKEN`        | `/api/mcp`   | Shared bearer token. Without it the endpoint returns 503 and refuses every request. |
+| `BLOB_READ_WRITE_TOKEN` | `/api/mcp`   | Vercel Blob credentials. Generated PDFs are stored there and served from its URL.   |
+| `CRON_SECRET`           | Blob cleanup | Set automatically by Vercel; authorises the daily sweep of expired PDFs.            |
+
+For local development put `MCP_AUTH_TOKEN` in `.env.local`.
+
+### Connecting Claude Code
+
+```bash
+claude mcp add --transport http toolkit https://toolkit.lesueur.uk/api/mcp --header "Authorization: Bearer $MCP_AUTH_TOKEN"
+```
+
+For claude.ai, add a custom connector pointing at the same URL with the same
+`Authorization` header.
+
+### Stored PDFs
+
+Vercel Blob has no native object expiry, so `/api/cron/cleanup-pdfs` deletes
+anything under the `markdown-pdf/` prefix older than 24 hours. It is scheduled
+daily by the `crons` entry in `vercel.json`. Blob URLs are public but carry a
+random UUID segment, so they are unguessable.
 
 ## Learn More
 

@@ -36,6 +36,28 @@ function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/**
+ * Latin letters that NFD cannot decompose into "base + combining mark". Without
+ * these, the strip below deletes them outright: "St\u00f8rst i M\u00f8re" becomes
+ * "st-rst-i-m-re" and "Stra\u00dfe" becomes "stra-e".
+ */
+const TRANSLITERATIONS: ReadonlyArray<[RegExp, string]> = [
+  [/\u00df/g, "ss"],
+  [/\u00e6/g, "ae"],
+  [/\u0153/g, "oe"],
+  [/\u00f8/g, "o"],
+  [/\u00e5/g, "aa"],
+  [/\u00f0/g, "d"],
+  [/\u0111/g, "d"],
+  [/\u00fe/g, "th"],
+  [/\u0142/g, "l"],
+  [/\u0131/g, "i"],
+  [/\u014b/g, "ng"],
+  [/\u0127/g, "h"],
+  [/\u0167/g, "t"],
+  [/\u0138/g, "k"],
+];
+
 function generateSlug(
   input: string,
   separator: Separator,
@@ -45,6 +67,9 @@ function generateSlug(
   let slug = input.trim().toLowerCase();
 
   if (transliterate) {
+    for (const [pattern, replacement] of TRANSLITERATIONS) {
+      slug = slug.replace(pattern, replacement);
+    }
     slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 

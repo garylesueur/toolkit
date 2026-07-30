@@ -16,9 +16,14 @@ import {
 const COPY_RESET_MS = 2000;
 const SECONDS_THRESHOLD = 10_000_000_000;
 
-/** Timestamp in seconds > this is treated as milliseconds. */
+/**
+ * Timestamps whose magnitude exceeds this are treated as milliseconds.
+ * Comparing the absolute value matters: `-1700000000000` is a pre-1970
+ * millisecond timestamp, and a plain `value < threshold` test would scale it
+ * by 1000 again and land tens of thousands of years off.
+ */
 function toMilliseconds(value: number): number {
-  return value < SECONDS_THRESHOLD ? value * 1000 : value;
+  return Math.abs(value) < SECONDS_THRESHOLD ? value * 1000 : value;
 }
 
 export default function UnixTimestampPage() {

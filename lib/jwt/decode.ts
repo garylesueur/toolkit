@@ -1,3 +1,5 @@
+import { decodeBase64UrlToUtf8 } from "@/lib/shared/base64";
+
 export interface DecodedJwt {
   header: Record<string, unknown>;
   payload: Record<string, unknown>;
@@ -7,22 +9,9 @@ export type JwtDecodeResult =
   | { decoded: DecodedJwt; error: null }
   | { decoded: null; error: string };
 
-/**
- * Decodes a base64url-encoded string to a UTF-8 string.
- * Base64url replaces `+` with `-` and `/` with `_`, and omits padding.
- */
-function base64UrlDecode(segment: string): string {
-  const base64 = segment.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = base64.padEnd(
-    base64.length + ((4 - (base64.length % 4)) % 4),
-    "=",
-  );
-  return atob(padded);
-}
-
 function parseSegment(segment: string, label: string): Record<string, unknown> {
   try {
-    const json = base64UrlDecode(segment);
+    const json = decodeBase64UrlToUtf8(segment);
     return JSON.parse(json) as Record<string, unknown>;
   } catch {
     throw new Error(`Failed to decode JWT ${label}`);

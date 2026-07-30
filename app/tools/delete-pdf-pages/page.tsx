@@ -30,6 +30,7 @@ export default function DeletePdfPagesPage() {
   } = usePdfDocument();
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const togglePage = useCallback((index: number) => {
     setSelected((prev) => {
@@ -43,12 +44,15 @@ export default function DeletePdfPagesPage() {
   const handleSave = useCallback(async () => {
     if (!pdfBytes || selected.size === 0) return;
     setSaving(true);
+    setSaveError(null);
     try {
       const result = await deletePdfPages(pdfBytes, selected);
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
       await downloadPdf(result, `${baseName}-modified.pdf`);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to delete pages.");
+      setSaveError(
+        err instanceof Error ? err.message : "Could not delete pages.",
+      );
     } finally {
       setSaving(false);
     }
@@ -129,6 +133,8 @@ export default function DeletePdfPagesPage() {
               </Button>
             </div>
           </div>
+
+          {saveError && <p className="text-destructive text-sm">{saveError}</p>}
 
           <PageThumbnailGrid
             thumbnails={thumbnails}

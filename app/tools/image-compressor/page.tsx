@@ -74,17 +74,33 @@ export default function ImageCompressorPage() {
         compressSingleFile(next.file, currentFormat, currentQuality / 100)
           .then(({ sourceUrl, img, blob }) => {
             const resultUrl = URL.createObjectURL(blob);
-            updateItem(next.id, {
-              sourceUrl,
-              originalWidth: img.naturalWidth,
-              originalHeight: img.naturalHeight,
-              status: "done",
-              result: { blob, url: resultUrl },
-              compressedWith: {
-                format: currentFormat,
-                quality: currentQuality,
-              },
-            });
+            setItems((prev) =>
+              prev.map((item) => {
+                if (item.id !== next.id) return item;
+
+                /**
+                 * `loadImage` mints a fresh object URL for the file on every
+                 * run. On a re-compress the item already has a perfectly good
+                 * preview URL, so release the duplicate instead of overwriting
+                 * — otherwise each pass leaks one blob per image.
+                 */
+                const keepExisting = item.sourceUrl.length > 0;
+                if (keepExisting) URL.revokeObjectURL(sourceUrl);
+
+                return {
+                  ...item,
+                  sourceUrl: keepExisting ? item.sourceUrl : sourceUrl,
+                  originalWidth: img.naturalWidth,
+                  originalHeight: img.naturalHeight,
+                  status: "done" as const,
+                  result: { blob, url: resultUrl },
+                  compressedWith: {
+                    format: currentFormat,
+                    quality: currentQuality,
+                  },
+                };
+              }),
+            );
           })
           .catch((err) => {
             updateItem(next.id, {
@@ -261,7 +277,8 @@ export default function ImageCompressorPage() {
       </PrivacyBanner>
 
       {/* Drop zone */}
-      <div
+      <button
+        type="button"
         onDragOver={(e) => {
           e.preventDefault();
           setDragOver(true);
@@ -269,7 +286,7 @@ export default function ImageCompressorPage() {
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
-        className={`mt-8 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors ${
+        className={`mt-8 flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
           items.length > 0 ? "p-6" : "p-10"
         } ${
           dragOver
@@ -300,7 +317,7 @@ export default function ImageCompressorPage() {
             e.target.value = "";
           }}
         />
-      </div>
+      </button>
 
       {/* Settings + actions */}
       {items.length > 0 && (

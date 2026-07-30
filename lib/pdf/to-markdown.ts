@@ -39,29 +39,38 @@ export async function convertPdfToMarkdown(
   const pdfjs = await getPdfjs();
   const pdf = await pdfjs.getDocument({ data: bytes }).promise;
 
-  const pages: Line[][] = [];
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const items = content.items.filter(
-      (item): item is TextItem =>
-        typeof (item as TextItem).str === "string",
-    );
-    pages.push(extractLines(items));
+  try {
+    const pages: Line[][] = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const items = content.items.filter(
+        (item): item is TextItem => typeof (item as TextItem).str === "string",
+      );
+      pages.push(extractLines(items));
+    }
+
+    const medianSize = computeMedianFontSize(pages);
+
+    const sections = pages
+      .map((lines) => renderPage(lines, medianSize, detectHeadings))
+      .filter((section) => section.length > 0);
+
+    const separator = pageBreaks ? "\n\n---\n\n" : "\n\n";
+    return sections
+      .join(separator)
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+  } finally {
+    // This runs again on every option toggle, so a leaked proxy per run adds up.
+    await pdf.loadingTask.destroy();
   }
-
-  const medianSize = computeMedianFontSize(pages);
-
-  const sections = pages
-    .map((lines) => renderPage(lines, medianSize, detectHeadings))
-    .filter((section) => section.length > 0);
-
-  const separator = pageBreaks ? "\n\n---\n\n" : "\n\n";
-  return sections.join(separator).replace(/\n{3,}/g, "\n\n").trim();
 }
 
 function computeMedianFontSize(pages: Line[][]): number {
-  const sizes = pages.flatMap((p) => p.map((l) => l.fontSize)).filter((s) => s > 0);
+  const sizes = pages
+    .flatMap((p) => p.map((l) => l.fontSize))
+    .filter((s) => s > 0);
   if (sizes.length === 0) return 12;
   sizes.sort((a, b) => a - b);
   return sizes[Math.floor(sizes.length / 2)];
@@ -94,9 +103,9 @@ function extractLines(items: TextItem[]): Line[] {
   const lines: Line[] = [];
 
   for (const y of sortedYs) {
-    const rowItems = grouped.get(y)!.sort(
-      (a, b) => a.transform[4] - b.transform[4],
-    );
+    const rowItems = grouped
+      .get(y)!
+      .sort((a, b) => a.transform[4] - b.transform[4]);
 
     let text = "";
     let prevEnd = Number.NEGATIVE_INFINITY;
@@ -160,7 +169,13 @@ function renderPage(
     const bulletMatch = BULLET_PATTERN.exec(line.text);
     const orderedMatch = ORDERED_LIST_PATTERN.exec(line.text);
 
-    if (isHeading || isParagraphBreak || bulletMatch || orderedMatch || lastLineWasHeading) {
+    if (
+      isHeading ||
+      isParagraphBreak ||
+      bulletMatch ||
+      orderedMatch ||
+      lastLineWasHeading
+    ) {
       flushParagraph();
     }
 

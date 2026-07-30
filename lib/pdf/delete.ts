@@ -1,11 +1,13 @@
 import { PDFDocument } from "pdf-lib";
 
+import { loadPdfBytes } from "./load";
+
 /** Create a new PDF with the specified pages removed. indicesToDelete is a Set of 0-based page indices. */
 export async function deletePdfPages(
   sourceBytes: Uint8Array,
   indicesToDelete: Set<number>,
 ): Promise<PDFDocument> {
-  const source = await PDFDocument.load(sourceBytes);
+  const source = await loadPdfBytes(sourceBytes);
   const result = await PDFDocument.create();
   const totalPages = source.getPageCount();
 

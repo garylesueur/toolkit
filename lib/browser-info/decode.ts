@@ -241,21 +241,39 @@ export async function decodeFromBrowserInfo(
     osVersionName = getMacOSVersionName(osVersion) ?? osVersionName;
   }
 
-  const architecture = normaliseArchitecture(
-    highEntropyHints?.architecture ?? operatingSystem.architecture ?? undefined,
+  /**
+   * Client Hints are the only architecture signal that is actually reliable on
+   * macOS. Keep them separate from the user-agent guess so the weaker signal
+   * can never override the GPU renderer below.
+   */
+  const hintedArchitecture = normaliseArchitecture(
+    highEntropyHints?.architecture ?? undefined,
   );
   const bitness = highEntropyHints?.bitness
     ? `${highEntropyHints.bitness}-bit`
     : null;
 
-  let appleSilicon: boolean | null = null;
-  if (architecture === "arm64" && os.name?.toLowerCase() === "macos") {
-    appleSilicon = true;
-  } else if (architecture === "x64" && os.name?.toLowerCase() === "macos") {
-    appleSilicon = false;
+  const isMac = os.name?.toLowerCase() === "macos";
+
+  let appleSilicon: boolean | null;
+  if (isMac && hintedArchitecture) {
+    appleSilicon = hintedArchitecture === "arm64";
   } else {
+    // Safari sends no Client Hints and its UA claims "Intel" on every Mac, so
+    // the GPU renderer ("Apple M1", …) is the only thing left worth reading.
     appleSilicon = detectAppleSiliconFromGpu(hardware.gpu);
   }
+
+  const uaArchitecture = normaliseArchitecture(
+    operatingSystem.architecture ?? undefined,
+  );
+  const architecture =
+    hintedArchitecture ??
+    (isMac && appleSilicon !== null
+      ? appleSilicon
+        ? "arm64"
+        : "x64"
+      : uaArchitecture);
 
   const deviceMemoryNote = getDeviceMemoryNote(hardware.deviceMemory);
   const gpuChipName = extractGpuChipName(hardware.gpu?.renderer);

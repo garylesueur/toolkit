@@ -53,6 +53,26 @@ export function complianceForRatio(ratio: number): WcagCompliance {
   };
 }
 
+const OPAQUE = 1;
+
+/**
+ * Flattens a translucent colour onto an opaque one.
+ *
+ * WCAG contrast is only defined between two opaque colours. A semi-transparent
+ * foreground is what the eye sees composited over its backdrop, so measuring
+ * the raw colour instead would report a ratio the user never actually sees.
+ */
+function compositeOver(colour: RgbColour, backdrop: RgbColour): RgbColour {
+  const alpha = colour.a ?? OPAQUE;
+  if (alpha >= OPAQUE) return colour;
+
+  return {
+    r: Math.round(colour.r * alpha + backdrop.r * (1 - alpha)),
+    g: Math.round(colour.g * alpha + backdrop.g * (1 - alpha)),
+    b: Math.round(colour.b * alpha + backdrop.b * (1 - alpha)),
+  };
+}
+
 /**
  * Parses two colour strings and returns contrast analysis, or `null` if either is invalid.
  */
@@ -60,9 +80,18 @@ export function analyseContrast(
   foregroundInput: string,
   backgroundInput: string,
 ): ContrastResult | null {
-  const foreground = parseColour(foregroundInput);
-  const background = parseColour(backgroundInput);
-  if (!foreground || !background) return null;
+  const parsedForeground = parseColour(foregroundInput);
+  const parsedBackground = parseColour(backgroundInput);
+  if (!parsedForeground || !parsedBackground) return null;
+
+  // A translucent background has nothing behind it here, so assume white —
+  // the same assumption a browser makes against a default page.
+  const background = compositeOver(parsedBackground, {
+    r: 255,
+    g: 255,
+    b: 255,
+  });
+  const foreground = compositeOver(parsedForeground, background);
 
   const ratio = contrastRatioBetweenColours(foreground, background);
 

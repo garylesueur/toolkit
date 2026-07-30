@@ -1,13 +1,14 @@
 import { PDFDocument, degrees } from "pdf-lib";
 
 import type { RotationAngle } from "./constants";
+import { loadPdfBytes } from "./load";
 
 /** Create a new PDF with the given rotations applied. rotations is a Map of 0-based page index → angle. */
 export async function rotatePdfPages(
   sourceBytes: Uint8Array,
   rotations: Map<number, RotationAngle>,
 ): Promise<PDFDocument> {
-  const pdfDoc = await PDFDocument.load(sourceBytes);
+  const pdfDoc = await loadPdfBytes(sourceBytes);
   const pages = pdfDoc.getPages();
 
   for (const [index, angle] of rotations) {

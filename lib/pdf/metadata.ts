@@ -1,5 +1,7 @@
 import { PDFDocument } from "pdf-lib";
 
+import { loadPdfBytes } from "./load";
+
 export type PdfMetadata = {
   title: string;
   author: string;
@@ -13,7 +15,7 @@ export type PdfMetadata = {
 export async function readPdfMetadata(
   sourceBytes: Uint8Array,
 ): Promise<PdfMetadata> {
-  const pdfDoc = await PDFDocument.load(sourceBytes);
+  const pdfDoc = await loadPdfBytes(sourceBytes);
   return {
     title: pdfDoc.getTitle() ?? "",
     author: pdfDoc.getAuthor() ?? "",
@@ -29,7 +31,7 @@ export async function updatePdfMetadata(
   sourceBytes: Uint8Array,
   metadata: Partial<PdfMetadata>,
 ): Promise<PDFDocument> {
-  const pdfDoc = await PDFDocument.load(sourceBytes);
+  const pdfDoc = await loadPdfBytes(sourceBytes);
 
   if (metadata.title !== undefined) pdfDoc.setTitle(metadata.title);
   if (metadata.author !== undefined) pdfDoc.setAuthor(metadata.author);

@@ -30,6 +30,7 @@ export default function RearrangePdfPage() {
   } = usePdfDocument();
   const [order, setOrder] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const dragIndexRef = useRef<number | null>(null);
 
   // Initialize order when thumbnails load
@@ -73,17 +74,21 @@ export default function RearrangePdfPage() {
   const handleSave = useCallback(async () => {
     if (!pdfBytes) return;
     setSaving(true);
+    setSaveError(null);
     try {
       const result = await rearrangePdfPages(pdfBytes, effectiveOrder);
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
       await downloadPdf(result, `${baseName}-rearranged.pdf`);
+    } catch (err) {
+      setSaveError(
+        err instanceof Error ? err.message : "Could not save the PDF.",
+      );
     } finally {
       setSaving(false);
     }
   }, [pdfBytes, effectiveOrder, fileName]);
 
-  const isReordered =
-    effectiveOrder.length > 0 && effectiveOrder.some((v, i) => v !== i);
+  const isReordered = effectiveOrder.some((v, i) => v !== i);
 
   return (
     <div>
@@ -151,6 +156,8 @@ export default function RearrangePdfPage() {
               </Button>
             </div>
           </div>
+
+          {saveError && <p className="text-destructive text-sm">{saveError}</p>}
 
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
             {effectiveOrder.map((sourceIndex, displayIndex) => (

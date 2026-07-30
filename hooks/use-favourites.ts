@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, useCallback } from "react";
+import { useSyncExternalStore, useCallback, useMemo } from "react";
 
 const STORAGE_KEY = "toolkit-favourites";
 
@@ -70,7 +70,12 @@ function subscribe(callback: () => void): () => void {
  */
 export function useFavourites(): FavouritesStore {
   const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const favourites = new Set<string>(JSON.parse(raw) as string[]);
+  // Keyed on the serialised snapshot: building the Set inline would hand every
+  // consumer a new identity each render, defeating their memoisation too.
+  const favourites = useMemo(
+    () => new Set<string>(JSON.parse(raw) as string[]),
+    [raw],
+  );
 
   const toggleFavourite = useCallback((href: string) => {
     const current = readFavourites();

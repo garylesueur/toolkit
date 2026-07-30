@@ -7,7 +7,8 @@ const DEFAULT_SITE_URL = "https://toolkit.lesueur.uk";
  */
 export function getSiteUrl(): string {
   const configured = process.env.NEXT_PUBLIC_SITE_URL;
-  const url = configured && configured.length > 0 ? configured : DEFAULT_SITE_URL;
+  const url =
+    configured && configured.length > 0 ? configured : DEFAULT_SITE_URL;
   return url.replace(/\/$/, "");
 }
 

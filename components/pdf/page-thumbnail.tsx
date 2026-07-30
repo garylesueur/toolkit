@@ -27,19 +27,16 @@ export function PageThumbnail({
   onDragOver,
   onDrop,
 }: PageThumbnailProps) {
-  return (
-    <div
-      className={`relative cursor-pointer rounded-lg border-2 transition-colors ${
-        selected
-          ? "border-primary bg-primary/5"
-          : "border-border hover:border-muted-foreground/40"
-      }`}
-      onClick={onClick}
-      draggable={draggable}
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-    >
+  const className = `relative rounded-lg border-2 transition-colors ${
+    onClick ? "cursor-pointer" : ""
+  } ${
+    selected
+      ? "border-primary bg-primary/5"
+      : "border-border hover:border-muted-foreground/40"
+  }`;
+
+  const content = (
+    <>
       <div className="flex items-center justify-center overflow-hidden rounded-md p-2">
         <img
           src={src}
@@ -56,6 +53,33 @@ export function PageThumbnail({
         {pageNumber}
       </div>
       {overlay}
-    </div>
+    </>
+  );
+
+  const dragProps = { draggable, onDragStart, onDragOver, onDrop };
+
+  /**
+   * Only an actionable thumbnail becomes a button. Display-only grids (resize)
+   * would otherwise put an unusable stop in the tab order for every page.
+   */
+  if (!onClick) {
+    return (
+      <div className={className} {...dragProps}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${className} w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+      onClick={onClick}
+      aria-pressed={selected}
+      aria-label={`Page ${pageNumber}`}
+      {...dragProps}
+    >
+      {content}
+    </button>
   );
 }

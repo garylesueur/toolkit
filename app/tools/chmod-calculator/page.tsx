@@ -13,7 +13,12 @@ const READ = 4;
 const WRITE = 2;
 const EXECUTE = 1;
 
-const NUMERIC_PATTERN = /^[0-7]{3}$/;
+/** Leading-digit bits: setuid, setgid, sticky. `1777` is the mode of /tmp. */
+const SETUID = 4;
+const SETGID = 2;
+const STICKY = 1;
+
+const NUMERIC_PATTERN = /^[0-7]{3,4}$/;
 
 type EntityLabel = "Owner" | "Group" | "Other";
 
@@ -38,6 +43,12 @@ const PERMISSION_BITS: ReadonlyArray<PermissionBit> = [
   { label: "Read", symbol: "r", value: READ },
   { label: "Write", symbol: "w", value: WRITE },
   { label: "Execute", symbol: "x", value: EXECUTE },
+];
+
+const SPECIAL_BITS: ReadonlyArray<PermissionBit> = [
+  { label: "Setuid", symbol: "u+s", value: SETUID },
+  { label: "Setgid", symbol: "g+s", value: SETGID },
+  { label: "Sticky", symbol: "+t", value: STICKY },
 ];
 
 /** Permissions as a 3-element tuple: [owner, group, other], each 0–7. */
@@ -74,6 +85,21 @@ const COMMON_PATTERNS: ReadonlyArray<CommonPattern> = [
   { numeric: "400", description: "Owner: read only — Group & Other: none" },
 ];
 
+/**
+ * The special bits have no column of their own in `ls` output — they replace
+ * the execute character of the triple they belong to. A capital letter means
+ * the special bit is set while execute is not.
+ */
+function applySpecialBit(
+  triple: string,
+  isSet: boolean,
+  setChar: string,
+): string {
+  if (!isSet) return triple;
+  const executable = triple[2] === "x";
+  return `${triple.slice(0, 2)}${executable ? setChar : setChar.toUpperCase()}`;
+}
+
 function entityToSymbolic(value: number): string {
   const r = value & READ ? "r" : "-";
   const w = value & WRITE ? "w" : "-";
@@ -81,17 +107,36 @@ function entityToSymbolic(value: number): string {
   return `${r}${w}${x}`;
 }
 
-function permissionsToSymbolic(perms: PermissionTriple): string {
-  return perms.map(entityToSymbolic).join("");
+function permissionsToSymbolic(
+  perms: PermissionTriple,
+  special: number,
+): string {
+  const [owner, group, other] = perms.map(entityToSymbolic);
+  return [
+    applySpecialBit(owner, Boolean(special & SETUID), "s"),
+    applySpecialBit(group, Boolean(special & SETGID), "s"),
+    applySpecialBit(other, Boolean(special & STICKY), "t"),
+  ].join("");
 }
 
-function permissionsToNumeric(perms: PermissionTriple): string {
-  return perms.join("");
+function permissionsToNumeric(perms: PermissionTriple, special = 0): string {
+  // chmod only needs the leading digit when a special bit is actually set.
+  return special > 0 ? `${special}${perms.join("")}` : perms.join("");
 }
 
-function parseNumericInput(input: string): PermissionTriple | null {
+interface ParsedMode {
+  perms: PermissionTriple;
+  special: number;
+}
+
+function parseNumericInput(input: string): ParsedMode | null {
   if (!NUMERIC_PATTERN.test(input)) return null;
-  return [Number(input[0]), Number(input[1]), Number(input[2])];
+
+  const padded = input.padStart(4, "0");
+  return {
+    special: Number(padded[0]),
+    perms: [Number(padded[1]), Number(padded[2]), Number(padded[3])],
+  };
 }
 
 function findCommonPattern(numeric: string): string | null {
@@ -139,6 +184,7 @@ const DEFAULT_PERMISSIONS: PermissionTriple = [7, 5, 5];
 export default function ChmodCalculatorPage() {
   const [permissions, setPermissions] =
     useState<PermissionTriple>(DEFAULT_PERMISSIONS);
+  const [special, setSpecial] = useState(0);
   const [numericInput, setNumericInput] = useState(
     permissionsToNumeric(DEFAULT_PERMISSIONS),
   );
@@ -150,27 +196,41 @@ export default function ChmodCalculatorPage() {
     setTimeout(() => setCopiedKey(null), COPY_RESET_MS);
   }, []);
 
-  const toggleBit = useCallback((entityIndex: number, bitValue: number) => {
-    setPermissions((prev) => {
-      const next: PermissionTriple = [...prev];
-      next[entityIndex] = prev[entityIndex] ^ bitValue;
-      const numeric = permissionsToNumeric(next);
-      setNumericInput(numeric);
-      return next;
-    });
-  }, []);
+  const toggleBit = useCallback(
+    (entityIndex: number, bitValue: number) => {
+      setPermissions((prev) => {
+        const next: PermissionTriple = [...prev];
+        next[entityIndex] = prev[entityIndex] ^ bitValue;
+        setNumericInput(permissionsToNumeric(next, special));
+        return next;
+      });
+    },
+    [special],
+  );
+
+  const toggleSpecial = useCallback(
+    (bitValue: number) => {
+      setSpecial((prev) => {
+        const next = prev ^ bitValue;
+        setNumericInput(permissionsToNumeric(permissions, next));
+        return next;
+      });
+    },
+    [permissions],
+  );
 
   const handleNumericChange = useCallback((value: string) => {
     setNumericInput(value);
     const parsed = parseNumericInput(value);
     if (parsed) {
-      setPermissions(parsed);
+      setPermissions(parsed.perms);
+      setSpecial(parsed.special);
     }
   }, []);
 
-  const numericStr = permissionsToNumeric(permissions);
-  const symbolic = permissionsToSymbolic(permissions);
-  const octalStr = `0${numericStr}`;
+  const numericStr = permissionsToNumeric(permissions, special);
+  const symbolic = permissionsToSymbolic(permissions, special);
+  const octalStr = numericStr.padStart(4, "0");
   const commonDescription = findCommonPattern(numericStr);
   const isInputValid =
     NUMERIC_PATTERN.test(numericInput) || numericInput === "";
@@ -190,7 +250,9 @@ export default function ChmodCalculatorPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/40">
-                <th className="px-4 py-2 text-left font-medium" />
+                <th className="px-4 py-2 text-left font-medium">
+                  <span className="sr-only">Entity</span>
+                </th>
                 {PERMISSION_BITS.map((bit) => (
                   <th
                     key={bit.symbol}
@@ -211,6 +273,7 @@ export default function ChmodCalculatorPage() {
                       <td key={bit.symbol} className="px-4 py-2 text-center">
                         <input
                           type="checkbox"
+                          aria-label={`${entity.label}: ${bit.label}`}
                           checked={isSet}
                           onChange={() => toggleBit(entity.index, bit.value)}
                           className="size-4 rounded border-border accent-primary"
@@ -222,6 +285,26 @@ export default function ChmodCalculatorPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Special bits</h2>
+        <div className="flex flex-wrap gap-4 rounded-md border px-4 py-3">
+          {SPECIAL_BITS.map((bit) => (
+            <label key={bit.symbol} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={(special & bit.value) !== 0}
+                onChange={() => toggleSpecial(bit.value)}
+                className="size-4 rounded border-border accent-primary"
+              />
+              {bit.label}
+              <span className="text-muted-foreground font-mono text-xs">
+                {bit.symbol}
+              </span>
+            </label>
+          ))}
         </div>
       </section>
 
