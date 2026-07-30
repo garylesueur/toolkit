@@ -23,12 +23,17 @@ export interface BrowserIdentity {
   clientHints: ClientHints | null;
 }
 
+export interface UaBrand {
+  brand: string;
+  version: string;
+}
+
 export interface ClientHints {
   architecture: string | null;
   bitness: string | null;
-  brand: string | null;
-  brands: Array<{ brand: string; version: string }> | null;
-  fullVersionList: Array<{ brand: string; version: string }> | null;
+  brands: UaBrand[] | null;
+  fullVersionList: UaBrand[] | null;
+  formFactors: string[] | null;
   mobile: boolean | null;
   model: string | null;
   platform: string | null;
@@ -75,11 +80,14 @@ export interface Hardware {
   maxTouchPoints: number | null;
   touchSupport: boolean;
   gpu: GpuInfo | null;
+  webgpu: WebGpuInfo | null;
 }
 
 export interface GpuInfo {
   vendor: string | null;
   renderer: string | null;
+  /** True when vendor/renderer came from WEBGL_debug_renderer_info rather than the masked defaults. */
+  unmasked: boolean;
   webglVersion: string | null;
   shadingLanguageVersion: string | null;
   maxTextureSize: number | null;
@@ -87,6 +95,14 @@ export interface GpuInfo {
   maxViewportDims: number[] | null;
   extensions: string[];
   antialiasing: boolean | null;
+}
+
+/** GPUAdapterInfo, where the WebGPU API is available. */
+export interface WebGpuInfo {
+  vendor: string | null;
+  architecture: string | null;
+  device: string | null;
+  description: string | null;
 }
 
 export interface Network {
