@@ -180,18 +180,14 @@ export function detectOperatingSystem(): OperatingSystem {
     const match = userAgent.match(/Mac OS X (\d+[._]\d+)/);
     if (match) version = match[1].replace("_", ".");
 
-    // macOS architecture detection
-    // navigator.platform always returns "MacIntel" even on Apple Silicon for compatibility
-    // So we need to check other signals
+    /**
+     * `navigator.platform` is frozen at "MacIntel" on Apple Silicon, and Safari
+     * reports "Intel Mac OS X" in its user agent there too — so neither string
+     * can tell the two apart. Only an explicit arm token is worth trusting;
+     * otherwise leave this unset and let the GPU renderer decide in `decode.ts`.
+     */
     if (!architecture) {
-      if (userAgent.includes("Intel")) {
-        architecture = "x64";
-      } else if (userAgent.includes("arm64") || userAgent.includes("aarch64")) {
-        architecture = "arm64";
-      } else {
-        // On modern macOS, if no Intel mention and platform is MacIntel,
-        // it's likely Apple Silicon (M1/M2/M3)
-        // This is a heuristic but works for most cases
+      if (userAgent.includes("arm64") || userAgent.includes("aarch64")) {
         architecture = "arm64";
       }
     }

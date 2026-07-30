@@ -1,13 +1,13 @@
 "use client";
 
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
-import { marked } from "marked";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useSanitisedMarkdown } from "@/hooks/use-sanitised-markdown";
 
 const COPY_RESET_MS = 2000;
 
@@ -39,7 +39,7 @@ export default function MarkdownPreviewPage() {
   const [input, setInput] = useState(SAMPLE_MARKDOWN);
   const [copied, setCopied] = useState(false);
 
-  const html = useMemo(() => marked.parse(input) as string, [input]);
+  const html = useSanitisedMarkdown(input);
 
   const handleCopy = useCallback(async () => {
     if (!html) return;

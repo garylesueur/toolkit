@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatDateForInput } from "@/lib/shared/date";
+import { addMonths, formatDateForInput } from "@/lib/shared/date";
 
 const COPY_RESET_MS = 2000;
 
@@ -70,8 +70,7 @@ function computeResultDate(
       return result;
     }
     case "months":
-      result.setMonth(result.getMonth() + signedAmount);
-      return result;
+      return addMonths(base, signedAmount);
     case "business-days":
       return addBusinessDays(base, signedAmount);
   }
@@ -108,8 +107,12 @@ export default function RelativeDateCalculatorPage() {
     setDateInput(formatDateForInput(new Date()));
   }, []);
 
-  const parsedDate =
-    dateInput.trim() !== "" ? new Date(dateInput + "T00:00:00") : null;
+  // Memoised on the raw input: a fresh Date every render would make every
+  // downstream `useMemo` that depends on it recompute regardless.
+  const parsedDate = useMemo(
+    () => (dateInput.trim() !== "" ? new Date(dateInput + "T00:00:00") : null),
+    [dateInput],
+  );
   const isInvalid = parsedDate !== null && Number.isNaN(parsedDate.getTime());
   const isValid = parsedDate !== null && !isInvalid;
 

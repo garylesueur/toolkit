@@ -7,7 +7,11 @@ import { CopyableRow } from "@/components/copyable-row";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { formatDateTimeLocalForInput } from "@/lib/shared/date";
+import {
+  addMonths,
+  formatDateTimeLocalForInput,
+  MONTHS_PER_YEAR,
+} from "@/lib/shared/date";
 
 const COPY_RESET_MS = 2000;
 const MS_PER_SECOND = 1000;
@@ -170,9 +174,12 @@ export default function DurationCalculatorPage() {
     hasAddStart && hasDurationInput
       ? (() => {
           const base = new Date(addStartDate);
-          const result = new Date(base);
-          result.setFullYear(result.getFullYear() + parsedYears);
-          result.setMonth(result.getMonth() + parsedMonths);
+          // Years and months are applied together so 31 Jan + 1 year 1 month
+          // clamps once, against the final target month.
+          const result = addMonths(
+            base,
+            parsedYears * MONTHS_PER_YEAR + parsedMonths,
+          );
           result.setDate(result.getDate() + parsedDays);
           result.setHours(result.getHours() + parsedHours);
           result.setMinutes(result.getMinutes() + parsedMinutes);

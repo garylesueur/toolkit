@@ -6,13 +6,18 @@ import { useState, useCallback, useMemo } from "react";
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { decodeBase64ToUtf8, encodeUtf8ToBase64 } from "@/lib/shared/base64";
 
 type Direction = "encode" | "decode";
 
 const COPY_RESET_MS = 2000;
 
-function base64Encode(input: string): string {
-  return btoa(unescape(encodeURIComponent(input)));
+function base64Encode(input: string): { output: string; error: string | null } {
+  try {
+    return { output: encodeUtf8ToBase64(input), error: null };
+  } catch {
+    return { output: "", error: "Could not encode this input" };
+  }
 }
 
 function base64Decode(input: string): { output: string; error: string | null } {
@@ -21,8 +26,7 @@ function base64Decode(input: string): { output: string; error: string | null } {
     return { output: "", error: null };
   }
   try {
-    const decoded = decodeURIComponent(escape(atob(trimmed)));
-    return { output: decoded, error: null };
+    return { output: decodeBase64ToUtf8(trimmed), error: null };
   } catch {
     return { output: "", error: "Invalid Base64" };
   }
@@ -35,7 +39,7 @@ export default function Base64Page() {
 
   const { output, error } = useMemo(() => {
     if (direction === "encode") {
-      return { output: base64Encode(input), error: null };
+      return base64Encode(input);
     }
     return base64Decode(input);
   }, [direction, input]);

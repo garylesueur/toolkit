@@ -19,6 +19,7 @@ import {
   RiFileCodeLine,
   RiFileImageLine,
   RiFileInfoLine,
+  RiFilePdf2Line,
   RiFileListLine,
   RiFileReduceLine,
   RiFileShieldLine,
@@ -47,6 +48,7 @@ import {
   RiRouterLine,
   RiRulerLine,
   RiScissorsCutLine,
+  RiSearchEyeLine,
   RiServerLine,
   RiShieldKeyholeLine,
   RiSortAsc,
@@ -55,6 +57,7 @@ import {
   RiTimeLine,
   RiMagicLine,
   RiShape2Line,
+  RiWifiLine,
 } from "@remixicon/react";
 
 export type Tool = {
@@ -607,6 +610,33 @@ export const tools: Tool[] = [
     icon: RiMarkdownLine,
     tags: ["pdf", "conversion", "text"],
     dateAdded: "2026-04-23",
+  },
+  {
+    name: "What Is My IP Address",
+    description:
+      "See the public IP address a server actually sees, whether you have IPv6, and the headers behind it.",
+    href: "/tools/my-ip",
+    icon: RiWifiLine,
+    tags: ["network", "dev-utils"],
+    dateAdded: "2026-07-30",
+  },
+  {
+    name: "Domain Inspector",
+    description:
+      "Look up a domain's registration data over RDAP alongside its live DNS records — registrar, dates, status codes, and nameservers.",
+    href: "/tools/domain-inspector",
+    icon: RiSearchEyeLine,
+    tags: ["network", "dev-utils", "seo"],
+    dateAdded: "2026-07-30",
+  },
+  {
+    name: "Markdown to PDF",
+    description:
+      "Typeset GitHub-flavoured Markdown as a PDF — tables, task lists, and code blocks included — with a choice of themes.",
+    href: "/tools/markdown-to-pdf",
+    icon: RiFilePdf2Line,
+    tags: ["pdf", "conversion", "text", "generation"],
+    dateAdded: "2026-07-30",
   },
 ];
 

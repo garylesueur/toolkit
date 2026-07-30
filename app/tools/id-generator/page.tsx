@@ -28,47 +28,51 @@ function nanoId(length = 21): string {
   return result;
 }
 
-/** Encodes a buffer to Crockford Base32 (used for ULID). */
-function encodeCrockfordBase32(buffer: Uint8Array): string {
-  const alphabet = CROCKFORD_BASE32;
-  let result = "";
-  let bits = 0;
-  let value = 0;
+const BITS_PER_CHAR = 5;
+const CHAR_MASK = BigInt(0b11111);
 
-  for (const byte of buffer) {
-    value = (value << 8) | byte;
-    bits += 8;
-    while (bits >= 5) {
-      bits -= 5;
-      result += alphabet[(value >>> bits) & 31];
-    }
-  }
-  if (bits > 0) {
-    result += alphabet[(value << (5 - bits)) & 31];
+/**
+ * Encodes an integer as exactly `charCount` Crockford Base32 characters.
+ *
+ * Working from a single integer keeps the value right-aligned in the output.
+ * A byte-at-a-time encoder has to do something with the leftover bits when the
+ * input is not a multiple of 5 — and appending them shifted *left* silently
+ * multiplies the value (a 48-bit timestamp came out 4× too large, dating every
+ * ULID to the year 2196).
+ */
+function encodeCrockfordBase32(value: bigint, charCount: number): string {
+  let result = "";
+  for (let i = charCount - 1; i >= 0; i -= 1) {
+    const shift = BigInt(i * BITS_PER_CHAR);
+    result += CROCKFORD_BASE32[Number((value >> shift) & CHAR_MASK)];
   }
   return result;
 }
 
+const ULID_TIME_CHARS = 10;
+const ULID_RANDOM_BYTES = 10;
+const ULID_RANDOM_CHARS = 16;
+
+function bytesToBigInt(bytes: Uint8Array): bigint {
+  let value = BigInt(0);
+  for (const byte of bytes) value = (value << BigInt(8)) | BigInt(byte);
+  return value;
+}
+
 /** Generates a ULID: 10 chars timestamp + 16 chars random, Crockford Base32. */
 function ulid(): string {
-  const timestamp = Date.now();
-  const timestampBytes = new Uint8Array(6);
-  timestampBytes[0] = (timestamp >>> 40) & 0xff;
-  timestampBytes[1] = (timestamp >>> 32) & 0xff;
-  timestampBytes[2] = (timestamp >>> 24) & 0xff;
-  timestampBytes[3] = (timestamp >>> 16) & 0xff;
-  timestampBytes[4] = (timestamp >>> 8) & 0xff;
-  timestampBytes[5] = timestamp & 0xff;
+  /**
+   * The timestamp is 48 bits, wider than the 32-bit operands JS bitwise
+   * operators coerce to — `Date.now() >>> 40` silently shifts by `40 % 32`.
+   * BigInt is the only way to handle the full width.
+   */
+  const timestamp = BigInt(Date.now());
+  const randomBytes = crypto.getRandomValues(new Uint8Array(ULID_RANDOM_BYTES));
 
-  const randomBytes = crypto.getRandomValues(new Uint8Array(10));
-  const timePart = encodeCrockfordBase32(timestampBytes)
-    .padStart(10, "0")
-    .slice(-10);
-  const randomPart = encodeCrockfordBase32(randomBytes)
-    .padStart(16, "0")
-    .slice(-16);
-
-  return timePart + randomPart;
+  return (
+    encodeCrockfordBase32(timestamp, ULID_TIME_CHARS) +
+    encodeCrockfordBase32(bytesToBigInt(randomBytes), ULID_RANDOM_CHARS)
+  );
 }
 
 function generateAll(): IdEntry[] {
@@ -130,40 +134,31 @@ export default function IdGeneratorPage() {
       <div className="mt-8 space-y-3">
         {ids.map((entry) => {
           const isCopied = copiedFormat === entry.format;
+          /*
+           * One real <button> for the whole row rather than a role="button"
+           * div wrapping a nested copy button — a button may not contain
+           * another button, and both fired the same copy action anyway.
+           */
           return (
-            <div
+            <button
               key={entry.format}
-              role="button"
-              tabIndex={0}
+              type="button"
               onClick={() => handleRowClick(entry)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleRowClick(entry);
-                }
-              }}
-              className="flex cursor-pointer items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-colors hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={isCopied ? "Copied" : `Copy ${entry.format}`}
+              className="flex w-full cursor-pointer items-center gap-3 rounded-lg border bg-card px-4 py-3 text-left transition-colors hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Badge variant="secondary">{entry.format}</Badge>
               <code className="min-w-0 flex-1 truncate font-mono text-sm">
                 {entry.value}
               </code>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  void handleCopy(entry);
-                }}
-                aria-label={isCopied ? "Copied" : `Copy ${entry.format}`}
-              >
+              <span className="text-muted-foreground flex size-8 shrink-0 items-center justify-center">
                 {isCopied ? (
                   <RiCheckLine className="size-4 text-green-600 dark:text-green-500" />
                 ) : (
                   <RiFileCopyLine className="size-4" />
                 )}
-              </Button>
-            </div>
+              </span>
+            </button>
           );
         })}
       </div>

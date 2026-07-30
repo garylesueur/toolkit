@@ -53,6 +53,28 @@ function getIsoWeekYear(date: Date): number {
   return d.getUTCFullYear();
 }
 
+const ISO_THURSDAY = 4;
+const ISO_WEDNESDAY = 3;
+const LONG_YEAR_WEEKS = 53;
+const SHORT_YEAR_WEEKS = 52;
+
+function isLeapYear(year: number): boolean {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+/**
+ * Most ISO years have 52 weeks; a year only has 53 when it starts on a Thursday,
+ * or on a Wednesday in a leap year. Without this check, asking for "week 53" of
+ * a 52-week year silently returns the dates of week 1 of the following year.
+ */
+function getIsoWeeksInYear(year: number): number {
+  const firstDay = new Date(Date.UTC(year, 0, 1)).getUTCDay();
+  const startsLongYear =
+    firstDay === ISO_THURSDAY ||
+    (isLeapYear(year) && firstDay === ISO_WEDNESDAY);
+  return startsLongYear ? LONG_YEAR_WEEKS : SHORT_YEAR_WEEKS;
+}
+
 interface WeekDateRange {
   monday: Date;
   sunday: Date;
@@ -121,16 +143,28 @@ export default function WeekNumberPage() {
 
   const weekNum = weekInput.trim() !== "" ? Number(weekInput) : null;
   const yearNum = yearInput.trim() !== "" ? Number(yearInput) : null;
+  const weeksInYear =
+    yearNum !== null && Number.isInteger(yearNum)
+      ? getIsoWeeksInYear(yearNum)
+      : null;
   const isWeekValid =
     weekNum !== null &&
     yearNum !== null &&
+    weeksInYear !== null &&
     Number.isInteger(weekNum) &&
     Number.isInteger(yearNum) &&
     weekNum >= MIN_WEEK &&
-    weekNum <= MAX_WEEK;
+    weekNum <= weeksInYear;
   const weekRange = isWeekValid
     ? getDateRangeForIsoWeek(weekNum, yearNum)
     : null;
+  const weekOutOfRange =
+    weekNum !== null &&
+    yearNum !== null &&
+    weeksInYear !== null &&
+    Number.isInteger(weekNum) &&
+    weekNum > weeksInYear &&
+    weekNum <= MAX_WEEK;
 
   return (
     <div className="space-y-8">
@@ -222,6 +256,13 @@ export default function WeekNumberPage() {
             />
           </div>
         </div>
+
+        {weekOutOfRange && (
+          <p className="text-destructive text-sm">
+            {yearNum} has only {weeksInYear} ISO weeks, so week {weekNum} does
+            not exist.
+          </p>
+        )}
 
         {weekRange && (
           <div className="space-y-2">

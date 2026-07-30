@@ -17,28 +17,36 @@ export async function renderPageThumbnail(
   scale = 0.4,
 ): Promise<string> {
   let pdf: PDFDocumentProxy;
+  // Only destroy a document we opened ourselves; a caller-supplied proxy is
+  // still theirs to manage.
+  let ownsDocument = false;
 
   if (source instanceof Uint8Array) {
     const pdfjs = await getPdfjs();
     pdf = await pdfjs.getDocument({ data: source }).promise;
+    ownsDocument = true;
   } else {
     pdf = source;
   }
 
-  const page = await pdf.getPage(pageIndex + 1); // PDF.js uses 1-based
-  const viewport = page.getViewport({ scale });
+  try {
+    const page = await pdf.getPage(pageIndex + 1); // PDF.js uses 1-based
+    const viewport = page.getViewport({ scale });
 
-  const canvas = document.createElement("canvas");
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
+    const canvas = document.createElement("canvas");
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
 
-  await page.render({
-    canvasContext: canvas.getContext("2d")!,
-    viewport,
-    canvas,
-  }).promise;
+    await page.render({
+      canvasContext: canvas.getContext("2d")!,
+      viewport,
+      canvas,
+    }).promise;
 
-  return canvas.toDataURL("image/png");
+    return canvas.toDataURL("image/png");
+  } finally {
+    if (ownsDocument) await pdf.loadingTask.destroy();
+  }
 }
 
 /** Render thumbnails for all pages. */
@@ -48,11 +56,15 @@ export async function renderAllThumbnails(
 ): Promise<string[]> {
   const pdfjs = await getPdfjs();
   const pdf = await pdfjs.getDocument({ data: bytes }).promise;
-  const results: string[] = [];
 
-  for (let i = 0; i < pdf.numPages; i++) {
-    results.push(await renderPageThumbnail(pdf, i, scale));
+  try {
+    const results: string[] = [];
+    for (let i = 0; i < pdf.numPages; i++) {
+      results.push(await renderPageThumbnail(pdf, i, scale));
+    }
+    return results;
+  } finally {
+    // Without this the worker holds every document ever opened in the session.
+    await pdf.loadingTask.destroy();
   }
-
-  return results;
 }

@@ -7,19 +7,19 @@ export function createWebSiteJsonLd(): JsonLdDocument {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Toolkit",
-    url: getSiteUrl(),
-    description:
+    "name": "Toolkit",
+    "url": getSiteUrl(),
+    "description":
       "A growing collection of handy developer utilities — no sign-ups, no nonsense.",
-    author: {
+    "author": {
       "@type": "Person",
-      name: "Gary Le Sueur",
+      "name": "Gary Le Sueur",
     },
-    potentialAction: {
+    "potentialAction": {
       "@type": "SearchAction",
-      target: {
+      "target": {
         "@type": "EntryPoint",
-        urlTemplate: `${canonicalPath("/")}?q={search_term_string}`,
+        "urlTemplate": `${canonicalPath("/")}?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },

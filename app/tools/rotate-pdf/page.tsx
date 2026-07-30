@@ -34,6 +34,7 @@ export default function RotatePdfPage() {
     new Map(),
   );
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const rotateAll = useCallback(
     (direction: 90 | 270) => {
@@ -61,10 +62,15 @@ export default function RotatePdfPage() {
   const handleSave = useCallback(async () => {
     if (!pdfBytes || rotations.size === 0) return;
     setSaving(true);
+    setSaveError(null);
     try {
       const result = await rotatePdfPages(pdfBytes, rotations);
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
       await downloadPdf(result, `${baseName}-rotated.pdf`);
+    } catch (err) {
+      setSaveError(
+        err instanceof Error ? err.message : "Could not rotate the PDF.",
+      );
     } finally {
       setSaving(false);
     }
@@ -145,6 +151,8 @@ export default function RotatePdfPage() {
               </Button>
             </div>
           </div>
+
+          {saveError && <p className="text-destructive text-sm">{saveError}</p>}
 
           <PageThumbnailGrid
             thumbnails={thumbnails}

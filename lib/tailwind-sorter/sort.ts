@@ -214,21 +214,34 @@ function stripVariants(className: string): string {
  * the category prefix list. Returns `FALLBACK_CATEGORY_INDEX` for unrecognised
  * utilities so they sort to the end.
  */
+/**
+ * Picks the category whose matching prefix is longest, not merely the first one
+ * declared. `border-collapse` matches both the Borders prefix `border` and the
+ * Tables prefix `border-collapse`; returning on first match would file it under
+ * Borders and leave the Tables entries permanently unreachable.
+ */
 function getCategoryIndex(baseUtility: string): number {
+  let bestIndex = FALLBACK_CATEGORY_INDEX;
+  let bestPrefixLength = -1;
+
   for (let i = 0; i < CATEGORY_ORDER.length; i++) {
     const category = CATEGORY_ORDER[i];
     for (const prefix of category.prefixes) {
-      if (
+      const matches =
         baseUtility === prefix ||
         baseUtility.startsWith(`${prefix}-`) ||
         baseUtility.startsWith(`-${prefix}-`) ||
-        baseUtility === `-${prefix}`
-      ) {
-        return i;
+        baseUtility === `-${prefix}`;
+
+      // Strictly greater, so equal-length prefixes keep declaration order.
+      if (matches && prefix.length > bestPrefixLength) {
+        bestPrefixLength = prefix.length;
+        bestIndex = i;
       }
     }
   }
-  return FALLBACK_CATEGORY_INDEX;
+
+  return bestIndex;
 }
 
 interface IndexedClass {

@@ -10,10 +10,13 @@ import { Textarea } from "@/components/ui/textarea";
 const COPY_RESET_MS = 2000;
 
 /**
- * Matches 13-digit (millisecond) or 10-digit (second) numeric sequences
- * on word boundaries so embedded numbers in longer strings are ignored.
+ * Matches 13-digit (millisecond) or 10-digit (second) numeric sequences,
+ * optionally signed. The guards either side stop us matching a slice of a
+ * longer number or the fractional part of a decimal. A leading `-` has to be
+ * part of the match — `\b` sits *after* the sign, so a bare `\b\d{10}\b` reads
+ * `-1700000000` as positive and annotates it with a date 108 years out.
  */
-const EPOCH_PATTERN = /\b(\d{13}|\d{10})\b/g;
+const EPOCH_PATTERN = /(?<![\w.])(-?\d{13}|-?\d{10})(?![\w.])/g;
 
 /** Minimum 10-digit epoch in seconds: 2001-09-09T01:46:40Z */
 const MIN_EPOCH_SECONDS = 1_000_000_000;
@@ -33,11 +36,13 @@ interface ConversionResult {
  * Unix-epoch range (seconds or milliseconds).
  */
 function isPlausibleEpoch(value: number, digitCount: number): boolean {
+  // Range-check the magnitude so pre-1970 (negative) timestamps qualify too.
+  const magnitude = Math.abs(value);
   if (digitCount === 13) {
-    const seconds = value / MS_PER_SECOND;
+    const seconds = magnitude / MS_PER_SECOND;
     return seconds >= MIN_EPOCH_SECONDS && seconds <= MAX_EPOCH_SECONDS;
   }
-  return value >= MIN_EPOCH_SECONDS && value <= MAX_EPOCH_SECONDS;
+  return magnitude >= MIN_EPOCH_SECONDS && magnitude <= MAX_EPOCH_SECONDS;
 }
 
 function convertEpochs(text: string): ConversionResult {
@@ -45,7 +50,7 @@ function convertEpochs(text: string): ConversionResult {
 
   const output = text.replace(EPOCH_PATTERN, (match) => {
     const value = Number(match);
-    const digitCount = match.length;
+    const digitCount = match.replace("-", "").length;
 
     if (!isPlausibleEpoch(value, digitCount)) {
       return match;

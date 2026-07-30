@@ -6,11 +6,10 @@ import {
   RiDeleteBin6Line,
   RiEraserLine,
 } from "@remixicon/react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 
 import { PdfDropZone } from "@/components/pdf/pdf-drop-zone";
 import { PrivacyBanner } from "@/components/privacy-banner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

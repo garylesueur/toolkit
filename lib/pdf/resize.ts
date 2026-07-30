@@ -1,5 +1,7 @@
 import { PDFDocument } from "pdf-lib";
 
+import { loadPdfBytes } from "./load";
+
 type ResizeOptions = {
   width: number;
   height: number;
@@ -13,7 +15,7 @@ export async function resizePdfPages(
   sourceBytes: Uint8Array,
   options: ResizeOptions,
 ): Promise<PDFDocument> {
-  const pdfDoc = await PDFDocument.load(sourceBytes);
+  const pdfDoc = await loadPdfBytes(sourceBytes);
   const allPages = pdfDoc.getPages();
 
   const indices =

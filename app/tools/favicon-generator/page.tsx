@@ -163,7 +163,8 @@ export default function FaviconGeneratorPage() {
       </PrivacyBanner>
 
       {/* Drop zone */}
-      <div
+      <button
+        type="button"
         onDragOver={(e) => {
           e.preventDefault();
           setDragOver(true);
@@ -171,7 +172,7 @@ export default function FaviconGeneratorPage() {
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
-        className={`mt-8 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 transition-colors ${
+        className={`mt-8 flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
           dragOver
             ? "border-primary bg-primary/5"
             : "border-border hover:border-muted-foreground/40"
@@ -213,7 +214,7 @@ export default function FaviconGeneratorPage() {
             e.target.value = "";
           }}
         />
-      </div>
+      </button>
 
       {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 

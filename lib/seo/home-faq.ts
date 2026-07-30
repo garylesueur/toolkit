@@ -41,14 +41,14 @@ export function createHomeFaqJsonLd(): JsonLdDocument {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: HOME_FAQ_ITEMS.map((item) => ({
+    "mainEntity": HOME_FAQ_ITEMS.map((item) => ({
       "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
+      "name": item.question,
+      "acceptedAnswer": {
         "@type": "Answer",
-        text: item.answer,
+        "text": item.answer,
       },
     })),
-    url: canonicalPath("/"),
+    "url": canonicalPath("/"),
   };
 }

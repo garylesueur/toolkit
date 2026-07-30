@@ -10,8 +10,12 @@ const FIELD_BOUNDS: FieldBounds[] = [
   { min: 0, max: 23 }, // hour
   { min: 1, max: 31 }, // day of month
   { min: 1, max: 12 }, // month
-  { min: 0, max: 6 }, // day of week (0 = Sunday)
+  // 0 and 7 both mean Sunday in standard cron; 7 is normalised to 0 below.
+  { min: 0, max: 7 }, // day of week
 ];
+
+const SUNDAY_ALTERNATE = 7;
+const SUNDAY = 0;
 
 const MAX_ITERATIONS = 525_960; // ~1 year of minutes, safety limit
 
@@ -46,6 +50,17 @@ function expandField(field: string, bounds: FieldBounds): Set<number> {
       throw new Error(`Invalid cron field: ${field}`);
     }
 
+    // A zero or negative step would never advance the loop below.
+    if (step < 1) {
+      throw new Error(`Step must be 1 or greater in cron field: ${field}`);
+    }
+
+    // Silently expanding to nothing would render as "no upcoming runs" rather
+    // than telling the user their range is the wrong way round.
+    if (end < start) {
+      throw new Error(`Range start is after its end in cron field: ${field}`);
+    }
+
     for (let i = start; i <= end; i += step) {
       if (i >= bounds.min && i <= bounds.max) {
         values.add(i);
@@ -62,6 +77,19 @@ interface ParsedCron {
   daysOfMonth: Set<number>;
   months: Set<number>;
   daysOfWeek: Set<number>;
+  /** Whether each day field narrows the schedule — see `dateMatchesCron`. */
+  dayOfMonthRestricted: boolean;
+  dayOfWeekRestricted: boolean;
+}
+
+/** Collapses the alternate Sunday (7) onto the canonical one (0). */
+function normaliseDaysOfWeek(values: Set<number>): Set<number> {
+  if (!values.has(SUNDAY_ALTERNATE)) return values;
+
+  const normalised = new Set(values);
+  normalised.delete(SUNDAY_ALTERNATE);
+  normalised.add(SUNDAY);
+  return normalised;
 }
 
 function parseCronExpression(expression: string): ParsedCron {
@@ -75,17 +103,30 @@ function parseCronExpression(expression: string): ParsedCron {
     hours: expandField(parts[1], FIELD_BOUNDS[1]),
     daysOfMonth: expandField(parts[2], FIELD_BOUNDS[2]),
     months: expandField(parts[3], FIELD_BOUNDS[3]),
-    daysOfWeek: expandField(parts[4], FIELD_BOUNDS[4]),
+    daysOfWeek: normaliseDaysOfWeek(expandField(parts[4], FIELD_BOUNDS[4])),
+    dayOfMonthRestricted: parts[2] !== "*",
+    dayOfWeekRestricted: parts[4] !== "*",
   };
 }
 
 function dateMatchesCron(date: Date, cron: ParsedCron): boolean {
+  /**
+   * When both day fields are restricted, cron ORs them: `0 0 1 * 1` fires on
+   * the 1st of the month *and* on every Monday. ANDing the two would only fire
+   * on Mondays that happen to fall on the 1st.
+   */
+  const dayOfMonthMatches = cron.daysOfMonth.has(date.getDate());
+  const dayOfWeekMatches = cron.daysOfWeek.has(date.getDay());
+  const dayMatches =
+    cron.dayOfMonthRestricted && cron.dayOfWeekRestricted
+      ? dayOfMonthMatches || dayOfWeekMatches
+      : dayOfMonthMatches && dayOfWeekMatches;
+
   return (
     cron.minutes.has(date.getMinutes()) &&
     cron.hours.has(date.getHours()) &&
-    cron.daysOfMonth.has(date.getDate()) &&
-    cron.months.has(date.getMonth() + 1) &&
-    cron.daysOfWeek.has(date.getDay())
+    dayMatches &&
+    cron.months.has(date.getMonth() + 1)
   );
 }
 

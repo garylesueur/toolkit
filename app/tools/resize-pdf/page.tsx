@@ -42,6 +42,7 @@ export default function ResizePdfPage() {
   const [customHeight, setCustomHeight] = useState(842);
   const [scaleContent, setScaleContent] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const width = sizeKey === "custom" ? customWidth : PAGE_SIZES[sizeKey].width;
   const height =
@@ -50,6 +51,7 @@ export default function ResizePdfPage() {
   const handleSave = useCallback(async () => {
     if (!pdfBytes) return;
     setSaving(true);
+    setSaveError(null);
     try {
       const result = await resizePdfPages(pdfBytes, {
         width,
@@ -58,6 +60,10 @@ export default function ResizePdfPage() {
       });
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
       await downloadPdf(result, `${baseName}-resized.pdf`);
+    } catch (err) {
+      setSaveError(
+        err instanceof Error ? err.message : "Could not resize the PDF.",
+      );
     } finally {
       setSaving(false);
     }
@@ -171,6 +177,8 @@ export default function ResizePdfPage() {
               </Button>
             </div>
           </div>
+
+          {saveError && <p className="text-destructive text-sm">{saveError}</p>}
 
           <PageThumbnailGrid thumbnails={thumbnails} />
         </div>

@@ -59,7 +59,11 @@ function parseInput(raw: string, base: NumberBase): ParseResult {
   const cleaned = raw.trim().toLowerCase();
   if (!cleaned) return { value: null, error: null };
 
-  let normalized = cleaned;
+  // Pull the sign off before validating: BigInt handles negatives fine, but the
+  // per-character check below would otherwise reject "-" as an invalid digit.
+  const isNegative = cleaned.startsWith("-");
+  let normalized = isNegative ? cleaned.slice(1) : cleaned;
+
   if (base === "hexadecimal") normalized = normalized.replace(/^0x/, "");
   if (base === "octal") normalized = normalized.replace(/^0o/, "");
   if (base === "binary") normalized = normalized.replace(/^0b/, "");
@@ -81,8 +85,8 @@ function parseInput(raw: string, base: NumberBase): ParseResult {
 
   try {
     const prefix = BIGINT_PREFIX[base];
-    const value = BigInt(`${prefix}${normalized}`);
-    return { value, error: null };
+    const magnitude = BigInt(`${prefix}${normalized}`);
+    return { value: isNegative ? -magnitude : magnitude, error: null };
   } catch {
     return { value: null, error: "Could not parse the input as a number." };
   }
@@ -94,11 +98,15 @@ interface FormatResult {
 }
 
 function formatAllBases(value: bigint): FormatResult[] {
+  const isNegative = value < BigInt(0);
+  const magnitude = isNegative ? -value : value;
+
   return BASE_OPTIONS.map((option) => {
-    const raw = value.toString(option.radix);
+    const raw = magnitude.toString(option.radix);
     const formatted = option.radix === 16 ? raw.toUpperCase() : raw;
-    const display = option.prefix ? `${option.prefix}${formatted}` : formatted;
-    return { label: option.label, display };
+    // The sign belongs outside the radix prefix — "-0xFF", never "0x-FF".
+    const body = option.prefix ? `${option.prefix}${formatted}` : formatted;
+    return { label: option.label, display: isNegative ? `-${body}` : body };
   });
 }
 

@@ -392,9 +392,10 @@ export default function PerspectiveMockupPage() {
               </button>
             </div>
           ) : (
-            <div
+            <button
+              type="button"
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors",
+                "flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 dragOverPrimary
                   ? "border-primary bg-primary/5"
                   : "border-muted-foreground/25 hover:border-muted-foreground/50",
@@ -418,7 +419,7 @@ export default function PerspectiveMockupPage() {
                 className="hidden"
                 onChange={(e) => handleInputChange(e, "primary")}
               />
-            </div>
+            </button>
           )}
         </div>
 
@@ -445,9 +446,10 @@ export default function PerspectiveMockupPage() {
               </button>
             </div>
           ) : (
-            <div
+            <button
+              type="button"
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors",
+                "flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 dragOverSecondary
                   ? "border-primary bg-primary/5"
                   : "border-muted-foreground/25 hover:border-muted-foreground/50",
@@ -471,7 +473,7 @@ export default function PerspectiveMockupPage() {
                 className="hidden"
                 onChange={(e) => handleInputChange(e, "secondary")}
               />
-            </div>
+            </button>
           )}
         </div>
       </div>

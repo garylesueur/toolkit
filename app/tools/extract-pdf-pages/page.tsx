@@ -31,6 +31,7 @@ export default function ExtractPdfPagesPage() {
   } = usePdfDocument();
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const togglePage = useCallback((index: number) => {
     setSelected((prev) => {
@@ -48,11 +49,16 @@ export default function ExtractPdfPagesPage() {
   const handleSave = useCallback(async () => {
     if (!pdfBytes || selected.size === 0) return;
     setSaving(true);
+    setSaveError(null);
     try {
       const indices = Array.from(selected).sort((a, b) => a - b);
       const result = await extractPdfPages(pdfBytes, indices);
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
       await downloadPdf(result, `${baseName}-extracted.pdf`);
+    } catch (err) {
+      setSaveError(
+        err instanceof Error ? err.message : "Could not extract pages.",
+      );
     } finally {
       setSaving(false);
     }
@@ -135,6 +141,8 @@ export default function ExtractPdfPagesPage() {
               </Button>
             </div>
           </div>
+
+          {saveError && <p className="text-destructive text-sm">{saveError}</p>}
 
           <PageThumbnailGrid
             thumbnails={thumbnails}

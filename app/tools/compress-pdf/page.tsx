@@ -126,10 +126,14 @@ export default function CompressPdfPage() {
                   <Badge variant="secondary">
                     {formatBytes(result.compressedSize)}
                   </Badge>
+                  {/*
+                    Re-saving can legitimately make a PDF bigger. Reporting that
+                    as "no size reduction" hides it — say which way it went.
+                  */}
                   <Badge variant={saved > 0 ? "default" : "secondary"}>
-                    {saved > 0
-                      ? `−${formatBytes(saved)} (${savedPercent}%)`
-                      : "No size reduction"}
+                    {saved > 0 && `−${formatBytes(saved)} (${savedPercent}%)`}
+                    {saved === 0 && "No size change"}
+                    {saved < 0 && `+${formatBytes(-saved)} — already optimised`}
                   </Badge>
                 </>
               )}

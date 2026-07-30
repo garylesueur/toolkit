@@ -325,17 +325,30 @@ export default function OgPreviewPage() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<OgFetchResult | null>(null);
+  /**
+   * The URL that actually produced `result`. Deriving the preview's domain from
+   * the live input instead would let an edit after a successful fetch show one
+   * site's metadata under another site's domain — and resolve a relative
+   * `og:image` against the wrong origin.
+   */
+  const [fetchedUrl, setFetchedUrl] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  /** Guards against an earlier, slower fetch overwriting a newer result. */
+  const requestRef = useRef(0);
 
   const handleFetch = useCallback(async () => {
     const trimmed = url.trim();
     if (!trimmed) return;
 
+    const request = ++requestRef.current;
     setLoading(true);
     setResult(null);
 
     const fetchResult = await fetchAndParseOgTags(trimmed);
+    if (request !== requestRef.current) return;
+
     setResult(fetchResult);
+    setFetchedUrl(trimmed);
     setLoading(false);
   }, [url]);
 
@@ -349,7 +362,7 @@ export default function OgPreviewPage() {
   );
 
   const data = result?.ok ? result.data : null;
-  const pageUrl = normaliseUrl(url);
+  const pageUrl = normaliseUrl(fetchedUrl);
 
   const presentTags = data
     ? RECOMMENDED_TAGS.map((tag) => {

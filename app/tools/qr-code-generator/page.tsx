@@ -39,12 +39,15 @@ export default function QrCodeGeneratorPage() {
     useState<ErrorCorrectionLevel>("M");
   const [error, setError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  /** Monotonic id of the newest render, so stale ones can bail out. */
+  const generationRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     if (!text.trim()) {
+      generationRef.current++;
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -55,22 +58,32 @@ export default function QrCodeGeneratorPage() {
       return;
     }
 
-    let cancelled = false;
+    const generation = ++generationRef.current;
 
-    renderQrToCanvas(canvas, text, {
+    /**
+     * Rendered off-screen first, then blitted across only if this is still the
+     * newest request. Painting the visible canvas directly lets a slow, already
+     * superseded render finish last and leave a QR code for text the user has
+     * since changed — a cancelled flag around `setError` cannot prevent that,
+     * because the library has already drawn by the time the promise settles.
+     */
+    const offscreen = document.createElement("canvas");
+
+    renderQrToCanvas(offscreen, text, {
       errorCorrectionLevel: errorCorrection,
       width: QR_CANVAS_WIDTH,
     })
       .then(() => {
-        if (!cancelled) setError(null);
+        if (generation !== generationRef.current) return;
+        canvas.width = offscreen.width;
+        canvas.height = offscreen.height;
+        canvas.getContext("2d")?.drawImage(offscreen, 0, 0);
+        setError(null);
       })
       .catch((err: Error) => {
-        if (!cancelled) setError(err.message);
+        if (generation !== generationRef.current) return;
+        setError(err.message);
       });
-
-    return () => {
-      cancelled = true;
-    };
   }, [text, errorCorrection]);
 
   const handleDownloadPng = useCallback(() => {

@@ -8,7 +8,8 @@ This document tracks **what is shipped**, **what is hidden or broken**, and **ba
 
 ## Shipped (production)
 
-These tools are registered and appear on the home grid for normal builds (45 entries).
+These tools are registered and appear on the home grid for normal builds. `lib/tools.ts`
+is the source of truth — this table has drifted behind it and does not list every entry.
 
 | Tool                        | Route                             |
 | --------------------------- | --------------------------------- |
@@ -57,11 +58,44 @@ These tools are registered and appear on the home grid for normal builds (45 ent
 | Password Generator          | `/tools/password-generator`       |
 | Secret / Token Generator    | `/tools/secret-generator`         |
 | Browser Info                | `/tools/browser-info`             |
+| What Is My IP Address       | `/tools/my-ip`                    |
+| Domain Inspector            | `/tools/domain-inspector`         |
+| Markdown to PDF             | `/tools/markdown-to-pdf`          |
 
 **Implementation notes (for doc accuracy):**
 
 - **Hash Generator** — SHA-1, SHA-256, SHA-384, and SHA-512 via Web Crypto (not MD5).
 - **ID Generator** — See in-app options; registry text summarises supported ID styles.
+- **What Is My IP Address** — The first tool with a server dependency. `/api/ip` reads
+  `x-vercel-forwarded-for` / `x-real-ip` / `x-forwarded-for` and **must** keep its
+  `dynamic = "force-dynamic"` export: the root layout sets `revalidate = 31536000`, so
+  without it every visitor is served one cached build-time IP. Dual-stack detection calls
+  api4/api6.ipify.org from the browser.
+- **Domain Inspector** — Fully client-side. Resolves the authoritative RDAP server from
+  IANA's bootstrap files rather than going through `rdap.org`, which rate-limits hard and
+  returns 429s with no CORS headers. Not every TLD has RDAP (`.io`, `.de`, `.co` do not),
+  which is a first-class UI state rather than an error. DNS records come from Cloudflare DoH.
+- **Markdown to PDF** — pdfmake, with one `lib/markdown-pdf/` document builder shared by the
+  browser (`generate-client.ts`) and the MCP route (`generate-server.ts`). Roboto is served
+  from `public/fonts`; the standard PDF fonts (Times, Courier) need no glyph data but are
+  WinAnsi-only, so `glyphs.ts` substitutes or drops characters neither font can draw and
+  reports what changed. Remote images are never fetched — that would be an SSRF hole on the
+  server side.
+
+---
+
+## API routes
+
+The toolkit was client-only until July 2026. These are the exceptions:
+
+| Route                    | Purpose                                                       |
+| ------------------------ | ------------------------------------------------------------- |
+| `/api/ip`                | Reports the caller's IP as the edge sees it.                  |
+| `/api/mcp`               | Stateless MCP server exposing `markdown_to_pdf`. Bearer auth. |
+| `/api/cron/cleanup-pdfs` | Daily sweep of MCP-generated PDFs older than 24h from Blob.   |
+
+All of them set `dynamic = "force-dynamic"` and `revalidate = 0`. See the README for the
+environment variables they need.
 
 ---
 

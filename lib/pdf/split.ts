@@ -1,5 +1,7 @@
 import { PDFDocument } from "pdf-lib";
 
+import { loadPdfBytes } from "./load";
+
 export type SplitResult = {
   name: string;
   bytes: Uint8Array;
@@ -10,7 +12,7 @@ export async function splitPdfByPages(
   sourceBytes: Uint8Array,
   baseName: string,
 ): Promise<SplitResult[]> {
-  const source = await PDFDocument.load(sourceBytes);
+  const source = await loadPdfBytes(sourceBytes);
   const results: SplitResult[] = [];
 
   for (let i = 0; i < source.getPageCount(); i++) {
@@ -33,7 +35,7 @@ export async function splitPdfByRanges(
   ranges: number[][],
   baseName: string,
 ): Promise<SplitResult[]> {
-  const source = await PDFDocument.load(sourceBytes);
+  const source = await loadPdfBytes(sourceBytes);
   const results: SplitResult[] = [];
 
   for (let r = 0; r < ranges.length; r++) {

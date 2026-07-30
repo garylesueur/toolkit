@@ -37,7 +37,7 @@ export function PageThumbnailGrid({
           pageNumber={i + 1}
           selected={selectedPages?.has(i)}
           rotation={rotations?.get(i)}
-          onClick={() => onTogglePage?.(i)}
+          onClick={onTogglePage ? () => onTogglePage(i) : undefined}
           overlay={overlay?.(i)}
           draggable={draggable}
           onDragStart={draggable ? (e) => onDragStart?.(e, i) : undefined}
