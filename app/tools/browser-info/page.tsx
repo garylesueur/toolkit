@@ -17,7 +17,11 @@ import {
   createShareableUrl,
   extractSharedInfoFromHash,
 } from "@/lib/browser-info/share";
-import type { BrowserInfo, DecodedSummary } from "@/lib/browser-info/types";
+import type {
+  BrowserInfo,
+  DecodedSummary,
+  UaBrand,
+} from "@/lib/browser-info/types";
 
 const COPY_RESET_MS = 2000;
 
@@ -49,6 +53,11 @@ function formatWithUnit(
 ): string {
   if (value === null || value === undefined) return "Not supported";
   return `${value.toLocaleString()} ${unit}`;
+}
+
+function formatBrands(brands: UaBrand[] | null | undefined): string {
+  if (!brands || brands.length === 0) return "Not supported";
+  return brands.map(({ brand, version }) => `${brand} ${version}`).join(", ");
 }
 
 function DecodedSummaryCard({ decoded }: { decoded: DecodedSummary }) {
@@ -151,8 +160,16 @@ function buildSections(info: BrowserInfo): InfoSection[] {
 
   const gpuRendererValue = hw.gpu?.renderer
     ? formatValue(hw.gpu.renderer) +
-      (decoded?.gpuChipName ? ` (chip: ${decoded.gpuChipName})` : "")
+      (decoded?.gpuChipName ? ` (chip: ${decoded.gpuChipName})` : "") +
+      (hw.gpu.unmasked ? "" : " — masked by browser")
     : formatValue(hw.gpu?.renderer);
+
+  const webgpuValue = hw.webgpu
+    ? [
+        hw.webgpu.description,
+        [hw.webgpu.vendor, hw.webgpu.architecture].filter(Boolean).join(" "),
+      ].find((part) => part && part.length > 0) || "Available (no details)"
+    : "Not supported";
 
   const sections: InfoSection[] = [
     {
@@ -178,19 +195,49 @@ function buildSections(info: BrowserInfo): InfoSection[] {
         ...(bi.clientHints
           ? [
               {
+                label: "Client Hints — Brands",
+                value: formatBrands(
+                  bi.clientHints.fullVersionList ?? bi.clientHints.brands,
+                ),
+              },
+              {
+                label: "Client Hints — Full Version",
+                value: formatValue(bi.clientHints.uaFullVersion),
+              },
+              {
+                label: "Client Hints — Platform",
+                value: formatValue(bi.clientHints.platform),
+              },
+              {
+                label: "Client Hints — Platform Version",
+                value: formatValue(bi.clientHints.platformVersion),
+              },
+              {
                 label: "Client Hints — Architecture",
                 value: formatValue(bi.clientHints.architecture),
+              },
+              {
+                label: "Client Hints — Bitness",
+                value: formatValue(bi.clientHints.bitness),
+              },
+              {
+                label: "Client Hints — Model",
+                value: formatValue(bi.clientHints.model),
+              },
+              {
+                label: "Client Hints — Form Factors",
+                value: formatValue(bi.clientHints.formFactors),
               },
               {
                 label: "Client Hints — Mobile",
                 value: formatValue(bi.clientHints.mobile),
               },
               {
-                label: "Client Hints — Platform",
-                value: formatValue(bi.clientHints.platform),
+                label: "Client Hints — WOW64",
+                value: formatValue(bi.clientHints.wow64),
               },
             ]
-          : []),
+          : [{ label: "Client Hints", value: "Not supported" }]),
       ],
     },
     {
@@ -244,6 +291,7 @@ function buildSections(info: BrowserInfo): InfoSection[] {
         { label: "Device Memory", value: deviceMemoryValue },
         { label: "Max Touch Points", value: formatValue(hw.maxTouchPoints) },
         { label: "Touch Support", value: formatValue(hw.touchSupport) },
+        { label: "WebGPU Adapter", value: webgpuValue },
         ...(hw.gpu
           ? [
               { label: "GPU Vendor", value: formatValue(hw.gpu.vendor) },
@@ -442,18 +490,16 @@ export default function BrowserInfoPage() {
   }, []);
 
   const handleDetect = useCallback(async () => {
-    const info = detectAllBrowserInfo();
-    setBrowserInfo(info);
+    const info = await detectAllBrowserInfo();
     setViewState("results");
 
     let enrichedInfo: BrowserInfo = info;
     try {
-      const decoded = await decodeFromBrowserInfo(info);
-      enrichedInfo = { ...info, decoded };
-      setBrowserInfo(enrichedInfo);
+      enrichedInfo = { ...info, decoded: decodeFromBrowserInfo(info) };
     } catch (error) {
       console.error("Failed to decode browser info:", error);
     }
+    setBrowserInfo(enrichedInfo);
 
     try {
       const url = await createShareableUrl(
