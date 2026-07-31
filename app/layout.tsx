@@ -1,5 +1,5 @@
 import { Analytics } from "@vercel/analytics/next";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 
 import { JsonLd } from "@/components/json-ld";
@@ -56,13 +56,23 @@ export const metadata: Metadata = {
     images: [ROOT_OG_IMAGE.url],
   },
   manifest: "/site.webmanifest",
-  themeColor: "#09090b",
   robots: isPreviewDeployment()
     ? { index: false, follow: false }
     : { index: true, follow: true },
   ...(googleSiteVerification
     ? { verification: { google: googleSiteVerification } }
     : {}),
+};
+
+/**
+ * Next requires `themeColor` here rather than in the `metadata` export —
+ * it is silently dropped from `metadata` and no meta tag is emitted.
+ */
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+  ],
 };
 
 export default function RootLayout({

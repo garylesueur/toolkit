@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 
+import { ROOT_OG_IMAGE, ROOT_OG_IMAGE_PATH } from "@/lib/seo/root-og-image";
 import { canonicalPath } from "@/lib/site";
 import { tools } from "@/lib/tools";
 
-/** Path to the segment Open Graph image (`app/tools/opengraph-image.tsx`). */
-const TOOL_OPENGRAPH_IMAGE_PATH = "/tools/opengraph-image";
-
-const TOOL_OPENGRAPH_IMAGE = {
-  url: TOOL_OPENGRAPH_IMAGE_PATH,
-  width: 1200,
-  height: 630,
-  alt: "Toolkit — Developer utilities",
-} as const;
+/** Per-tool share image, prerendered by `app/api/og/[slug]/route.tsx`. */
+function toolOpenGraphImagePath(slug: string): string {
+  return `/api/og/${slug}`;
+}
 
 /**
  * Generates a Next.js `Metadata` object for a tool page.
@@ -29,19 +25,21 @@ export function createToolMetadata(slug: string): Metadata {
         title: "Tool not found",
         description: "That toolkit page does not exist.",
         url: canonicalPath("/"),
-        images: [TOOL_OPENGRAPH_IMAGE],
+        images: [ROOT_OG_IMAGE],
       },
       twitter: {
         card: "summary_large_image",
         title: "Tool not found",
         description: "That toolkit page does not exist.",
-        images: [TOOL_OPENGRAPH_IMAGE_PATH],
+        images: [ROOT_OG_IMAGE_PATH],
       },
       alternates: {
         canonical: "/",
       },
     };
   }
+
+  const imagePath = toolOpenGraphImagePath(slug);
 
   return {
     title: tool.name,
@@ -50,13 +48,20 @@ export function createToolMetadata(slug: string): Metadata {
       title: tool.name,
       description: tool.description,
       url: canonicalPath(tool.href),
-      images: [TOOL_OPENGRAPH_IMAGE],
+      images: [
+        {
+          url: imagePath,
+          width: 1200,
+          height: 630,
+          alt: `${tool.name} — Toolkit`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: tool.name,
       description: tool.description,
-      images: [TOOL_OPENGRAPH_IMAGE_PATH],
+      images: [imagePath],
     },
     alternates: {
       canonical: tool.href,

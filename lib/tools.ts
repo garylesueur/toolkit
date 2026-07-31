@@ -642,9 +642,17 @@ export const tools: Tool[] = [
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
-export const visibleTools = tools.filter(
-  (tool) => !tool.devOnly || isDevelopment,
-);
+function addedTime(tool: Tool): number {
+  return tool.dateAdded ? new Date(tool.dateAdded).getTime() : 0;
+}
+
+/**
+ * Newest tools first. Sort is stable, so tools sharing a `dateAdded`
+ * keep their registry order, and any tool without one sorts last.
+ */
+export const visibleTools = tools
+  .filter((tool) => !tool.devOnly || isDevelopment)
+  .sort((a, b) => addedTime(b) - addedTime(a));
 
 const RELATED_TOOLS_COUNT = 4;
 
