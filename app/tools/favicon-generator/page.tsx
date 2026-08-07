@@ -6,14 +6,19 @@ import {
   RiFileCopyLine,
   RiCheckLine,
 } from "@remixicon/react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
+import { ImageToolHandoff } from "@/components/image-tool-handoff";
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { generateFavicons, buildHeadSnippet } from "@/lib/favicon/generate";
 import { faviconTargets } from "@/lib/favicon/sizes";
+import {
+  clearImageHandoff,
+  readImageHandoff,
+} from "@/lib/tool-handoff/storage";
 
 type GeneratedPreview = {
   filename: string;
@@ -23,6 +28,7 @@ type GeneratedPreview = {
 
 export default function FaviconGeneratorPage() {
   const [sourceImage, setSourceImage] = useState<HTMLImageElement | null>(null);
+  const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   const [sourceDimensions, setSourceDimensions] = useState<{
     w: number;
@@ -39,6 +45,7 @@ export default function FaviconGeneratorPage() {
 
   const reset = useCallback(() => {
     setSourceImage(null);
+    setSourceFile(null);
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
     setSourceUrl(null);
     setSourceDimensions(null);
@@ -51,10 +58,14 @@ export default function FaviconGeneratorPage() {
   }, [sourceUrl]);
 
   const loadFile = useCallback(
-    (file: File) => {
+    (file: File, fromHandoff = false) => {
       reset();
 
-      if (!file.type.startsWith("image/png")) {
+      if (
+        fromHandoff
+          ? !file.type.startsWith("image/")
+          : !file.type.startsWith("image/png")
+      ) {
         setError("Please upload a PNG file.");
         return;
       }
@@ -71,6 +82,7 @@ export default function FaviconGeneratorPage() {
           return;
         }
         setSourceImage(img);
+        setSourceFile(file);
         setSourceUrl(url);
         setSourceDimensions({ w: img.naturalWidth, h: img.naturalHeight });
       };
@@ -82,6 +94,36 @@ export default function FaviconGeneratorPage() {
     },
     [reset],
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    readImageHandoff()
+      .then(async (handoff) => {
+        if (!handoff || cancelled) return;
+        loadFile(
+          new File([handoff.blob], handoff.filename, {
+            type: handoff.blob.type,
+          }),
+          true,
+        );
+        await clearImageHandoff();
+      })
+      .catch(() => {
+        if (!cancelled) setError("The image handoff could not be loaded.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [loadFile]);
+
+  const getSourceArtifact = useCallback(async () => {
+    if (!sourceFile) throw new Error("No source icon is available.");
+    return {
+      blob: sourceFile,
+      filename: sourceFile.name,
+      sourceHref: "/tools/favicon-generator",
+    };
+  }, [sourceFile]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -186,7 +228,7 @@ export default function FaviconGeneratorPage() {
               className="size-24 rounded-md object-contain"
             />
             <p className="text-sm font-medium">
-              {sourceDimensions?.w}×{sourceDimensions?.h} PNG
+              {sourceDimensions?.w}×{sourceDimensions?.h} image
             </p>
             <p className="text-muted-foreground text-xs">
               Click or drop to replace
@@ -220,7 +262,7 @@ export default function FaviconGeneratorPage() {
 
       {/* Actions */}
       {sourceImage && (
-        <div className="mt-6 flex gap-3">
+        <div className="mt-6 flex flex-wrap gap-3">
           <Button onClick={handleGenerate} disabled={generating}>
             {generating ? "Generating…" : "Generate favicons"}
           </Button>
@@ -230,6 +272,16 @@ export default function FaviconGeneratorPage() {
               Download ZIP
             </Button>
           )}
+          <ImageToolHandoff
+            getArtifact={getSourceArtifact}
+            destinations={[
+              { label: "App Icon Bundle", href: "/tools/app-icon-bundle" },
+              {
+                label: "Chrome Extension Icons",
+                href: "/tools/chrome-extension-icons",
+              },
+            ]}
+          />
         </div>
       )}
 

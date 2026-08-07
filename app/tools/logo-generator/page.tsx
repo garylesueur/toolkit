@@ -8,6 +8,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useEffect, useCallback } from "react";
 
+import { ImageToolHandoff } from "@/components/image-tool-handoff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +20,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePersistedState } from "@/hooks/use-persisted-state";
-import { storeIconBundleHandoff } from "@/lib/app-icon-bundle/handoff";
 import {
   downloadIco,
   downloadPng,
@@ -49,6 +49,7 @@ import type {
   FontOption,
   GradientDirection,
 } from "@/lib/logo-generator/types";
+import { storeImageHandoff } from "@/lib/tool-handoff/storage";
 import { cn } from "@/lib/utils";
 
 const RADIUS_OPTIONS = [
@@ -75,6 +76,7 @@ const HORIZONTAL_MAX = 200;
 
 const ICON_SIZE_MIN = 30;
 const ICON_SIZE_MAX = 200;
+const LOGO_HANDOFF_SIZE = 1024;
 
 /** Track which Google Font stylesheets have been injected */
 const loadedFonts = new Set<string>();
@@ -210,13 +212,27 @@ export default function LogoGeneratorPage() {
     }
   }, [svgString, exportPrefix]);
 
-  const handleContinueToAppIcons = useCallback(() => {
-    storeIconBundleHandoff({
+  const getLogoArtifact = useCallback(
+    async () => ({
+      blob: new Blob(
+        [
+          svgString.replace(
+            "<svg ",
+            `<svg width="${LOGO_HANDOFF_SIZE}" height="${LOGO_HANDOFF_SIZE}" `,
+          ),
+        ],
+        { type: "image/svg+xml" },
+      ),
       filename: `${exportPrefix}-logo.svg`,
-      svg: svgString,
-    });
+      sourceHref: "/tools/logo-generator",
+    }),
+    [exportPrefix, svgString],
+  );
+
+  const handleContinueToAppIcons = useCallback(async () => {
+    await storeImageHandoff(await getLogoArtifact());
     router.push("/tools/app-icon-bundle");
-  }, [exportPrefix, router, svgString]);
+  }, [getLogoArtifact, router]);
 
   function handleLettersChange(value: string) {
     const cleaned = value
@@ -852,6 +868,20 @@ export default function LogoGeneratorPage() {
               Continue to app icon bundle
               <RiArrowRightLine data-icon="inline-end" aria-hidden />
             </Button>
+
+            <ImageToolHandoff
+              getArtifact={getLogoArtifact}
+              destinations={[
+                {
+                  label: "Favicon Generator",
+                  href: "/tools/favicon-generator",
+                },
+                {
+                  label: "Chrome Extension Icons",
+                  href: "/tools/chrome-extension-icons",
+                },
+              ]}
+            />
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import {
 } from "@remixicon/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { ImageToolHandoff } from "@/components/image-tool-handoff";
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +24,10 @@ import type {
   AppIconPlatform,
   AppIconSource,
 } from "@/lib/app-icon-bundle/types";
+import {
+  clearImageHandoff,
+  readImageHandoff,
+} from "@/lib/tool-handoff/storage";
 import { cn } from "@/lib/utils";
 
 type SourceDetails = {
@@ -51,6 +56,7 @@ function safeArchiveName(filename: string): string {
 
 export default function AppIconBundlePage() {
   const [source, setSource] = useState<AppIconSource | null>(null);
+  const [sourceBlob, setSourceBlob] = useState<Blob | null>(null);
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   const [sourceDetails, setSourceDetails] = useState<SourceDetails | null>(
     null,
@@ -83,6 +89,7 @@ export default function AppIconBundlePage() {
     const image = new Image();
     image.onload = () => {
       setSource(image);
+      setSourceBlob(blob);
       if (sourceUrlRef.current) URL.revokeObjectURL(sourceUrlRef.current);
       sourceUrlRef.current = url;
       setSourceUrl(url);
@@ -102,18 +109,46 @@ export default function AppIconBundlePage() {
   }, []);
 
   useEffect(() => {
-    try {
-      const handoff = takeIconBundleHandoff();
-      if (handoff) {
-        loadBlob(
-          new Blob([handoff.svg], { type: "image/svg+xml" }),
-          handoff.filename,
-        );
+    let cancelled = false;
+    async function loadHandoff() {
+      try {
+        const sharedHandoff = await readImageHandoff();
+        if (sharedHandoff && !cancelled) {
+          loadBlob(sharedHandoff.blob, sharedHandoff.filename);
+          await clearImageHandoff();
+          return;
+        }
+
+        const legacyHandoff = takeIconBundleHandoff();
+        if (legacyHandoff && !cancelled) {
+          loadBlob(
+            new Blob([legacyHandoff.svg], { type: "image/svg+xml" }),
+            legacyHandoff.filename,
+          );
+        }
+      } catch {
+        if (!cancelled) {
+          setError("The icon passed from another tool could not be loaded.");
+        }
       }
-    } catch {
-      setError("The icon passed from the logo generator could not be loaded.");
     }
+
+    loadHandoff();
+    return () => {
+      cancelled = true;
+    };
   }, [loadBlob]);
+
+  const getSourceArtifact = useCallback(async () => {
+    if (!sourceBlob || !sourceDetails) {
+      throw new Error("No source icon is available.");
+    }
+    return {
+      blob: sourceBlob,
+      filename: sourceDetails.filename,
+      sourceHref: "/tools/app-icon-bundle",
+    };
+  }, [sourceBlob, sourceDetails]);
 
   useEffect(() => {
     if (!source) return;
@@ -440,6 +475,19 @@ export default function AppIconBundlePage() {
                   Download ZIP
                 </Button>
               )}
+              <ImageToolHandoff
+                getArtifact={getSourceArtifact}
+                destinations={[
+                  {
+                    label: "Favicon Generator",
+                    href: "/tools/favicon-generator",
+                  },
+                  {
+                    label: "Chrome Extension Icons",
+                    href: "/tools/chrome-extension-icons",
+                  },
+                ]}
+              />
               {platforms.length === 0 && (
                 <p className="text-center text-xs text-destructive">
                   Choose at least one output.

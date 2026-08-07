@@ -3,6 +3,7 @@
 import { RiFileCopyLine, RiCheckLine, RiDownload2Line } from "@remixicon/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 
+import { ImageToolHandoff } from "@/components/image-tool-handoff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -92,6 +93,24 @@ export default function PlaceholderImagePage() {
     setCopied(true);
     setTimeout(() => setCopied(false), COPY_RESET_MS);
   }, []);
+
+  const getPlaceholderArtifact = useCallback(async () => {
+    const canvas = canvasRef.current;
+    if (!canvas || !sizeSupported) {
+      throw new Error("No placeholder image is available.");
+    }
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((result) => {
+        if (result) resolve(result);
+        else reject(new Error("The placeholder image could not be exported."));
+      }, "image/png");
+    });
+    return {
+      blob,
+      filename: `placeholder-${width}x${height}.png`,
+      sourceHref: "/tools/placeholder-image",
+    };
+  }, [height, sizeSupported, width]);
 
   return (
     <div>
@@ -200,7 +219,7 @@ export default function PlaceholderImagePage() {
         <p className="text-destructive mt-4 text-sm">{sizeError}</p>
       )}
 
-      <div className="mt-6 flex gap-3">
+      <div className="mt-6 flex flex-wrap gap-3">
         <Button onClick={handleDownload} disabled={!sizeSupported}>
           <RiDownload2Line data-icon="inline-start" />
           Download PNG
@@ -217,6 +236,19 @@ export default function PlaceholderImagePage() {
           )}
           {copied ? "Copied" : "Copy data URL"}
         </Button>
+        {sizeSupported && (
+          <ImageToolHandoff
+            getArtifact={getPlaceholderArtifact}
+            destinations={[
+              { label: "App Icon Bundle", href: "/tools/app-icon-bundle" },
+              { label: "Favicon Generator", href: "/tools/favicon-generator" },
+              {
+                label: "Chrome Extension Icons",
+                href: "/tools/chrome-extension-icons",
+              },
+            ]}
+          />
+        )}
       </div>
     </div>
   );

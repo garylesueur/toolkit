@@ -2,7 +2,7 @@
 
 import { RiSearchLine, RiCloseLine } from "@remixicon/react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useCallback, useRef, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 import {
   InputGroup,
@@ -23,6 +23,15 @@ export function ToolsSearch() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const query = searchParams.get(SEARCH_PARAM_KEY) ?? "";
+  const [value, setValue] = useState(query);
+
+  useEffect(() => setValue(query), [query]);
+  useEffect(
+    () => () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    },
+    [],
+  );
 
   const updateSearchParam = useCallback(
     (value: string) => {
@@ -46,6 +55,7 @@ export function ToolsSearch() {
 
   const clearSearch = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    setValue("");
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       params.delete(SEARCH_PARAM_KEY);
@@ -64,11 +74,14 @@ export function ToolsSearch() {
         </InputGroupAddon>
         <InputGroupInput
           placeholder="Search tools…"
-          defaultValue={query}
-          onChange={(e) => updateSearchParam(e.target.value)}
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+            updateSearchParam(e.target.value);
+          }}
           aria-label="Search tools"
         />
-        {query && (
+        {value && (
           <InputGroupAddon align="inline-end">
             <InputGroupButton
               size="icon-xs"
