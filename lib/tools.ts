@@ -1,6 +1,7 @@
 import type { RemixiconComponentType } from "@remixicon/react";
 import {
   RiAccessibilityLine,
+  RiApps2AddLine,
   RiAspectRatioLine,
   RiBracesLine,
   RiCalendar2Line,
@@ -146,6 +147,15 @@ export const tools: Tool[] = [
     icon: RiImageFill,
     tags: ["image", "generation", "seo"],
     dateAdded: "2026-02-25",
+  },
+  {
+    name: "App Icon Bundle",
+    description:
+      "Generate a complete Xcode asset catalogue and Expo Android icons from one image.",
+    href: "/tools/app-icon-bundle",
+    icon: RiApps2AddLine,
+    tags: ["image", "generation", "dev-utils"],
+    dateAdded: "2026-08-07",
   },
   {
     name: "Chrome Extension Icons",
