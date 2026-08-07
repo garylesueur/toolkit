@@ -73,6 +73,7 @@ export function ToolsSearch() {
           </InputGroupText>
         </InputGroupAddon>
         <InputGroupInput
+          autoFocus
           placeholder="Search tools…"
           value={value}
           onChange={(e) => {
@@ -91,6 +92,15 @@ export function ToolsSearch() {
             >
               <RiCloseLine className="size-3.5" />
             </InputGroupButton>
+          </InputGroupAddon>
+        )}
+        {!value && (
+          <InputGroupAddon align="inline-end">
+            <InputGroupText>
+              <kbd className="text-muted-foreground hidden rounded border bg-muted px-1.5 py-0.5 font-mono text-[10px] sm:inline">
+                Ctrl K
+              </kbd>
+            </InputGroupText>
           </InputGroupAddon>
         )}
       </InputGroup>
