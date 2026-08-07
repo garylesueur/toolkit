@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 
 import { JsonLd } from "@/components/json-ld";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ToolCommandMenu } from "@/components/tool-command-menu";
 import { ROOT_OG_IMAGE } from "@/lib/seo/root-og-image";
 import { createWebSiteJsonLd } from "@/lib/seo/website-json-ld";
 import { canonicalPath, getSiteUrl, isPreviewDeployment } from "@/lib/site";
@@ -93,6 +94,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <ToolCommandMenu />
         </ThemeProvider>
         <Analytics />
       </body>

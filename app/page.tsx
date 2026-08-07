@@ -3,7 +3,6 @@ import { Suspense } from "react";
 
 import { HomeFaq } from "@/components/home-faq";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ToolCommandMenu } from "@/components/tool-command-menu";
 import { ToolsExplorer } from "@/components/tools-explorer";
 import { ToolsGrid } from "@/components/tools-grid";
 import { ToolsSearch } from "@/components/tools-search";
@@ -32,8 +31,6 @@ export default function Page() {
           </div>
         </div>
       </header>
-
-      <ToolCommandMenu />
 
       <main className="flex-1">
         <ToolsGrid />
