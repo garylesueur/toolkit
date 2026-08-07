@@ -1,6 +1,11 @@
 "use client";
 
-import { RiDownload2Line, RiLoopLeftLine } from "@remixicon/react";
+import {
+  RiArrowRightLine,
+  RiDownload2Line,
+  RiLoopLeftLine,
+} from "@remixicon/react";
+import { useRouter } from "next/navigation";
 import { useState, useMemo, useEffect, useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePersistedState } from "@/hooks/use-persisted-state";
+import { storeIconBundleHandoff } from "@/lib/app-icon-bundle/handoff";
 import {
   downloadIco,
   downloadPng,
@@ -94,6 +100,7 @@ function filterIcons(query: string) {
 }
 
 export default function LogoGeneratorPage() {
+  const router = useRouter();
   const [settings, setSettings] = usePersistedState<LogoGeneratorSettings>(
     "toolkit:logo-generator",
     LOGO_STATE_VERSION,
@@ -202,6 +209,14 @@ export default function LogoGeneratorPage() {
       setExporting(false);
     }
   }, [svgString, exportPrefix]);
+
+  const handleContinueToAppIcons = useCallback(() => {
+    storeIconBundleHandoff({
+      filename: `${exportPrefix}-logo.svg`,
+      svg: svgString,
+    });
+    router.push("/tools/app-icon-bundle");
+  }, [exportPrefix, router, svgString]);
 
   function handleLettersChange(value: string) {
     const cleaned = value
@@ -827,6 +842,16 @@ export default function LogoGeneratorPage() {
                 </Button>
               ))}
             </div>
+
+            <Button
+              variant="secondary"
+              onClick={handleContinueToAppIcons}
+              disabled={!canExport}
+              className="mt-2 w-full"
+            >
+              Continue to app icon bundle
+              <RiArrowRightLine data-icon="inline-end" aria-hidden />
+            </Button>
           </div>
         </div>
       </div>
