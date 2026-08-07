@@ -23,6 +23,7 @@ export default defineConfig({
     "**/coverage/**",
     "**/pnpm-lock.yaml",
     "**/*.min.js",
+    "lib/pdf/vendor/**",
   ],
   rules: {
     "typescript/no-explicit-any": ["error", { fixToUnknown: true }],

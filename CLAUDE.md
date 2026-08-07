@@ -66,6 +66,13 @@ Complex tool logic is extracted into `lib/<feature>/` directories (e.g., `lib/pd
 - **Semantic HTML over ARIA** — use native `<button>`, `<a>`, `<nav>` elements
 - **Icon-only buttons must have `aria-label`**; decorative icons get `aria-hidden`
 
+## Dependency Licensing
+
+- Only add dependencies under permissive licences compatible with a proprietary application: MIT, BSD, ISC, or Apache-2.0.
+- Do not add AGPL, GPL, or other copyleft dependencies, including WebAssembly builds or wrappers around copyleft software.
+- Verify the licence of both the package and its bundled/native/WASM components before adoption. A wrapper's licence does not replace the licence of the software it distributes.
+- If a dependency's licence is missing, unclear, dual-licensed, or outside the approved list, do not add it without the project owner's explicit approval after legal review.
+
 ## Quirks
 
 - `pdf.worker.min.mjs` must exist in `public/` for PDF.js to work

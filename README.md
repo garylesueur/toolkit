@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Roadmap
+
+See [ROADMAP.md](./ROADMAP.md) for the browser-first product principles, PDF compression plan, and prioritised tool backlog.
+
 ## Getting Started
 
 First, run the development server:

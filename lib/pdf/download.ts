@@ -17,5 +17,7 @@ export function downloadPdfBytes(bytes: Uint8Array, filename: string): void {
   a.href = url;
   a.download = filename;
   a.click();
-  URL.revokeObjectURL(url);
+  // Revoking synchronously can cancel blob downloads in some browsers before
+  // they have taken ownership of the URL.
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
