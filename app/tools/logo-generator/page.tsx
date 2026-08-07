@@ -873,6 +873,10 @@ export default function LogoGeneratorPage() {
               getArtifact={getLogoArtifact}
               destinations={[
                 {
+                  label: "Image Crop & Resize",
+                  href: "/tools/image-crop-resize",
+                },
+                {
                   label: "Favicon Generator",
                   href: "/tools/favicon-generator",
                 },

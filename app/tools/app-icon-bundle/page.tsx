@@ -479,6 +479,10 @@ export default function AppIconBundlePage() {
                 getArtifact={getSourceArtifact}
                 destinations={[
                   {
+                    label: "Image Crop & Resize",
+                    href: "/tools/image-crop-resize",
+                  },
+                  {
                     label: "Favicon Generator",
                     href: "/tools/favicon-generator",
                   },

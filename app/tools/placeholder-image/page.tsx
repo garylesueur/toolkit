@@ -240,6 +240,10 @@ export default function PlaceholderImagePage() {
           <ImageToolHandoff
             getArtifact={getPlaceholderArtifact}
             destinations={[
+              {
+                label: "Image Crop & Resize",
+                href: "/tools/image-crop-resize",
+              },
               { label: "App Icon Bundle", href: "/tools/app-icon-bundle" },
               { label: "Favicon Generator", href: "/tools/favicon-generator" },
               {

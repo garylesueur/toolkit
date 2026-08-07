@@ -180,6 +180,22 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-07",
   },
   {
+    name: "Image Crop & Resize",
+    description:
+      "Quickly crop, reposition, and resize an image before downloading or using it in another tool.",
+    href: "/tools/image-crop-resize",
+    icon: RiScissorsCutLine,
+    tags: ["image", "conversion"],
+    keywords: [
+      "crop image",
+      "resize image",
+      "image editor",
+      "downsize image",
+      "square crop",
+    ],
+    dateAdded: "2026-08-07",
+  },
+  {
     name: "Chrome Extension Icons",
     description:
       "Upload a PNG and get every icon size a Chrome extension needs.",
