@@ -275,6 +275,10 @@ export default function FaviconGeneratorPage() {
           <ImageToolHandoff
             getArtifact={getSourceArtifact}
             destinations={[
+              {
+                label: "Image Crop & Resize",
+                href: "/tools/image-crop-resize",
+              },
               { label: "App Icon Bundle", href: "/tools/app-icon-bundle" },
               {
                 label: "Chrome Extension Icons",
