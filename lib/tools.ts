@@ -67,6 +67,7 @@ export type Tool = {
   href: string;
   icon: RemixiconComponentType;
   tags: string[];
+  keywords?: string[];
   devOnly?: boolean;
   dateAdded?: string;
 };
@@ -87,6 +88,7 @@ export const tools: Tool[] = [
     href: "/tools/id-generator",
     icon: RiFingerprintLine,
     tags: ["generation", "dev-utils"],
+    keywords: ["uuid", "guid", "nanoid", "ulid", "random id"],
     dateAdded: "2026-02-25",
   },
   {
@@ -95,6 +97,7 @@ export const tools: Tool[] = [
     href: "/tools/base64",
     icon: RiFileCodeLine,
     tags: ["encoding", "conversion"],
+    keywords: ["b64", "binary to text"],
     dateAdded: "2026-02-25",
   },
   {
@@ -103,6 +106,7 @@ export const tools: Tool[] = [
     href: "/tools/url-encode-decode",
     icon: RiLink,
     tags: ["encoding", "conversion", "seo"],
+    keywords: ["percent encoding", "uri encode", "url escape"],
     dateAdded: "2026-02-25",
   },
   {
@@ -111,6 +115,7 @@ export const tools: Tool[] = [
     href: "/tools/html-entities",
     icon: RiCodeLine,
     tags: ["encoding", "conversion", "text"],
+    keywords: ["html escape", "html unescape", "special characters"],
     dateAdded: "2026-02-25",
   },
   {
@@ -120,6 +125,7 @@ export const tools: Tool[] = [
     href: "/tools/lorem-ipsum",
     icon: RiTextBlock,
     tags: ["text", "generation"],
+    keywords: ["dummy text", "placeholder copy", "sample text"],
     dateAdded: "2026-02-25",
   },
   {
@@ -128,6 +134,7 @@ export const tools: Tool[] = [
     href: "/tools/unix-timestamp",
     icon: RiTimeLine,
     tags: ["date-time", "conversion"],
+    keywords: ["epoch", "unix time", "timestamp"],
     dateAdded: "2026-02-25",
   },
   {
@@ -137,6 +144,13 @@ export const tools: Tool[] = [
     href: "/tools/character-counter",
     icon: RiCharacterRecognitionLine,
     tags: ["text", "data"],
+    keywords: [
+      "word counter",
+      "word count",
+      "letter counter",
+      "character count",
+      "text length",
+    ],
     dateAdded: "2026-02-25",
   },
   {
@@ -146,6 +160,7 @@ export const tools: Tool[] = [
     href: "/tools/favicon-generator",
     icon: RiImageFill,
     tags: ["image", "generation", "seo"],
+    keywords: ["website icon", "browser tab icon", "ico generator"],
     dateAdded: "2026-02-25",
   },
   {
@@ -155,6 +170,13 @@ export const tools: Tool[] = [
     href: "/tools/app-icon-bundle",
     icon: RiApps2AddLine,
     tags: ["image", "generation", "dev-utils"],
+    keywords: [
+      "xcode icon",
+      "ios app icon",
+      "expo icon",
+      "android adaptive icon",
+      "appiconset",
+    ],
     dateAdded: "2026-08-07",
   },
   {
@@ -164,6 +186,7 @@ export const tools: Tool[] = [
     href: "/tools/chrome-extension-icons",
     icon: RiPuzzleLine,
     tags: ["image", "generation", "dev-utils"],
+    keywords: ["browser extension icon", "manifest icons", "plugin icon"],
     dateAdded: "2026-02-25",
   },
   {
@@ -173,6 +196,7 @@ export const tools: Tool[] = [
     href: "/tools/og-preview",
     icon: RiGlobalLine,
     tags: ["seo", "network"],
+    keywords: ["open graph", "social card", "link preview", "og tags"],
     dateAdded: "2026-02-25",
   },
   {
@@ -181,6 +205,7 @@ export const tools: Tool[] = [
     href: "/tools/json-formatter",
     icon: RiBracesLine,
     tags: ["formatting", "data", "dev-utils"],
+    keywords: ["json beautifier", "pretty print", "json validator"],
     dateAdded: "2026-02-25",
   },
   {
@@ -189,6 +214,7 @@ export const tools: Tool[] = [
     href: "/tools/jwt-decoder",
     icon: RiKey2Line,
     tags: ["security", "encoding", "dev-utils"],
+    keywords: ["token decoder", "json web token", "jwt payload"],
     dateAdded: "2026-02-25",
   },
   {

@@ -5,19 +5,12 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ToolCard } from "@/components/tool-card";
 import { useFavourites } from "@/hooks/use-favourites";
+import { searchTools } from "@/lib/tool-search";
 import { visibleTools } from "@/lib/tools";
 import type { Tool } from "@/lib/tools";
 
 const SEARCH_PARAM_KEY = "q";
 const STATIC_GRID_ID = "static-tools-grid";
-
-function matchesQuery(tool: Tool, query: string): boolean {
-  const lower = query.toLowerCase();
-  return (
-    tool.name.toLowerCase().includes(lower) ||
-    tool.description.toLowerCase().includes(lower)
-  );
-}
 
 /**
  * Client-side interactive tool grid with search filtering and favourites.
@@ -39,9 +32,7 @@ export function ToolsExplorer() {
   }, []);
 
   const sortedTools = useMemo(() => {
-    const filtered = query
-      ? visibleTools.filter((tool) => matchesQuery(tool, query))
-      : visibleTools;
+    const filtered = query ? searchTools(visibleTools, query) : visibleTools;
 
     const favourites: Tool[] = [];
     const rest: Tool[] = [];

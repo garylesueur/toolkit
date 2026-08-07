@@ -3,6 +3,7 @@
 import { RiDownload2Line } from "@remixicon/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 
+import { ImageToolHandoff } from "@/components/image-tool-handoff";
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -111,6 +112,22 @@ export default function QrCodeGeneratorPage() {
     }
   }, [text, errorCorrection]);
 
+  const getQrArtifact = useCallback(async () => {
+    const canvas = canvasRef.current;
+    if (!canvas || !text.trim()) throw new Error("No QR code is available.");
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((result) => {
+        if (result) resolve(result);
+        else reject(new Error("The QR code could not be exported."));
+      }, "image/png");
+    });
+    return {
+      blob,
+      filename: "qr-code.png",
+      sourceHref: "/tools/qr-code-generator",
+    };
+  }, [text]);
+
   const hasText = text.trim().length > 0;
 
   return (
@@ -173,7 +190,7 @@ export default function QrCodeGeneratorPage() {
         )}
       </div>
 
-      <div className="mt-6 flex justify-center gap-3">
+      <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Button onClick={handleDownloadPng} disabled={!hasText}>
           <RiDownload2Line data-icon="inline-start" />
           Download PNG
@@ -186,6 +203,18 @@ export default function QrCodeGeneratorPage() {
           <RiDownload2Line data-icon="inline-start" />
           Download SVG
         </Button>
+        {hasText && (
+          <ImageToolHandoff
+            getArtifact={getQrArtifact}
+            destinations={[
+              { label: "App Icon Bundle", href: "/tools/app-icon-bundle" },
+              {
+                label: "Chrome Extension Icons",
+                href: "/tools/chrome-extension-icons",
+              },
+            ]}
+          />
+        )}
       </div>
     </div>
   );

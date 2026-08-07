@@ -8,6 +8,7 @@ import {
 } from "@remixicon/react";
 import { useState, useRef, useCallback } from "react";
 
+import { ImageToolHandoff } from "@/components/image-tool-handoff";
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -181,6 +182,23 @@ export default function SvgConverterPage() {
     }
   }, [svgSource, width, height, format, quality, fileName]);
 
+  const getSvgArtifact = useCallback(async () => {
+    if (!svgSource) throw new Error("No SVG is available.");
+    const blob = await convertSvgToRaster({
+      svgSource,
+      width,
+      height,
+      format: "image/png",
+      quality: 1,
+    });
+    const baseName = fileName ? fileName.replace(/\.svg$/i, "") : "image";
+    return {
+      blob,
+      filename: `${baseName}-${width}x${height}.png`,
+      sourceHref: "/tools/svg-converter",
+    };
+  }, [fileName, height, svgSource, width]);
+
   return (
     <div>
       <h1 className="text-2xl font-bold tracking-tight">
@@ -336,16 +354,32 @@ export default function SvgConverterPage() {
           </div>
 
           {/* Convert button */}
-          <Button onClick={handleConvert} disabled={converting}>
-            {converting ? (
-              "Converting…"
-            ) : (
-              <>
-                <RiDownload2Line data-icon="inline-start" />
-                Convert &amp; Download
-              </>
-            )}
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={handleConvert} disabled={converting}>
+              {converting ? (
+                "Converting…"
+              ) : (
+                <>
+                  <RiDownload2Line data-icon="inline-start" />
+                  Convert &amp; Download
+                </>
+              )}
+            </Button>
+            <ImageToolHandoff
+              getArtifact={getSvgArtifact}
+              destinations={[
+                { label: "App Icon Bundle", href: "/tools/app-icon-bundle" },
+                {
+                  label: "Favicon Generator",
+                  href: "/tools/favicon-generator",
+                },
+                {
+                  label: "Chrome Extension Icons",
+                  href: "/tools/chrome-extension-icons",
+                },
+              ]}
+            />
+          </div>
         </div>
       )}
     </div>
