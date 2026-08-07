@@ -560,11 +560,20 @@ export const tools: Tool[] = [
   {
     name: "Compress PDF",
     description:
-      "Reduce PDF file size by re-saving and stripping unused objects — all in the browser.",
+      "Losslessly optimise fonts, content streams, and duplicate resources with WebAssembly.",
     href: "/tools/compress-pdf",
     icon: RiCollapseDiagonalLine,
     tags: ["pdf"],
     dateAdded: "2026-04-10",
+  },
+  {
+    name: "Images to PDF",
+    description:
+      "Combine ordered JPEG, PNG, and WebP images into one PDF — entirely in your browser.",
+    href: "/tools/images-to-pdf",
+    icon: RiFileImageLine,
+    tags: ["pdf", "image", "conversion"],
+    dateAdded: "2026-08-07",
   },
   {
     name: "Flatten PDF",

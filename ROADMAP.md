@@ -45,6 +45,8 @@ These fill obvious gaps in the current 63-tool catalogue with little or no infra
 
 ### P1 — Complete the practical PDF set
 
+Status: **Images to PDF is implemented locally** with ordering, JPEG/PNG/WebP support, page sizing, orientation, margins, progress feedback, and no uploads.
+
 1. **Images to PDF** — reorder JPG, PNG, and WebP files; choose page size, margins, orientation, and fit mode.
 2. **PDF to images** — export selected pages to PNG or JPEG with scale/quality controls and ZIP download.
 3. **Watermark PDF** — text or image, opacity, rotation, position, page range, foreground/background.
