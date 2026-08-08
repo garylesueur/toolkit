@@ -90,7 +90,7 @@ Status: **The P1 small-tool set is implemented locally.** This includes SQL, XML
 
 ### P2 — PDF capabilities needing a technical spike
 
-- **True secure redaction** — annotations or black rectangles are not sufficient. Removal must be verified against extracted text, hidden layers, annotations, attachments, and incremental revisions. A flatten-and-rebuild option may be acceptable if the data-loss trade-off is explicit.
+- **True secure redaction** — implemented as explicit flatten-and-rebuild redaction, not annotations or removable overlays. User-drawn regions are burned into rendered pixels; the new image-only PDF is structurally verified to contain no fonts, forms, annotations, attachments/name trees, outlines, layers, or original revisions. The UI requires acknowledgement of the data-loss trade-off.
 - **Protect/unlock PDF** — implemented locally with pdfcpu's standard PDF security handler, AES-256 protection, required separate open/owner passwords, permission presets, and user-or-owner password unlocking. No custom cryptography.
 - **PDF validation and repair** — implemented locally with the official `pdfcpu` WASM build, relaxed/strict validation, offline diagnostics, structural rebuilding, and post-repair verification in disposable workers.
 - **Booklet / N-up imposition** — implemented locally with vector-preserving page embedding, sequential 2-up/4-up layouts, booklet page ordering, blank-page padding, paper size, margin, and gap controls.

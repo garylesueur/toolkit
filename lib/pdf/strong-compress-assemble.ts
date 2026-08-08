@@ -8,6 +8,7 @@ export type CompressedPageImage = {
 
 export async function assembleCompressedPdf(
   pages: CompressedPageImage[],
+  producer = "Le Sueur Toolkit strong PDF compression",
 ): Promise<Uint8Array> {
   if (!pages.length) throw new Error("The PDF has no pages to compress.");
   const output = await PDFDocument.create();
@@ -34,7 +35,7 @@ export async function assembleCompressedPdf(
     });
   }
 
-  output.setProducer("Le Sueur Toolkit strong PDF compression");
+  output.setProducer(producer);
   output.setCreator("Le Sueur Toolkit");
   return output.save({ useObjectStreams: true });
 }

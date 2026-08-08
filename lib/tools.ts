@@ -458,6 +458,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Permanently Redact PDF",
+    description:
+      "Burn sensitive areas into flattened pages and verify hidden PDF structures are removed locally.",
+    href: "/tools/redact-pdf",
+    icon: RiFileShieldLine,
+    tags: ["pdf", "security", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",
