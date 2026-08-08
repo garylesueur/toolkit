@@ -224,6 +224,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Suspicious URL Inspector",
+    description:
+      "Parse links and flag credentials, lookalikes, redirects, unusual ports, and other tricks locally.",
+    href: "/tools/url-inspector",
+    icon: RiSearchEyeLine,
+    tags: ["security", "dev-utils"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
