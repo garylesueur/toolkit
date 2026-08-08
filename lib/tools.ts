@@ -19,6 +19,7 @@ import {
   RiFileCodeLine,
   RiFileImageLine,
   RiFileInfoLine,
+  RiFileList3Line,
   RiFilePdf2Line,
   RiFileListLine,
   RiFileReduceLine,
@@ -582,6 +583,15 @@ export const tools: Tool[] = [
     href: "/tools/pdf-to-images",
     icon: RiFileImageLine,
     tags: ["pdf", "image", "conversion"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Add Page Numbers",
+    description:
+      "Number all or selected PDF pages with custom format, position, size, and margins.",
+    href: "/tools/add-page-numbers",
+    icon: RiFileList3Line,
+    tags: ["pdf"],
     dateAdded: "2026-08-08",
   },
   {
