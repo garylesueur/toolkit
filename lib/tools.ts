@@ -467,6 +467,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "PDF Accessibility Structure Checker",
+    description:
+      "Preflight PDF tags, language, titles, figures, fields, and links locally without claiming certification.",
+    href: "/tools/pdf-accessibility",
+    icon: RiAccessibilityLine,
+    tags: ["pdf", "accessibility", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",

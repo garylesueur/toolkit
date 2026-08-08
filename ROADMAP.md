@@ -1,6 +1,6 @@
 # Product roadmap
 
-Last reviewed: 7 August 2026
+Last reviewed: 8 August 2026
 
 ## Product rules
 
@@ -95,7 +95,7 @@ Status: **The P1 small-tool set is implemented locally.** This includes SQL, XML
 - **PDF validation and repair** — implemented locally with the official `pdfcpu` WASM build, relaxed/strict validation, offline diagnostics, structural rebuilding, and post-repair verification in disposable workers.
 - **Booklet / N-up imposition** — implemented locally with vector-preserving page embedding, sequential 2-up/4-up layouts, booklet page ordering, blank-page padding, paper size, margin, and gap controls.
 - **Local OCR** — Tesseract-style OCR can run in a worker with downloadable language packs. It is useful non-generative ML, but the download size, mobile performance, accuracy, and searchable-PDF construction need a spike.
-- **PDF/A and accessibility checks** — valuable, but only if conformance can be tested. Avoid a checkbox that merely changes metadata.
+- **PDF/A and accessibility checks** — a local PDF accessibility structure checker is implemented for evidence-based preflight of tags, language, title handling, page structure links, figure alternatives, form tooltips, and link descriptions. It explicitly does not claim PDF/UA, WCAG, or legal conformance; reading order, contrast, reflow, and content quality remain manual checks. PDF/A conformance still needs a genuine validator before it should be offered.
 
 ### P2 — Network tools with no paid API
 
