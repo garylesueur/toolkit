@@ -206,9 +206,9 @@ export const tools: Tool[] = [
     dateAdded: "2026-03-20",
   },
   {
-    name: "Hash Generator",
+    name: "Hash & Checksum Verifier",
     description:
-      "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text.",
+      "Hash text or verify a local file against a SHA checksum without uploading it.",
     href: "/tools/hash-generator",
     icon: RiShieldKeyholeLine,
     tags: ["security", "generation", "encoding"],

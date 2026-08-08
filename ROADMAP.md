@@ -60,6 +60,8 @@ Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, Crop PD
 
 ### P1 — Privacy and safety tools
 
+Status: **File checksum verification is implemented locally.** Text and files can be hashed with standard SHA algorithms, and files can be checked against a supplied digest without implying malware detection.
+
 1. **File checksum verifier** — extend Hash Generator to accept files, stream them where possible, compare against a supplied digest, and clearly distinguish checksums from malware scanning.
 2. **Image metadata viewer and scrubber** — show EXIF/GPS/device fields, then remove them by local re-encoding. Warn about quality/colour-profile changes.
 3. **Password strength checker** — local strength and pattern analysis; never transmit the password. Keep it separate from the password generator.
