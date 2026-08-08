@@ -233,6 +233,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Image Metadata Viewer & Scrubber",
+    description:
+      "Inspect EXIF, GPS, device, and text metadata, then remove it by local re-encoding.",
+    href: "/tools/image-metadata-scrubber",
+    icon: RiFileImageLine,
+    tags: ["security", "image"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
