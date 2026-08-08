@@ -10,6 +10,7 @@ import {
   RiCharacterRecognitionLine,
   RiCodeLine,
   RiCollapseDiagonalLine,
+  RiCrop2Line,
   RiComputerLine,
   RiDatabase2Line,
   RiDeleteBin6Line,
@@ -601,6 +602,15 @@ export const tools: Tool[] = [
       "Apply text or image watermarks over or behind selected PDF pages locally.",
     href: "/tools/watermark-pdf",
     icon: RiWaterPercentLine,
+    tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Crop PDF",
+    description:
+      "Adjust visible PDF page boundaries locally without rasterising or deleting content.",
+    href: "/tools/crop-pdf",
+    icon: RiCrop2Line,
     tags: ["pdf"],
     dateAdded: "2026-08-08",
   },
