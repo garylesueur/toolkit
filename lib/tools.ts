@@ -2,6 +2,7 @@ import type { RemixiconComponentType } from "@remixicon/react";
 import {
   RiAccessibilityLine,
   RiAspectRatioLine,
+  RiAttachmentLine,
   RiBracesLine,
   RiCalendar2Line,
   RiCalendarEventLine,
@@ -641,6 +642,15 @@ export const tools: Tool[] = [
     href: "/tools/sign-pdf",
     icon: RiFileEditLine,
     tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF Attachments",
+    description:
+      "Inspect, download, and remove files embedded inside a PDF locally.",
+    href: "/tools/pdf-attachments",
+    icon: RiAttachmentLine,
+    tags: ["pdf", "data"],
     dateAdded: "2026-08-08",
   },
   {
