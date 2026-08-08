@@ -287,6 +287,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "XML Formatter & Converter",
+    description:
+      "Format, validate, or minify XML and convert between XML and JSON locally.",
+    href: "/tools/xml-tools",
+    icon: RiFileCodeLine,
+    tags: ["formatting", "conversion", "dev-utils", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
