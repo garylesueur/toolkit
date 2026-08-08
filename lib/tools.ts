@@ -278,6 +278,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "SQL Formatter & Minifier",
+    description:
+      "Format or compact Standard SQL, DB2, N1QL, and PL/SQL entirely locally.",
+    href: "/tools/sql-formatter",
+    icon: RiDatabase2Line,
+    tags: ["formatting", "dev-utils", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
