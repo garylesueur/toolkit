@@ -92,7 +92,7 @@ Status: **The P1 small-tool set is implemented locally.** This includes SQL, XML
 
 - **True secure redaction** — annotations or black rectangles are not sufficient. Removal must be verified against extracted text, hidden layers, annotations, attachments, and incremental revisions. A flatten-and-rebuild option may be acceptable if the data-loss trade-off is explicit.
 - **Protect/unlock PDF** — only with a maintained implementation of standard PDF encryption and test vectors. Do not invent cryptography.
-- **PDF validation and repair** — a good candidate for the official `pdfcpu` WASM build, subject to browser memory and malformed-file testing.
+- **PDF validation and repair** — implemented locally with the official `pdfcpu` WASM build, relaxed/strict validation, offline diagnostics, structural rebuilding, and post-repair verification in disposable workers.
 - **Booklet / N-up imposition** — implemented locally with vector-preserving page embedding, sequential 2-up/4-up layouts, booklet page ordering, blank-page padding, paper size, margin, and gap controls.
 - **Local OCR** — Tesseract-style OCR can run in a worker with downloadable language packs. It is useful non-generative ML, but the download size, mobile performance, accuracy, and searchable-PDF construction need a spike.
 - **PDF/A and accessibility checks** — valuable, but only if conformance can be tested. Avoid a checkbox that merely changes metadata.

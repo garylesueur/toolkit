@@ -440,6 +440,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "PDF Validator & Repair",
+    description:
+      "Check PDF structure and rebuild a verified compatibility copy locally with WebAssembly.",
+    href: "/tools/pdf-validator",
+    icon: RiFileShieldLine,
+    tags: ["pdf", "security", "analysis"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",
