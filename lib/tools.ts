@@ -3,6 +3,7 @@ import {
   RiAccessibilityLine,
   RiAspectRatioLine,
   RiAttachmentLine,
+  RiBookOpenLine,
   RiBracesLine,
   RiCalendar2Line,
   RiCalendarEventLine,
@@ -427,6 +428,15 @@ export const tools: Tool[] = [
     href: "/tools/image-editor",
     icon: RiCrop2Line,
     tags: ["image", "conversion"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF N-up & Booklet",
+    description:
+      "Place two or four pages per sheet, or reorder pages for booklet printing locally.",
+    href: "/tools/impose-pdf",
+    icon: RiBookOpenLine,
+    tags: ["pdf", "formatting"],
     dateAdded: "2026-08-08",
   },
   {
