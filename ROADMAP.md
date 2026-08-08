@@ -58,6 +58,7 @@ Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, Crop PD
 8. **Sign PDF** — draw, type, or upload a signature image. Label this as placing a signature, not certificate-backed digital signing.
 9. **PDF attachments and images** — list, extract, and remove embedded files; extract embedded images where the library can do so safely.
 10. **Compare PDFs** — page-aligned visual difference with an overlay/slider and a downloadable report. Keep the original files local.
+11. **Extract PDF fonts** — implemented locally for embedded TrueType programs on bounded page selections. The UI identifies likely subsets, warns that embedding does not grant installation or redistribution rights, and treats extracted font binaries as untrusted files.
 
 ### P1 — Privacy and safety tools
 

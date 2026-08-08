@@ -494,6 +494,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Extract PDF Fonts",
+    description:
+      "Recover embedded TrueType font programs from selected PDF pages locally with licensing and subset warnings.",
+    href: "/tools/extract-pdf-fonts",
+    icon: RiFontSize,
+    tags: ["pdf", "font", "extraction", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",

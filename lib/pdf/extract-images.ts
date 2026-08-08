@@ -1,10 +1,17 @@
 import { extractedImageMetadata } from "./extract-images-options";
+import type { PdfExtractableResource } from "./extract-images-options";
 import { cleanPdfCpuLog } from "./pdf-health-options";
 
 export type PdfImageExtractionStage =
   | "loading-engine"
   | "extracting"
   | "collecting";
+
+export type ExtractedPdfResource = {
+  name: string;
+  bytes: Uint8Array;
+  size: number;
+};
 
 export type ExtractedPdfImage = {
   name: string;
@@ -19,8 +26,11 @@ type WorkerResult = { type: "result"; files: WorkerFile[]; log: string };
 type WorkerError = { type: "error"; message: string; log: string };
 type WorkerProgress = { type: "progress"; stage: PdfImageExtractionStage };
 
-function abortError(): DOMException {
-  return new DOMException("PDF image extraction cancelled.", "AbortError");
+function abortError(resource: PdfExtractableResource): DOMException {
+  return new DOMException(
+    `PDF ${resource} extraction cancelled.`,
+    "AbortError",
+  );
 }
 
 function sourceBuffer(source: Uint8Array): ArrayBuffer {
@@ -30,18 +40,19 @@ function sourceBuffer(source: Uint8Array): ArrayBuffer {
   ) as ArrayBuffer;
 }
 
-export function extractPdfImages(
+export function extractPdfResourceFiles(
+  resource: PdfExtractableResource,
   source: Uint8Array,
   pages: number[],
   options: {
     signal?: AbortSignal;
     onStage?: (stage: PdfImageExtractionStage) => void;
   } = {},
-): Promise<ExtractedPdfImage[]> {
+): Promise<ExtractedPdfResource[]> {
   if (!source.byteLength) {
     return Promise.reject(new Error("Choose a non-empty PDF first."));
   }
-  if (options.signal?.aborted) return Promise.reject(abortError());
+  if (options.signal?.aborted) return Promise.reject(abortError(resource));
   const bytes = sourceBuffer(source);
 
   return new Promise((resolve, reject) => {
@@ -60,11 +71,11 @@ export function extractPdfImages(
       finish();
       reject(cause);
     };
-    const cancel = () => fail(abortError());
+    const cancel = () => fail(abortError(resource));
     options.signal?.addEventListener("abort", cancel, { once: true });
 
     worker.onerror = (event) => {
-      fail(new Error(event.message || "The PDF image worker stopped."));
+      fail(new Error(event.message || `The PDF ${resource} worker stopped.`));
     };
     worker.onmessage = (
       event: MessageEvent<WorkerResult | WorkerError | WorkerProgress>,
@@ -79,7 +90,7 @@ export function extractPdfImages(
           new Error(
             cleanPdfCpuLog(message.log) ||
               message.message ||
-              "The PDF images could not be extracted.",
+              `The PDF ${resource}s could not be extracted.`,
           ),
         );
         return;
@@ -89,16 +100,30 @@ export function extractPdfImages(
       finish();
       resolve(
         message.files.map((file) => {
-          const metadata = extractedImageMetadata(file.name);
-          const imageBytes = new Uint8Array(file.bytes);
+          const resourceBytes = new Uint8Array(file.bytes);
           return {
-            ...metadata,
-            bytes: imageBytes,
-            size: imageBytes.byteLength,
+            name: file.name,
+            bytes: resourceBytes,
+            size: resourceBytes.byteLength,
           };
         }),
       );
     };
-    worker.postMessage({ bytes, pages }, [bytes]);
+    worker.postMessage({ bytes, pages, resource }, [bytes]);
   });
+}
+
+export async function extractPdfImages(
+  source: Uint8Array,
+  pages: number[],
+  options: {
+    signal?: AbortSignal;
+    onStage?: (stage: PdfImageExtractionStage) => void;
+  } = {},
+): Promise<ExtractedPdfImage[]> {
+  const files = await extractPdfResourceFiles("image", source, pages, options);
+  return files.map((file) => ({
+    ...file,
+    ...extractedImageMetadata(file.name),
+  }));
 }

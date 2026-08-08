@@ -6,16 +6,20 @@ import "./vendor/wasm_exec.js";
 import {
   MAX_EXTRACTED_IMAGE_BYTES,
   MAX_EXTRACTED_IMAGES,
-  buildImageExtractionArguments,
+  buildResourceExtractionArguments,
   sortExtractedImageNames,
 } from "./extract-images-options";
+import type { PdfExtractableResource } from "./extract-images-options";
 
 const PDFCPU_WASM_URL = "/vendor/pdfcpu/pdfcpu.wasm";
 const INPUT_PATH = "/input.pdf";
-const OUTPUT_DIRECTORY = "/images";
 const TEMP_DIRECTORY = "/tmp";
 
-type WorkerRequest = { bytes: ArrayBuffer; pages: number[] };
+type WorkerRequest = {
+  bytes: ArrayBuffer;
+  pages: number[];
+  resource: PdfExtractableResource;
+};
 type GoRuntime = {
   argv: string[];
   env: Record<string, string>;
@@ -83,7 +87,7 @@ function configureGoGlobals(volume: Volume, logs: string[]): void {
 async function instantiatePdfCpu(go: GoRuntime): Promise<WebAssembly.Instance> {
   const response = await fetch(PDFCPU_WASM_URL);
   if (!response.ok)
-    throw new Error("The local PDF image engine could not be loaded.");
+    throw new Error("The local PDF resource engine could not be loaded.");
   if (WebAssembly.instantiateStreaming) {
     try {
       return (
@@ -104,14 +108,15 @@ async function instantiatePdfCpu(go: GoRuntime): Promise<WebAssembly.Instance> {
 async function runExtraction(request: WorkerRequest): Promise<void> {
   const volume = new Volume();
   const logs: string[] = [];
+  const outputDirectory = request.resource === "image" ? "/images" : "/fonts";
   volume.mkdirSync(TEMP_DIRECTORY);
-  volume.mkdirSync(OUTPUT_DIRECTORY);
+  volume.mkdirSync(outputDirectory);
   volume.writeFileSync(INPUT_PATH, new Uint8Array(request.bytes));
   configureGoGlobals(volume, logs);
 
   const go = new (globalThis as GoWorkerGlobal).Go();
   let exitCode = 0;
-  go.argv = buildImageExtractionArguments(request.pages);
+  go.argv = buildResourceExtractionArguments(request.resource, request.pages);
   go.env = { HOME: TEMP_DIRECTORY, TMPDIR: TEMP_DIRECTORY };
   go.exit = (code) => {
     exitCode = code;
@@ -125,7 +130,7 @@ async function runExtraction(request: WorkerRequest): Promise<void> {
   if (exitCode !== 0) {
     self.postMessage({
       type: "error",
-      message: "pdfcpu could not extract images from this PDF.",
+      message: `pdfcpu could not extract ${request.resource}s from this PDF.`,
       log,
     });
     return;
@@ -133,14 +138,14 @@ async function runExtraction(request: WorkerRequest): Promise<void> {
 
   self.postMessage({ type: "progress", stage: "collecting" });
   const names = sortExtractedImageNames(
-    (volume.readdirSync(OUTPUT_DIRECTORY) as string[]).filter((name) => {
-      const path = `${OUTPUT_DIRECTORY}/${name}`;
+    (volume.readdirSync(outputDirectory) as string[]).filter((name) => {
+      const path = `${outputDirectory}/${name}`;
       return volume.statSync(path).isFile();
     }),
   );
   if (names.length > MAX_EXTRACTED_IMAGES) {
     throw new Error(
-      `This PDF contains more than ${MAX_EXTRACTED_IMAGES} extractable images. Select fewer pages.`,
+      `This PDF contains more than ${MAX_EXTRACTED_IMAGES} extractable resources. Select fewer pages.`,
     );
   }
 
@@ -148,12 +153,12 @@ async function runExtraction(request: WorkerRequest): Promise<void> {
   const transfer: ArrayBuffer[] = [];
   const files = names.map((name) => {
     const output = volume.readFileSync(
-      `${OUTPUT_DIRECTORY}/${name}`,
+      `${outputDirectory}/${name}`,
     ) as Uint8Array;
     totalBytes += output.byteLength;
     if (totalBytes > MAX_EXTRACTED_IMAGE_BYTES) {
       throw new Error(
-        "The extracted images exceed the 512 MB in-browser safety limit. Select fewer pages.",
+        "The extracted resources exceed the 512 MB in-browser safety limit. Select fewer pages.",
       );
     }
     const bytes = new Uint8Array(output.byteLength);
@@ -173,7 +178,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
       message:
         cause instanceof Error
           ? cause.message
-          : "The PDF images could not be extracted.",
+          : "The PDF resources could not be extracted.",
       log: "",
     });
   }

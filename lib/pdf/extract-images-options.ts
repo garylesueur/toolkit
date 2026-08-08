@@ -30,7 +30,10 @@ export type ExtractedImageMetadata = {
   previewable: boolean;
 };
 
-export function resolveImageExtractionPages(
+export type PdfExtractableResource = "image" | "font";
+
+export function resolveResourceExtractionPages(
+  resource: PdfExtractableResource,
   value: string,
   pageCount: number,
 ): number[] {
@@ -41,42 +44,61 @@ export function resolveImageExtractionPages(
     : Array.from({ length: pageCount }, (_, index) => index + 1);
   if (pages.length > MAX_IMAGE_EXTRACTION_PAGES) {
     throw new Error(
-      `Extract images from at most ${MAX_IMAGE_EXTRACTION_PAGES} pages at a time.`,
+      `Extract ${resource}s from at most ${MAX_IMAGE_EXTRACTION_PAGES} pages at a time.`,
     );
   }
   return pages;
 }
 
-export function buildImageExtractionArguments(pages: number[]): string[] {
+export function resolveImageExtractionPages(
+  value: string,
+  pageCount: number,
+): number[] {
+  return resolveResourceExtractionPages("image", value, pageCount);
+}
+
+export function buildResourceExtractionArguments(
+  resource: PdfExtractableResource,
+  pages: number[],
+): string[] {
   if (!pages.length) throw new Error("Select at least one PDF page.");
   if (
     pages.length > MAX_IMAGE_EXTRACTION_PAGES ||
     pages.some((page) => !Number.isInteger(page) || page < 1)
   ) {
-    throw new Error("The image extraction page selection is invalid.");
+    throw new Error(`The ${resource} extraction page selection is invalid.`);
   }
+  const command =
+    resource === "image"
+      ? ["pdfcpu", "images", "extract"]
+      : ["pdfcpu", "extract", "--mode", "font"];
   return [
-    "pdfcpu",
-    "images",
-    "extract",
+    ...command,
     "--conf",
     "disable",
     "--offline",
     "--pages",
     [...new Set(pages)].sort((a, b) => a - b).join(","),
     "/input.pdf",
-    "/images",
+    resource === "image" ? "/images" : "/fonts",
   ];
 }
 
-export function extractedImageMetadata(name: string): ExtractedImageMetadata {
+export function buildImageExtractionArguments(pages: number[]): string[] {
+  return buildResourceExtractionArguments("image", pages);
+}
+
+export function safeExtractedResourceName(name: string): string {
   const baseName = name.split(/[\\/]/).at(-1) ?? "";
   const withoutControls = Array.from(baseName, (character) => {
     const code = character.charCodeAt(0);
     return code < 32 || code === 127 ? "_" : character;
   }).join("");
-  const safeName =
-    withoutControls.replace(/[<>:"|?*]/g, "_") || "extracted-image";
+  return withoutControls.replace(/[<>:"|?*]/g, "_") || "extracted-resource";
+}
+
+export function extractedImageMetadata(name: string): ExtractedImageMetadata {
+  const safeName = safeExtractedResourceName(name);
   const extension = safeName.split(".").at(-1)?.toLowerCase() ?? "";
   const mimeType = MIME_BY_EXTENSION[extension] ?? "application/octet-stream";
   return {
