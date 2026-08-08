@@ -21,6 +21,7 @@ import {
   RiFileCodeLine,
   RiFileImageLine,
   RiFileInfoLine,
+  RiFileEditLine,
   RiFileList3Line,
   RiFilePdf2Line,
   RiFileListLine,
@@ -622,6 +623,15 @@ export const tools: Tool[] = [
     href: "/tools/scan-to-pdf",
     icon: RiCameraLine,
     tags: ["pdf", "image", "conversion"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF Form Filler",
+    description:
+      "Detect and fill local AcroForm fields, with optional explicit flattening.",
+    href: "/tools/pdf-form-filler",
+    icon: RiFileEditLine,
+    tags: ["pdf"],
     dateAdded: "2026-08-08",
   },
   {
