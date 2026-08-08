@@ -60,7 +60,7 @@ Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, Crop PD
 
 ### P1 — Privacy and safety tools
 
-Status: **File checksum verification, image metadata viewing/scrubbing, password strength analysis, suspicious URL inspection, and local browser privacy review are implemented locally.** Text and files can be hashed; image metadata can be inspected and removed by re-encoding; passwords and URLs can be explained without transmission; and browser privacy signals, permissions, storage, and fingerprinting surface can be reviewed without an external observer or generated fingerprint.
+Status: **File checksum verification, image metadata viewing/scrubbing, password strength analysis, suspicious URL inspection, local browser privacy review, and the CSP builder are implemented locally.** Text and files can be hashed; image metadata can be inspected and removed by re-encoding; passwords and URLs can be explained without transmission; browser privacy signals can be reviewed without an external observer or generated fingerprint; and CSP headers can be constructed and checked for common weaknesses.
 
 1. **File checksum verifier** — extend Hash Generator to accept files, stream them where possible, compare against a supplied digest, and clearly distinguish checksums from malware scanning.
 2. **Image metadata viewer and scrubber** — show EXIF/GPS/device fields, then remove them by local re-encoding. Warn about quality/colour-profile changes.

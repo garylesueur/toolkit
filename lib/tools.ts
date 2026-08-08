@@ -251,6 +251,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "CSP Builder",
+    description:
+      "Build a Content Security Policy and flag risky directives entirely locally.",
+    href: "/tools/csp-builder",
+    icon: RiFileShieldLine,
+    tags: ["security", "dev-utils"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
