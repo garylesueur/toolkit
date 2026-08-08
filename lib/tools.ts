@@ -296,6 +296,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "JSON to TypeScript",
+    description:
+      "Infer nested TypeScript interfaces, arrays, unions, and optional fields from JSON.",
+    href: "/tools/json-to-typescript",
+    icon: RiBracesLine,
+    tags: ["conversion", "dev-utils", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
