@@ -403,6 +403,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Barcode Generator",
+    description:
+      "Generate Code 128, EAN, UPC, Code 39, ITF-14, and Codabar locally.",
+    href: "/tools/barcode-generator",
+    icon: RiQrCodeLine,
+    tags: ["generation", "image", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",

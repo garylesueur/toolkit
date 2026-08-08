@@ -73,7 +73,7 @@ Status: **The browser-only privacy and safety set is implemented.** Text and fil
 
 ### P1 — Small tools with strong repeat use
 
-Status: **SQL formatting/minification, XML formatting/validation/conversion, JSON ↔ YAML conversion, JSON-to-TypeScript inference, URL/query-string building, line-based text tools, CSS gradient/shadow builders, and visual cron expression building are implemented locally.** JSON ↔ YAML was already available in YAML Formatter; the dedicated TypeScript generator completes that roadmap item without duplicating it.
+Status: **SQL formatting/minification, XML formatting/validation/conversion, JSON ↔ YAML conversion, JSON-to-TypeScript inference, URL/query-string building, line-based text tools, CSS gradient/shadow builders, visual cron expression building, and one-dimensional barcode generation are implemented locally.** JSON ↔ YAML was already available in YAML Formatter; the dedicated TypeScript generator completes that roadmap item without duplicating it.
 
 - SQL formatter and minifier
 - XML formatter, validator, and XML ↔ JSON converter
@@ -142,3 +142,4 @@ Use public endpoints only after checking terms, CORS support, reliability, and a
 - [`@zxing/browser`](https://github.com/zxing-js/browser) 0.2.1 (MIT) and [`@zxing/library`](https://github.com/zxing-js/library) 0.23.0 (Apache-2.0) are used for local QR/barcode decoding. Their helper dependencies were checked as MIT or available under Apache-2.0.
 - [`@sqltools/formatter`](https://github.com/mtxr/vscode-sqltools/tree/dev/packages/formatter) 1.2.5 is MIT licensed and has no runtime dependencies. The more common `sql-formatter` package was rejected because its dependency tree includes the Python-2.0 licence, which is outside this project's approved list.
 - [`fast-xml-parser`](https://github.com/NaturalIntelligence/fast-xml-parser) 5.10.1 and its complete runtime dependency tree are MIT licensed. The XML tool rejects DOCTYPE declarations and never resolves external resources.
+- [`jsbarcode`](https://github.com/lindell/JsBarcode) 3.12.3 is MIT licensed and has no runtime dependencies. It generates one-dimensional barcode SVGs locally; the matching TypeScript declarations are also MIT licensed.

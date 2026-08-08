@@ -72,6 +72,9 @@ importers:
       fast-xml-parser:
         specifier: 5.10.1
         version: 5.10.1
+      jsbarcode:
+        specifier: 3.12.3
+        version: 3.12.3
       marked:
         specifier: ^18.0.7
         version: 18.0.7
@@ -127,6 +130,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.3.3
         version: 4.3.3
+      '@types/jsbarcode':
+        specifier: 3.11.4
+        version: 3.11.4
       '@types/node':
         specifier: ^25.9.3
         version: 25.9.3
@@ -1967,6 +1973,9 @@ packages:
   '@ts-morph/common@0.27.0':
     resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
 
+  '@types/jsbarcode@3.11.4':
+    resolution: {integrity: sha512-VBcpTAnEMH0Gbh8JpV14CgOtJjCYjsvR2FoDRyoYPE0gUxtApf8N4c+HKEOyz/iiIZkMzqrzBA3XX7+KgKxxsA==}
+
   '@types/node@25.7.0':
     resolution: {integrity: sha512-z+pdZyxE+RTQE9AcboAZCb4otwcrvgHD+GlBpPgn0emDVt0ohrTMhAwlr2Wd9nZ+nihhYFxO2pThz3C5qSu2Eg==}
 
@@ -2730,6 +2739,9 @@ packages:
   js-yaml@4.3.0:
     resolution: {integrity: sha512-1td788aAnnZ5qs7V2QIRl1owjtYpbKt749Y3xauqQgwIIGF/xXWz1wMTEBx5O3LK3lXLVuqXPdPxj2BoFHaW9Q==}
     hasBin: true
+
+  jsbarcode@3.12.3:
+    resolution: {integrity: sha512-CuHU9hC6dPsHF5oVFMo8NW76uQVjH4L22CsP4hW+dNnGywJHC/B0ThA1CTDVLnxKLrrpYdicBLnd2xsgTfRnvg==}
 
   jsesc@3.1.0:
     resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
@@ -5429,6 +5441,10 @@ snapshots:
       minimatch: 10.2.5
       path-browserify: 1.0.1
 
+  '@types/jsbarcode@3.11.4':
+    dependencies:
+      '@types/node': 25.9.3
+
   '@types/node@25.7.0':
     dependencies:
       undici-types: 7.21.0
@@ -6118,6 +6134,8 @@ snapshots:
   js-yaml@4.3.0:
     dependencies:
       argparse: 2.0.1
+
+  jsbarcode@3.12.3: {}
 
   jsesc@3.1.0: {}
 
@@ -7106,6 +7124,7 @@ time:
   '@remixicon/react@4.9.0': '2026-01-29T10:53:18.993Z'
   '@sqltools/formatter@1.2.5': '2022-10-16T16:10:43.947Z'
   '@tailwindcss/postcss@4.3.3': '2026-07-16T12:03:56.054Z'
+  '@types/jsbarcode@3.11.4': '2023-11-07T08:43:53.163Z'
   '@types/node@25.9.3': '2026-06-10T22:15:10.607Z'
   '@types/papaparse@5.5.2': '2025-12-13T11:01:57.309Z'
   '@types/pdfmake@0.3.3': '2026-05-16T14:05:57.927Z'
@@ -7124,6 +7143,7 @@ time:
   diff@9.0.0: '2026-04-13T12:39:24.498Z'
   dompurify@3.4.12: '2026-07-11T12:11:29.337Z'
   fast-xml-parser@5.10.1: '2026-07-16T05:17:10.130Z'
+  jsbarcode@3.12.3: '2026-01-07T19:50:17.809Z'
   marked@18.0.7: '2026-07-21T01:50:38.417Z'
   memfs@4.62.0: '2026-07-07T13:20:43.077Z'
   next-themes@0.4.6: '2025-03-11T21:02:05.882Z'
