@@ -22,6 +22,8 @@
     "@remixicon/react": "^4.9.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "2.6.1",
+    "@zxing/browser": "0.2.1",
+    "@zxing/library": "0.23.0",
     "bowser": "^2.14.1",
     "class-variance-authority": "^0.7.1",
     "client-zip": "^2.5.0",

@@ -60,7 +60,7 @@ Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, Crop PD
 
 ### P1 — Privacy and safety tools
 
-Status: **File checksum verification, image metadata viewing/scrubbing, password strength analysis, suspicious URL inspection, local browser privacy review, certificate decoding, and the CSP builder are implemented locally.** Text and files can be hashed; image metadata can be inspected and removed by re-encoding; passwords and URLs can be explained without transmission; browser privacy signals can be reviewed without an external observer or generated fingerprint; X.509 certificates and pasted chains can be inspected without contacting a host; and CSP headers can be constructed and checked for common weaknesses.
+Status: **The browser-only privacy and safety set is implemented.** Text and files can be hashed; image metadata can be inspected and removed by re-encoding; passwords and URLs can be explained without transmission; browser privacy signals can be reviewed without an external observer or generated fingerprint; X.509 certificates and pasted chains can be inspected without contacting a host; CSP headers can be constructed and checked for common weaknesses; and QR/barcode images or camera frames can be decoded locally without automatically opening their contents.
 
 1. **File checksum verifier** — extend Hash Generator to accept files, stream them where possible, compare against a supplied digest, and clearly distinguish checksums from malware scanning.
 2. **Image metadata viewer and scrubber** — show EXIF/GPS/device fields, then remove them by local re-encoding. Warn about quality/colour-profile changes.
@@ -137,3 +137,4 @@ Use public endpoints only after checking terms, CORS support, reliability, and a
 - [Ghostscript's licensing FAQ](https://ghostscript.com/faq/index.html) requires AGPL compliance or a commercial licence when distributing it as part of an application, so Ghostscript is excluded from this project.
 - [Web Crypto](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) is broadly available for local cryptographic primitives, but its low-level nature makes design and key handling easy to get wrong.
 - [`@peculiar/x509`](https://github.com/PeculiarVentures/x509) is used for local X.509 parsing. Version 2.0.0 is MIT licensed; its direct dependency tree was checked as MIT or 0BSD, and the required `reflect-metadata` polyfill is Apache-2.0.
+- [`@zxing/browser`](https://github.com/zxing-js/browser) 0.2.1 (MIT) and [`@zxing/library`](https://github.com/zxing-js/library) 0.23.0 (Apache-2.0) are used for local QR/barcode decoding. Their helper dependencies were checked as MIT or available under Apache-2.0.

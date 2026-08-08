@@ -269,6 +269,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "QR & Barcode Reader",
+    description:
+      "Decode QR codes and common barcodes from images or a camera without uploading them.",
+    href: "/tools/barcode-reader",
+    icon: RiQrCodeLine,
+    tags: ["security", "image", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
