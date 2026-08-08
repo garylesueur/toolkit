@@ -242,6 +242,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Browser Privacy Check",
+    description:
+      "Review local privacy signals, permission states, storage, and fingerprinting surface.",
+    href: "/tools/browser-privacy",
+    icon: RiEyeLine,
+    tags: ["security", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
