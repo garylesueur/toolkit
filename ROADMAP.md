@@ -34,10 +34,11 @@ Do not use Ghostscript or a Ghostscript WASM wrapper. Ghostscript is AGPL or com
 
 ### P0 — Audit privacy claims
 
-- Inventory every tool as `local`, `direct third-party lookup`, or `first-party server`.
+Status: **The catalogue now has an explicit processing-boundary inventory.** Every tool is classified as `local`, `direct third-party lookup`, or `first-party server`; catalogue cards show that boundary, and all four network tools name their recipients on the tool page. The inventory separately records global analytics and the Markdown-to-PDF MCP server flow so browser-local processing is not confused with a zero-request website.
+
 - Keep the local-processing banner for genuinely local tools.
 - Give network tools a different disclosure. The IP endpoint, RDAP, DNS-over-HTTPS, OG lookup, analytics, and the Markdown-to-PDF MCP flow must not be described as zero-network tools.
-- Add an automated regression check that file-processing pages do not `fetch`, upload, or submit user files.
+- The automated regression guard inventories every raw fetch source, permits only reviewed same-origin static asset downloads for local tools, and rejects unreviewed upload, beacon, streaming, or mutation transports.
 
 ## Next: high-value browser-only tools
 

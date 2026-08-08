@@ -1,6 +1,12 @@
-import { RiArrowRightLine } from "@remixicon/react";
+import {
+  RiArrowRightLine,
+  RiGlobalLine,
+  RiServerLine,
+  RiShieldCheckLine,
+} from "@remixicon/react";
 import Link from "next/link";
 
+import { getToolProcessing } from "@/lib/tool-processing";
 import { type Tool, isNewTool } from "@/lib/tools";
 
 type ToolCardStaticProps = {
@@ -8,6 +14,14 @@ type ToolCardStaticProps = {
 };
 
 export function ToolCardStatic({ tool }: ToolCardStaticProps) {
+  const processing = getToolProcessing(tool.href);
+  const ProcessingIcon =
+    processing.kind === "local"
+      ? RiShieldCheckLine
+      : processing.kind === "first-party-server"
+        ? RiServerLine
+        : RiGlobalLine;
+
   return (
     <div className="group/card relative h-full">
       <Link
@@ -37,9 +51,22 @@ export function ToolCardStatic({ tool }: ToolCardStaticProps) {
             {tool.description}
           </p>
         </div>
-        <div className="text-muted-foreground flex items-center gap-1 text-xs font-medium transition-colors group-hover/card:text-primary">
-          Open tool
-          <RiArrowRightLine className="size-3 transition-transform group-hover/card:translate-x-0.5" />
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-medium">
+          <span
+            className={
+              processing.kind === "local"
+                ? "flex items-center gap-1 text-emerald-600 dark:text-emerald-500"
+                : "flex items-center gap-1 text-amber-600 dark:text-amber-500"
+            }
+            title={processing.summary}
+          >
+            <ProcessingIcon className="size-3.5" aria-hidden />
+            {processing.label}
+          </span>
+          <span className="text-muted-foreground flex items-center gap-1 transition-colors group-hover/card:text-primary">
+            Open tool
+            <RiArrowRightLine className="size-3 transition-transform group-hover/card:translate-x-0.5" />
+          </span>
         </div>
       </Link>
     </div>

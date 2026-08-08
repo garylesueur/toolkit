@@ -9,6 +9,7 @@ import {
 } from "@remixicon/react";
 import { useState, useCallback, useRef } from "react";
 
+import { ProcessingDisclosure } from "@/components/processing-disclosure";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -378,6 +379,7 @@ export default function OgPreviewPage() {
         Enter a URL to inspect its Open Graph tags and preview how the link
         appears on social platforms.
       </p>
+      <ProcessingDisclosure href="/tools/og-preview" />
 
       {/* URL input */}
       <div className="mt-8 flex gap-3">

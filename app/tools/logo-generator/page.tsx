@@ -3,6 +3,7 @@
 import { RiDownload2Line, RiLoopLeftLine } from "@remixicon/react";
 import { useState, useMemo, useEffect, useCallback } from "react";
 
+import { ProcessingDisclosure } from "@/components/processing-disclosure";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -247,6 +248,8 @@ export default function LogoGeneratorPage() {
           Reset
         </Button>
       </div>
+
+      <ProcessingDisclosure href="/tools/logo-generator" />
 
       <div className="grid gap-8 md:grid-cols-[1fr_auto]">
         {/* Controls */}
