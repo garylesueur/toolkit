@@ -889,6 +889,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "PDF Bookmarks",
+    description:
+      "Inspect, export, build, replace, or remove a nested PDF bookmark tree locally.",
+    href: "/tools/pdf-bookmarks",
+    icon: RiBookOpenLine,
+    tags: ["pdf", "navigation", "editing", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Compare PDFs",
     description:
       "Find page-aligned visual differences with an overlay slider and local report.",

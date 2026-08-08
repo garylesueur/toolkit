@@ -24,6 +24,7 @@ const LOCAL_ASSET_FETCH_SOURCES: Readonly<Record<string, string>> = {
   "lib/pdf/extract-images.worker.ts": "/tools/extract-pdf-images",
   "lib/pdf/pdf-health.worker.ts": "/tools/pdf-validator",
   "lib/pdf/pdf-password.worker.ts": "/tools/protect-pdf",
+  "lib/pdf/bookmarks.worker.ts": "/tools/pdf-bookmarks",
 };
 
 function sourceFiles(directory: string): string[] {
