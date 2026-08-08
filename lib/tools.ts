@@ -305,6 +305,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "URL & Query String Builder",
+    description:
+      "Parse, edit, reorder, and rebuild duplicate-safe URL query parameters locally.",
+    href: "/tools/query-string-builder",
+    icon: RiLinksLine,
+    tags: ["encoding", "dev-utils", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
