@@ -7,6 +7,7 @@ import {
   RiCalendarEventLine,
   RiCalendarLine,
   RiCalendarScheduleLine,
+  RiCameraLine,
   RiCharacterRecognitionLine,
   RiCodeLine,
   RiCollapseDiagonalLine,
@@ -612,6 +613,15 @@ export const tools: Tool[] = [
     href: "/tools/crop-pdf",
     icon: RiCrop2Line,
     tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Scan to PDF",
+    description:
+      "Capture, rotate, crop, and clean up page images before local PDF export.",
+    href: "/tools/scan-to-pdf",
+    icon: RiCameraLine,
+    tags: ["pdf", "image", "conversion"],
     dateAdded: "2026-08-08",
   },
   {

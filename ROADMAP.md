@@ -45,7 +45,7 @@ These fill obvious gaps in the current 63-tool catalogue with little or no infra
 
 ### P1 — Complete the practical PDF set
 
-Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, and Crop PDF are implemented locally.** The conversion pair supports both directions, document marking covers numbering and watermarks, and cropping preserves original page content while adjusting the visible page box.
+Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, Crop PDF, and Scan to PDF are implemented locally.** Conversion covers both directions and camera/file scans; document marking covers numbering and watermarks; cropping preserves original content while adjusting the visible page box.
 
 1. **Images to PDF** — reorder JPG, PNG, and WebP files; choose page size, margins, orientation, and fit mode.
 2. **PDF to images** — export selected pages to PNG or JPEG with scale/quality controls and ZIP download.
