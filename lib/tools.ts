@@ -898,6 +898,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "PDF Active Content Inspector",
+    description:
+      "Inspect and selectively remove scripts, automatic or external actions, attachments, interactive media, and XFA content locally.",
+    href: "/tools/pdf-active-content",
+    icon: RiShieldKeyholeLine,
+    tags: ["pdf", "security", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Compare PDFs",
     description:
       "Find page-aligned visual differences with an overlay slider and local report.",

@@ -101,6 +101,7 @@ const LOCAL_TOOL_HREFS = [
   "/tools/pdf-attachments",
   "/tools/remove-pdf-annotations",
   "/tools/pdf-bookmarks",
+  "/tools/pdf-active-content",
   "/tools/compare-pdfs",
   "/tools/flatten-pdf",
   "/tools/pdf-metadata",

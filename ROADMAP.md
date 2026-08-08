@@ -61,6 +61,7 @@ Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, Crop PD
 11. **Extract PDF fonts** — implemented locally for embedded TrueType programs on bounded page selections. The UI identifies likely subsets, warns that embedding does not grant installation or redistribution rights, and treats extracted font binaries as untrusted files.
 12. **Remove PDF comments and markup** — implemented locally with annotation-type and page selection. Links, form widgets, file attachments, and unsupported interactive annotations are preserved; redaction-mark removal requires an explicit warning because it may reveal underlying content.
 13. **PDF bookmark manager** — implemented locally with nested tree editing, page destinations, bold/italic styles, JSON backup, replace/remove operations, cancellation, and post-write re-export verification.
+14. **PDF active-content inspector** — implemented locally as a structural inspection and selective cleaner for JavaScript, automatic and external actions, embedded files, interactive media, and XFA. It preserves ordinary AcroForms and internal navigation where possible, re-opens cleaned output for verification, and explicitly does not claim antivirus or malware detection.
 
 ### P1 — Privacy and safety tools
 
