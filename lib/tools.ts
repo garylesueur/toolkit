@@ -576,6 +576,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-07",
   },
   {
+    name: "PDF to Images",
+    description:
+      "Export selected PDF pages as PNG or JPEG images with local PDF.js rendering.",
+    href: "/tools/pdf-to-images",
+    icon: RiFileImageLine,
+    tags: ["pdf", "image", "conversion"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Flatten PDF",
     description:
       "Bake form fields and annotations into page content, making them permanent.",

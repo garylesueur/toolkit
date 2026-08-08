@@ -23,7 +23,9 @@ export async function renderPageThumbnail(
 
   if (source instanceof Uint8Array) {
     const pdfjs = await getPdfjs();
-    pdf = await pdfjs.getDocument({ data: source }).promise;
+    // PDF.js transfers the supplied typed array to its worker, detaching the
+    // original buffer. Keep the caller's bytes reusable for later operations.
+    pdf = await pdfjs.getDocument({ data: source.slice() }).promise;
     ownsDocument = true;
   } else {
     pdf = source;
@@ -55,7 +57,9 @@ export async function renderAllThumbnails(
   scale = 0.4,
 ): Promise<string[]> {
   const pdfjs = await getPdfjs();
-  const pdf = await pdfjs.getDocument({ data: bytes }).promise;
+  // PDF.js may transfer this buffer to its worker. The hook that owns `bytes`
+  // still needs the original for the user's eventual PDF operation.
+  const pdf = await pdfjs.getDocument({ data: bytes.slice() }).promise;
 
   try {
     const results: string[] = [];
