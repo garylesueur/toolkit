@@ -323,6 +323,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "CSS Gradient & Shadow Builders",
+    description:
+      "Design gradients and box shadows with live previews and copy-ready CSS.",
+    href: "/tools/css-builders",
+    icon: RiPaletteLine,
+    tags: ["colour", "generation", "dev-utils"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",

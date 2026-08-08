@@ -73,7 +73,7 @@ Status: **The browser-only privacy and safety set is implemented.** Text and fil
 
 ### P1 — Small tools with strong repeat use
 
-Status: **SQL formatting/minification, XML formatting/validation/conversion, JSON ↔ YAML conversion, JSON-to-TypeScript inference, URL/query-string building, and line-based text tools are implemented locally.** JSON ↔ YAML was already available in YAML Formatter; the dedicated TypeScript generator completes that roadmap item without duplicating it.
+Status: **SQL formatting/minification, XML formatting/validation/conversion, JSON ↔ YAML conversion, JSON-to-TypeScript inference, URL/query-string building, line-based text tools, and CSS gradient/shadow builders are implemented locally.** JSON ↔ YAML was already available in YAML Formatter; the dedicated TypeScript generator completes that roadmap item without duplicating it.
 
 - SQL formatter and minifier
 - XML formatter, validator, and XML ↔ JSON converter
