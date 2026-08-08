@@ -421,6 +421,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Image Resize, Crop & Convert",
+    description:
+      "Crop, resize, and convert images to PNG, JPEG, WebP, or supported AVIF locally.",
+    href: "/tools/image-editor",
+    icon: RiCrop2Line,
+    tags: ["image", "conversion"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",
