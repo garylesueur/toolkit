@@ -21,12 +21,12 @@ The toolkit should be useful before it is clever.
 
 The current compressor loads the PDF with `pdf-lib` and saves it again. This may remove unused objects from repeatedly edited files, but it does not recompress the images that dominate scans and image-heavy PDFs.
 
-Status: the lossless optimiser is implemented locally with the official `pdfcpu` 0.14.0 WebAssembly build. Strong lossy compression remains a separate future mode.
+Status: lossless optimisation is implemented locally with the official `pdfcpu` 0.14.0 WebAssembly build. Strong browser-only compression is also implemented with PDF.js, Canvas, and `pdf-lib`, using explicit flattening warnings and selectable quality presets.
 
 Deliver two clearly named modes rather than one misleading button:
 
 1. **Lossless optimise** — preserve text, links, forms, vectors, and accessibility while removing redundant objects and resources. The implementation uses the official Apache-2.0 `pdfcpu` JavaScript/WASM build, whose optimiser removes redundant fonts, images, content streams, and page resources.
-2. **Strong compression** — render and rebuild pages with selectable DPI and JPEG quality presets. This can use the PDF.js, Canvas, and `pdf-lib` dependencies already shipped. It must warn that pages are flattened and selectable text, links, forms, signatures, layers, and accessibility structure are lost.
+2. **Strong compression** — implemented with balanced, smaller, and smallest presets. Pages render sequentially to bounded JPEG canvases and rebuild at their original physical sizes. The UI warns that selectable text, search, links, bookmarks, forms, signatures, annotations, layers, and accessibility structure are lost, and keeps the original when flattening is not smaller.
 
 Before changing the default, create a small public test corpus covering scans, exported office documents, forms, vector-heavy documents, transparency, rotated pages, and already-optimised PDFs. Record output size, render similarity, retained features, peak memory, and processing time. Never download an output larger than the input unless the user explicitly chooses it.
 
