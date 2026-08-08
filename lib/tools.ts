@@ -394,6 +394,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-02-25",
   },
   {
+    name: "Cron Expression Builder",
+    description:
+      "Build a five-field cron schedule visually and preview its next run times.",
+    href: "/tools/cron-builder",
+    icon: RiCalendarScheduleLine,
+    tags: ["dev-utils", "date-time", "generation"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",
