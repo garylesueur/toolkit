@@ -215,6 +215,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-02-25",
   },
   {
+    name: "Password Strength Checker",
+    description:
+      "Analyse password length, variety, and predictable patterns entirely locally.",
+    href: "/tools/password-strength",
+    icon: RiLockPasswordLine,
+    tags: ["security"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
