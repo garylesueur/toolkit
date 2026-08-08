@@ -260,6 +260,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "PEM / Certificate Decoder",
+    description:
+      "Inspect local X.509 certificates, validity, usages, SANs, and fingerprints.",
+    href: "/tools/certificate-decoder",
+    icon: RiFileInfoLine,
+    tags: ["security", "dev-utils", "encoding"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Regex Tester",
     description:
       "Test regular expressions with live match highlighting and capture groups.",
