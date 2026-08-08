@@ -59,6 +59,7 @@ import {
   RiMagicLine,
   RiShape2Line,
   RiWifiLine,
+  RiWaterPercentLine,
 } from "@remixicon/react";
 
 export type Tool = {
@@ -591,6 +592,15 @@ export const tools: Tool[] = [
       "Number all or selected PDF pages with custom format, position, size, and margins.",
     href: "/tools/add-page-numbers",
     icon: RiFileList3Line,
+    tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Watermark PDF",
+    description:
+      "Apply text or image watermarks over or behind selected PDF pages locally.",
+    href: "/tools/watermark-pdf",
+    icon: RiWaterPercentLine,
     tags: ["pdf"],
     dateAdded: "2026-08-08",
   },
