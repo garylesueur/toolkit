@@ -55,6 +55,7 @@ const LOCAL_TOOL_HREFS = [
   "/tools/redact-pdf",
   "/tools/pdf-accessibility",
   "/tools/ocr-pdf",
+  "/tools/extract-pdf-images",
   "/tools/csv-json-converter",
   "/tools/yaml-formatter",
   "/tools/svg-converter",

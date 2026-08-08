@@ -18,7 +18,14 @@ type UsePdfDocumentReturn = {
   reset: () => void;
 };
 
-export function usePdfDocument(): UsePdfDocumentReturn {
+type UsePdfDocumentOptions = {
+  renderThumbnails?: boolean;
+};
+
+export function usePdfDocument(
+  options: UsePdfDocumentOptions = {},
+): UsePdfDocumentReturn {
+  const renderThumbnails = options.renderThumbnails ?? true;
   const [pdfDoc, setPdfDoc] = useState<PDFDocument | null>(null);
   const [pdfBytes, setPdfBytes] = useState<Uint8Array | null>(null);
   const [pageCount, setPageCount] = useState(0);
@@ -45,34 +52,39 @@ export function usePdfDocument(): UsePdfDocumentReturn {
     setError(null);
   }, []);
 
-  const loadFile = useCallback(async (file: File) => {
-    setLoading(true);
-    setError(null);
-    setThumbnails([]);
+  const loadFile = useCallback(
+    async (file: File) => {
+      setLoading(true);
+      setError(null);
+      setThumbnails([]);
 
-    try {
-      const { pdfDoc: doc, bytes } = await loadPdfFile(file);
-      if (!mountedRef.current) return;
+      try {
+        const { pdfDoc: doc, bytes } = await loadPdfFile(file);
+        if (!mountedRef.current) return;
 
-      setPdfDoc(doc);
-      setPdfBytes(bytes);
-      setPageCount(doc.getPageCount());
-      setFileName(file.name);
+        setPdfDoc(doc);
+        setPdfBytes(bytes);
+        setPageCount(doc.getPageCount());
+        setFileName(file.name);
 
-      const thumbs = await renderAllThumbnails(bytes);
-      if (!mountedRef.current) return;
-      setThumbnails(thumbs);
-    } catch (err) {
-      if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Failed to load PDF.");
-      setPdfDoc(null);
-      setPdfBytes(null);
-      setPageCount(0);
-      setFileName(null);
-    } finally {
-      if (mountedRef.current) setLoading(false);
-    }
-  }, []);
+        if (renderThumbnails) {
+          const thumbs = await renderAllThumbnails(bytes);
+          if (!mountedRef.current) return;
+          setThumbnails(thumbs);
+        }
+      } catch (err) {
+        if (!mountedRef.current) return;
+        setError(err instanceof Error ? err.message : "Failed to load PDF.");
+        setPdfDoc(null);
+        setPdfBytes(null);
+        setPageCount(0);
+        setFileName(null);
+      } finally {
+        if (mountedRef.current) setLoading(false);
+      }
+    },
+    [renderThumbnails],
+  );
 
   return {
     pdfDoc,

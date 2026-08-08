@@ -21,6 +21,7 @@ const REMOTE_FETCH_SOURCES: Readonly<Record<string, string>> = {
 const LOCAL_ASSET_FETCH_SOURCES: Readonly<Record<string, string>> = {
   "lib/markdown-pdf/generate-client.ts": "/tools/markdown-to-pdf",
   "lib/pdf/compress.worker.ts": "/tools/compress-pdf",
+  "lib/pdf/extract-images.worker.ts": "/tools/extract-pdf-images",
   "lib/pdf/pdf-health.worker.ts": "/tools/pdf-validator",
   "lib/pdf/pdf-password.worker.ts": "/tools/protect-pdf",
 };

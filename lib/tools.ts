@@ -485,6 +485,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Extract PDF Images",
+    description:
+      "Recover original embedded raster images from selected PDF pages locally without rendering page screenshots.",
+    href: "/tools/extract-pdf-images",
+    icon: RiFileImageLine,
+    tags: ["pdf", "image", "extraction", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",
