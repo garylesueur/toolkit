@@ -449,6 +449,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Protect & Unlock PDF",
+    description:
+      "Add AES-256 open-password protection or unlock an accessible PDF entirely in your browser.",
+    href: "/tools/protect-pdf",
+    icon: RiLockPasswordLine,
+    tags: ["pdf", "security"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",

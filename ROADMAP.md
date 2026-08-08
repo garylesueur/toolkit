@@ -91,7 +91,7 @@ Status: **The P1 small-tool set is implemented locally.** This includes SQL, XML
 ### P2 — PDF capabilities needing a technical spike
 
 - **True secure redaction** — annotations or black rectangles are not sufficient. Removal must be verified against extracted text, hidden layers, annotations, attachments, and incremental revisions. A flatten-and-rebuild option may be acceptable if the data-loss trade-off is explicit.
-- **Protect/unlock PDF** — only with a maintained implementation of standard PDF encryption and test vectors. Do not invent cryptography.
+- **Protect/unlock PDF** — implemented locally with pdfcpu's standard PDF security handler, AES-256 protection, required separate open/owner passwords, permission presets, and user-or-owner password unlocking. No custom cryptography.
 - **PDF validation and repair** — implemented locally with the official `pdfcpu` WASM build, relaxed/strict validation, offline diagnostics, structural rebuilding, and post-repair verification in disposable workers.
 - **Booklet / N-up imposition** — implemented locally with vector-preserving page embedding, sequential 2-up/4-up layouts, booklet page ordering, blank-page padding, paper size, margin, and gap controls.
 - **Local OCR** — Tesseract-style OCR can run in a worker with downloadable language packs. It is useful non-generative ML, but the download size, mobile performance, accuracy, and searchable-PDF construction need a spike.
