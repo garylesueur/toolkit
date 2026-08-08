@@ -476,6 +476,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "OCR PDF",
+    description:
+      "Recognise English printed text and create a searchable PDF locally with self-hosted WebAssembly.",
+    href: "/tools/ocr-pdf",
+    icon: RiCharacterRecognitionLine,
+    tags: ["pdf", "ocr", "text", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",

@@ -1,5 +1,6 @@
 allowBuilds:
   sharp: true
+  tesseract.js: false
 
 minimumReleaseAge: 10080
 minimumReleaseAgeExclude:

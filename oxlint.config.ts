@@ -24,6 +24,7 @@ export default defineConfig({
     "**/pnpm-lock.yaml",
     "**/*.min.js",
     "lib/pdf/vendor/**",
+    "public/tesseract/**",
   ],
   rules: {
     "typescript/no-explicit-any": ["error", { fixToUnknown: true }],
