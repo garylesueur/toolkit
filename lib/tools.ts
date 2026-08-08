@@ -412,6 +412,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "HTML, CSS & JavaScript Formatter",
+    description:
+      "Format or minify frontend code locally with syntax-aware parsers.",
+    href: "/tools/web-code-formatter",
+    icon: RiFileCodeLine,
+    tags: ["dev-utils", "formatting", "code"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "CSV ↔ JSON Converter",
     description:
       "Convert CSV to JSON or JSON arrays to CSV with comma, tab, or semicolon delimiters.",

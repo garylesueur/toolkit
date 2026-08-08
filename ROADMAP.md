@@ -73,7 +73,7 @@ Status: **The browser-only privacy and safety set is implemented.** Text and fil
 
 ### P1 — Small tools with strong repeat use
 
-Status: **SQL formatting/minification, XML formatting/validation/conversion, JSON ↔ YAML conversion, JSON-to-TypeScript inference, URL/query-string building, line-based text tools, CSS gradient/shadow builders, visual cron expression building, and one-dimensional barcode generation are implemented locally.** JSON ↔ YAML was already available in YAML Formatter; the dedicated TypeScript generator completes that roadmap item without duplicating it.
+Status: **SQL, XML, HTML, CSS, and JavaScript formatting/minification; XML/JSON and JSON/YAML conversion; JSON-to-TypeScript inference; URL/query-string building; line-based text tools; CSS gradient/shadow builders; visual cron expression building; and one-dimensional barcode generation are implemented locally.** JSON ↔ YAML was already available in YAML Formatter; the dedicated TypeScript generator completes that roadmap item without duplicating it.
 
 - SQL formatter and minifier
 - XML formatter, validator, and XML ↔ JSON converter
@@ -143,3 +143,5 @@ Use public endpoints only after checking terms, CORS support, reliability, and a
 - [`@sqltools/formatter`](https://github.com/mtxr/vscode-sqltools/tree/dev/packages/formatter) 1.2.5 is MIT licensed and has no runtime dependencies. The more common `sql-formatter` package was rejected because its dependency tree includes the Python-2.0 licence, which is outside this project's approved list.
 - [`fast-xml-parser`](https://github.com/NaturalIntelligence/fast-xml-parser) 5.10.1 and its complete runtime dependency tree are MIT licensed. The XML tool rejects DOCTYPE declarations and never resolves external resources.
 - [`jsbarcode`](https://github.com/lindell/JsBarcode) 3.12.3 is MIT licensed and has no runtime dependencies. It generates one-dimensional barcode SVGs locally; the matching TypeScript declarations are also MIT licensed.
+- [`prettier`](https://github.com/prettier/prettier) 3.9.6 is MIT licensed and has no runtime dependencies. Its standalone browser plugins format HTML, CSS, and JavaScript without executing user code.
+- [`html-minifier-terser`](https://github.com/terser/html-minifier-terser) 7.2.0 and its complete runtime tree were checked as MIT, BSD-2-Clause, BSD-3-Clause, or 0BSD. HTML uses its parser; CSS uses the included MIT `clean-css` engine; JavaScript uses the included BSD-2-Clause `terser` engine without identifier mangling.
