@@ -45,7 +45,7 @@ These fill obvious gaps in the current 63-tool catalogue with little or no infra
 
 ### P1 — Complete the practical PDF set
 
-Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, Crop PDF, Scan to PDF, and PDF Form Filler are implemented locally.** Conversion covers both directions and scans; marking covers numbering and watermarks; cropping preserves content; AcroForms can be filled and optionally flattened.
+Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, Crop PDF, Scan to PDF, PDF Form Filler, and placed PDF signatures are implemented locally.** Conversion covers both directions and scans; marking covers numbering, watermarks, and visible signatures; cropping preserves content; AcroForms can be filled and optionally flattened.
 
 1. **Images to PDF** — reorder JPG, PNG, and WebP files; choose page size, margins, orientation, and fit mode.
 2. **PDF to images** — export selected pages to PNG or JPEG with scale/quality controls and ZIP download.

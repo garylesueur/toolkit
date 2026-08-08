@@ -635,6 +635,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Sign PDF",
+    description:
+      "Draw, type, or upload a visible signature and place it on a PDF locally.",
+    href: "/tools/sign-pdf",
+    icon: RiFileEditLine,
+    tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Flatten PDF",
     description:
       "Bake form fields and annotations into page content, making them permanent.",
