@@ -59,6 +59,7 @@ Status: **Images to PDF, PDF to Images, Add Page Numbers, Watermark PDF, Crop PD
 9. **PDF attachments and images** — list, extract, and remove embedded files; extract embedded images where the library can do so safely.
 10. **Compare PDFs** — page-aligned visual difference with an overlay/slider and a downloadable report. Keep the original files local.
 11. **Extract PDF fonts** — implemented locally for embedded TrueType programs on bounded page selections. The UI identifies likely subsets, warns that embedding does not grant installation or redistribution rights, and treats extracted font binaries as untrusted files.
+12. **Remove PDF comments and markup** — implemented locally with annotation-type and page selection. Links, form widgets, file attachments, and unsupported interactive annotations are preserved; redaction-mark removal requires an explicit warning because it may reveal underlying content.
 
 ### P1 — Privacy and safety tools
 

@@ -880,6 +880,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-08-08",
   },
   {
+    name: "Remove PDF Comments & Markup",
+    description:
+      "Inspect and remove selected comments, highlights, drawings, stamps, and redaction marks while preserving links and forms.",
+    href: "/tools/remove-pdf-annotations",
+    icon: RiDeleteBin6Line,
+    tags: ["pdf", "privacy", "editing"],
+    dateAdded: "2026-08-08",
+  },
+  {
     name: "Compare PDFs",
     description:
       "Find page-aligned visual differences with an overlay slider and local report.",

@@ -99,6 +99,7 @@ const LOCAL_TOOL_HREFS = [
   "/tools/pdf-form-filler",
   "/tools/sign-pdf",
   "/tools/pdf-attachments",
+  "/tools/remove-pdf-annotations",
   "/tools/compare-pdfs",
   "/tools/flatten-pdf",
   "/tools/pdf-metadata",
