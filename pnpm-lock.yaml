@@ -55,8 +55,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       dompurify:
-        specifier: ^3.4.12
-        version: 3.4.12
+        specifier: ^3.4.13
+        version: 3.4.13
       marked:
         specifier: ^18.0.7
         version: 18.0.7
@@ -2141,8 +2141,8 @@ packages:
   dijkstrajs@1.0.3:
     resolution: {integrity: sha512-qiSlmBq9+BCdCA/L46dw8Uy93mloxsPSbwnm5yrKn2vMPiy8KyAskTF6zuV/j5BMsmOGZDPs7KjU+mjb670kfA==}
 
-  dompurify@3.4.12:
-    resolution: {integrity: sha512-zQvGet8Z2sWbQhCmfFz/T5QWH2oBmjnqK3qvOjaqaNLrLEF912WamU+ohnTp0TCep/MFVHpdJuCZEdFOdTnEFg==}
+  dompurify@3.4.13:
+    resolution: {integrity: sha512-2vmYIoqjze2d+kakP8S/nS5shfsl587kzwEjcGlTdiksUVgFHnFCsLYDVj/JNqJVOQZGSYBTmuycv0PodwmnMQ==}
 
   dotenv@17.4.2:
     resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
@@ -5224,7 +5224,7 @@ snapshots:
 
   dijkstrajs@1.0.3: {}
 
-  dompurify@3.4.12:
+  dompurify@3.4.13:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -6533,7 +6533,7 @@ time:
   clsx@2.1.1: '2024-04-23T05:26:04.645Z'
   cronstrue@3.24.0: '2026-06-29T23:36:22.719Z'
   diff@9.0.0: '2026-04-13T12:39:24.498Z'
-  dompurify@3.4.12: '2026-07-11T12:11:29.337Z'
+  dompurify@3.4.13: '2026-08-03T14:16:00.210Z'
   marked@18.0.7: '2026-07-21T01:50:38.417Z'
   next-themes@0.4.6: '2025-03-11T21:02:05.882Z'
   next@16.2.12: '2026-07-25T20:45:53.940Z'
