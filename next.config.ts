@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
    * which the bundler cannot trace. Leaving it external keeps the server build
    * working for the MCP route.
    */
-  serverExternalPackages: ["pdfmake"],
+  serverExternalPackages: ["pdfmake", "konva", "react-konva"],
 };
 
 export default nextConfig;

@@ -43,6 +43,7 @@ import {
   RiMarkdownLine,
   RiMergeCellsVertical,
   RiPaletteLine,
+  RiPencilLine,
   RiPuzzleLine,
   RiQrCodeLine,
   RiRotateLockLine,
@@ -689,6 +690,23 @@ export const tools: Tool[] = [
     icon: RiFilePdf2Line,
     tags: ["pdf", "conversion", "text", "generation"],
     dateAdded: "2026-07-30",
+  },
+  {
+    name: "Sketch Pad",
+    description:
+      "Quick whiteboard for doodles, wireframes, and arrows — draw in the browser and export a PNG.",
+    href: "/tools/sketch-pad",
+    icon: RiPencilLine,
+    tags: ["image", "generation"],
+    keywords: [
+      "whiteboard",
+      "drawing",
+      "sketch",
+      "diagram",
+      "wireframe",
+      "konva",
+    ],
+    dateAdded: "2026-08-23",
   },
 ];
 
