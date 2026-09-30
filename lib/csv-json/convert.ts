@@ -116,14 +116,21 @@ export function jsonToCsv(input: JsonToCsvInput): JsonToCsvResult {
     if (row === null || typeof row !== "object" || Array.isArray(row)) {
       return {
         output: "",
-        error: "All rows must be objects with the same shape.",
+        error: "All rows must be objects with string keys.",
       };
     }
   }
 
   try {
+    const rows = parsed as Record<string, string | number | boolean | null>[];
+    const fields = [...new Set(rows.flatMap((row) => Object.keys(row)))];
     const csv = Papa.unparse(
-      parsed as Record<string, string | number | boolean | null>[],
+      {
+        fields,
+        data: rows.map((row) =>
+          fields.map((field) => (Object.hasOwn(row, field) ? row[field] : "")),
+        ),
+      },
       { delimiter: input.delimiter },
     );
     return { output: csv, error: null };

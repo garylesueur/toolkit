@@ -1,41 +1,98 @@
-import { PDFDocument } from "pdf-lib";
+export type CompressStage = "loading-engine" | "optimising" | "verifying";
 
-import { loadPdfBytes } from "./load";
-
-export type CompressResult = {
-  pdfDoc: PDFDocument;
-  originalSize: number;
-  compressedSize: number;
+export type CompressProgress = {
+  stage: CompressStage;
 };
 
+export type CompressResult = {
+  bytes: Uint8Array;
+  originalSize: number;
+  compressedSize: number;
+  savedSize: number;
+  usedOriginal: boolean;
+};
+
+type CompressWorkerProgress = {
+  type: "progress";
+  stage: CompressStage;
+};
+
+type CompressWorkerResult = {
+  type: "result";
+  bytes: ArrayBuffer;
+};
+
+type CompressWorkerError = {
+  type: "error";
+  message: string;
+};
+
+type CompressWorkerMessage =
+  | CompressWorkerProgress
+  | CompressWorkerResult
+  | CompressWorkerError;
+
 /**
- * "Compress" a PDF by re-saving it.
- * pdf-lib strips unused objects and rebuilds the cross-reference table on save,
- * which can reduce file size — especially for PDFs that have been edited many times.
- * Optionally strips metadata for additional size reduction.
+ * Optimise a PDF with pdfcpu running inside a disposable Web Worker.
+ * The worker owns the source buffer so large files are not copied between
+ * threads, and termination releases the Go/WASM heap after each run.
  */
-export async function compressPdf(
+export function compressPdf(
   sourceBytes: Uint8Array,
-  options: { stripMetadata?: boolean } = {},
+  onProgress?: (progress: CompressProgress) => void,
 ): Promise<CompressResult> {
-  const pdfDoc = await loadPdfBytes(sourceBytes);
+  const originalSize = sourceBytes.byteLength;
+  const sourceBuffer = sourceBytes.buffer.slice(
+    sourceBytes.byteOffset,
+    sourceBytes.byteOffset + sourceBytes.byteLength,
+  );
 
-  if (options.stripMetadata) {
-    pdfDoc.setTitle("");
-    pdfDoc.setAuthor("");
-    pdfDoc.setSubject("");
-    pdfDoc.setKeywords([]);
-    pdfDoc.setCreator("");
-    pdfDoc.setProducer("");
-  }
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(
+      new URL("./compress.worker.ts", import.meta.url),
+      {
+        type: "module",
+      },
+    );
 
-  const saved = await pdfDoc.save();
-  // Reload to get clean document for potential further use
-  const result = await loadPdfBytes(saved);
+    const finish = (): void => worker.terminate();
 
-  return {
-    pdfDoc: result,
-    originalSize: sourceBytes.length,
-    compressedSize: saved.length,
-  };
+    worker.onerror = (event) => {
+      finish();
+      reject(new Error(event.message || "PDF compression failed."));
+    };
+
+    worker.onmessage = (event: MessageEvent<CompressWorkerMessage>) => {
+      const message = event.data;
+
+      if (message.type === "progress") {
+        onProgress?.({ stage: message.stage });
+        return;
+      }
+
+      if (message.type === "error") {
+        finish();
+        reject(new Error(message.message));
+        return;
+      }
+
+      const optimisedBytes = new Uint8Array(message.bytes);
+      const usedOriginal = optimisedBytes.byteLength >= originalSize;
+      const bytes = usedOriginal
+        ? new Uint8Array(sourceBuffer)
+        : optimisedBytes;
+      finish();
+      resolve({
+        bytes,
+        originalSize,
+        compressedSize: bytes.byteLength,
+        savedSize: originalSize - bytes.byteLength,
+        usedOriginal,
+      });
+    };
+
+    worker.postMessage({ type: "compress", bytes: sourceBuffer }, [
+      sourceBuffer,
+    ]);
+  });
 }

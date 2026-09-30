@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 
 import { CopyableRow } from "@/components/copyable-row";
 import { Input } from "@/components/ui/input";
@@ -12,8 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const COPY_RESET_MS = 2000;
 
 type NumberBase = "decimal" | "hexadecimal" | "octal" | "binary";
 
@@ -113,7 +111,6 @@ function formatAllBases(value: bigint): FormatResult[] {
 export default function NumberBaseConverterPage() {
   const [input, setInput] = useState("");
   const [base, setBase] = useState<NumberBase>("decimal");
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const { value, error } = useMemo(
     () => parseInput(input, base),
@@ -123,12 +120,6 @@ export default function NumberBaseConverterPage() {
     () => (value !== null ? formatAllBases(value) : null),
     [value],
   );
-
-  const handleCopy = useCallback(async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedValue(text);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
 
   const hasInput = input.trim().length > 0;
 
@@ -181,8 +172,6 @@ export default function NumberBaseConverterPage() {
               key={result.label}
               label={result.label}
               value={result.display}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
           ))}
         </div>

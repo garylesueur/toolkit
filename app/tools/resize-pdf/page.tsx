@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { usePdfDocument } from "@/hooks/use-pdf-document";
 import { PAGE_SIZES, type PageSizeKey } from "@/lib/pdf/constants";
-import { downloadPdf } from "@/lib/pdf/download";
+import { downloadPdfBytes } from "@/lib/pdf/download";
 import { resizePdfPages } from "@/lib/pdf/resize";
 
 export default function ResizePdfPage() {
@@ -35,6 +35,7 @@ export default function ResizePdfPage() {
     loading,
     error,
     loadFile,
+    captureDocument,
     reset,
   } = usePdfDocument();
   const [sizeKey, setSizeKey] = useState<PageSizeKey | "custom">("A4");
@@ -50,6 +51,7 @@ export default function ResizePdfPage() {
 
   const handleSave = useCallback(async () => {
     if (!pdfBytes) return;
+    const isCurrent = captureDocument();
     setSaving(true);
     setSaveError(null);
     try {
@@ -59,15 +61,18 @@ export default function ResizePdfPage() {
         scaleContent,
       });
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
-      await downloadPdf(result, `${baseName}-resized.pdf`);
+      const bytes = await result.save();
+      if (!isCurrent()) return;
+      downloadPdfBytes(bytes, `${baseName}-resized.pdf`);
     } catch (err) {
+      if (!isCurrent()) return;
       setSaveError(
         err instanceof Error ? err.message : "Could not resize the PDF.",
       );
     } finally {
-      setSaving(false);
+      if (isCurrent()) setSaving(false);
     }
-  }, [pdfBytes, width, height, scaleContent, fileName]);
+  }, [pdfBytes, width, height, scaleContent, fileName, captureDocument]);
 
   return (
     <div>
@@ -83,7 +88,11 @@ export default function ResizePdfPage() {
 
       <div className="mt-8">
         <PdfDropZone
-          onFiles={(files) => loadFile(files[0])}
+          onFiles={(files) => {
+            setSaveError(null);
+            setSaving(false);
+            void loadFile(files[0]);
+          }}
           compact={!!pdfBytes}
         />
       </div>

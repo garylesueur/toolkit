@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 
 import { CopyableRow } from "@/components/copyable-row";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const COPY_RESET_MS = 2000;
 const DECIMAL_PRECISION = 3;
 
 type DimensionType = "width" | "height";
@@ -71,14 +70,6 @@ export default function AspectRatioCalculatorPage() {
   const [knownDimension, setKnownDimension] = useState("1920");
   const [knownDimensionType, setKnownDimensionType] =
     useState<DimensionType>("width");
-
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
-
-  const handleCopy = useCallback(async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopiedValue(value);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
 
   const parsedWidth = useMemo(() => {
     const n = parseFloat(dimWidth);
@@ -194,23 +185,9 @@ export default function AspectRatioCalculatorPage() {
             <CopyableRow
               label="Aspect Ratio"
               value={`${simplified.w}:${simplified.h}`}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
-            <CopyableRow
-              label="Decimal Ratio"
-              value={decimalRatio}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
-            />
-            {knownName && (
-              <CopyableRow
-                label="Common Name"
-                value={knownName}
-                copiedValue={copiedValue}
-                onCopy={handleCopy}
-              />
-            )}
+            <CopyableRow label="Decimal Ratio" value={decimalRatio} />
+            {knownName && <CopyableRow label="Common Name" value={knownName} />}
           </div>
         )}
       </section>
@@ -285,8 +262,6 @@ export default function AspectRatioCalculatorPage() {
                   ? String(calculatedDimension)
                   : calculatedDimension.toFixed(DECIMAL_PRECISION)
               }
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
           </div>
         )}

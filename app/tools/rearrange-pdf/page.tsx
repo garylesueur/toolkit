@@ -14,7 +14,7 @@ import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePdfDocument } from "@/hooks/use-pdf-document";
-import { downloadPdf } from "@/lib/pdf/download";
+import { downloadPdfBytes } from "@/lib/pdf/download";
 import { rearrangePdfPages } from "@/lib/pdf/rearrange";
 
 export default function RearrangePdfPage() {
@@ -26,6 +26,7 @@ export default function RearrangePdfPage() {
     loading,
     error,
     loadFile,
+    captureDocument,
     reset,
   } = usePdfDocument();
   const [order, setOrder] = useState<number[]>([]);
@@ -36,6 +37,10 @@ export default function RearrangePdfPage() {
   // Initialize order when thumbnails load
   const handleLoad = useCallback(
     async (files: File[]) => {
+      setOrder([]);
+      setSaveError(null);
+      dragIndexRef.current = null;
+      setSaving(false);
       await loadFile(files[0]);
     },
     [loadFile],
@@ -73,20 +78,24 @@ export default function RearrangePdfPage() {
 
   const handleSave = useCallback(async () => {
     if (!pdfBytes) return;
+    const isCurrent = captureDocument();
     setSaving(true);
     setSaveError(null);
     try {
       const result = await rearrangePdfPages(pdfBytes, effectiveOrder);
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
-      await downloadPdf(result, `${baseName}-rearranged.pdf`);
+      const bytes = await result.save();
+      if (!isCurrent()) return;
+      downloadPdfBytes(bytes, `${baseName}-rearranged.pdf`);
     } catch (err) {
+      if (!isCurrent()) return;
       setSaveError(
         err instanceof Error ? err.message : "Could not save the PDF.",
       );
     } finally {
-      setSaving(false);
+      if (isCurrent()) setSaving(false);
     }
-  }, [pdfBytes, effectiveOrder, fileName]);
+  }, [pdfBytes, effectiveOrder, fileName, captureDocument]);
 
   const isReordered = effectiveOrder.some((v, i) => v !== i);
 
@@ -133,6 +142,9 @@ export default function RearrangePdfPage() {
               size="sm"
               onClick={() => {
                 reset();
+                setSaving(false);
+                setSaveError(null);
+                dragIndexRef.current = null;
                 setOrder([]);
               }}
             >

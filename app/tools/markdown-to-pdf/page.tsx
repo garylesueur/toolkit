@@ -112,7 +112,8 @@ export default function MarkdownToPdfPage() {
       anchor.href = url;
       anchor.download = `${slugifyFilename(options.title) || "document"}.pdf`;
       anchor.click();
-      URL.revokeObjectURL(url);
+      // Allow the browser to take ownership before releasing the download URL.
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (err: unknown) {
       setError(
         err instanceof Error ? err.message : "Could not generate the PDF.",

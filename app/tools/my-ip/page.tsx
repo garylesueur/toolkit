@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { CopyableRow } from "@/components/copyable-row";
-import { PrivacyBanner } from "@/components/privacy-banner";
+import { ProcessingDisclosure } from "@/components/processing-disclosure";
 import { Button } from "@/components/ui/button";
 import {
   describeScope,
@@ -119,11 +119,7 @@ export default function MyIpPage() {
         The public IP address this site&apos;s server sees, plus how your
         connection reaches it — IPv4, IPv6, or both.
       </p>
-      <PrivacyBanner>
-        Unlike most tools here, this one has to talk to a server — that is the
-        only way to learn your public IP. The request is not logged or stored.
-        Dual-stack detection additionally calls ipify.org.
-      </PrivacyBanner>
+      <ProcessingDisclosure href="/tools/my-ip" />
 
       {loading && (
         <div className="mt-8 flex items-center justify-center gap-2 py-12">
@@ -214,8 +210,6 @@ export default function MyIpPage() {
                     key={entry.label}
                     label={entry.label}
                     value={entry.value}
-                    copiedValue={copiedValue}
-                    onCopy={handleCopy}
                   />
                 ))}
               </div>
@@ -226,12 +220,7 @@ export default function MyIpPage() {
             <h2 className="text-lg font-semibold">Request details</h2>
             <div className="space-y-2">
               {data.source && (
-                <CopyableRow
-                  label="Read from header"
-                  value={data.source}
-                  copiedValue={copiedValue}
-                  onCopy={handleCopy}
-                />
+                <CopyableRow label="Read from header" value={data.source} />
               )}
               <div className="flex flex-wrap items-center gap-3">
                 <Button

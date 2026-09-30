@@ -2,7 +2,7 @@
 
 import { RiSearchLine, RiCloseLine } from "@remixicon/react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useRef, useTransition, useState, useEffect } from "react";
 
 import {
   InputGroup,
@@ -23,9 +23,24 @@ export function ToolsSearch() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const query = searchParams.get(SEARCH_PARAM_KEY) ?? "";
-  const [value, setValue] = useState(query);
+  const [draft, setDraft] = useState(query);
+  const submittedQueries = useRef<string[]>([]);
+  const latestParams = useRef(searchParams);
+  useEffect(() => {
+    latestParams.current = searchParams;
+  }, [searchParams]);
 
-  useEffect(() => setValue(query), [query]);
+  useEffect(() => {
+    const acknowledgement = submittedQueries.current.indexOf(query);
+    if (acknowledgement >= 0) {
+      submittedQueries.current.splice(0, acknowledgement + 1);
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    submittedQueries.current = [];
+    setDraft(query);
+  }, [query]);
+
   useEffect(
     () => () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -35,31 +50,34 @@ export function ToolsSearch() {
 
   const updateSearchParam = useCallback(
     (value: string) => {
+      setDraft(value);
       if (debounceRef.current) clearTimeout(debounceRef.current);
 
       debounceRef.current = setTimeout(() => {
         startTransition(() => {
-          const params = new URLSearchParams(searchParams.toString());
+          const params = new URLSearchParams(latestParams.current.toString());
           if (value) {
             params.set(SEARCH_PARAM_KEY, value);
           } else {
             params.delete(SEARCH_PARAM_KEY);
           }
           const qs = params.toString();
+          submittedQueries.current.push(value);
           router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
         });
       }, DEBOUNCE_MS);
     },
-    [searchParams, router, pathname, startTransition],
+    [router, pathname, startTransition],
   );
 
   const clearSearch = useCallback(() => {
+    setDraft("");
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    setValue("");
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       params.delete(SEARCH_PARAM_KEY);
       const qs = params.toString();
+      submittedQueries.current.push("");
       router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
     });
   }, [searchParams, router, pathname, startTransition]);
@@ -75,14 +93,11 @@ export function ToolsSearch() {
         <InputGroupInput
           autoFocus
           placeholder="Search tools…"
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-            updateSearchParam(e.target.value);
-          }}
+          value={draft}
+          onChange={(e) => updateSearchParam(e.target.value)}
           aria-label="Search tools"
         />
-        {value && (
+        {draft && (
           <InputGroupAddon align="inline-end">
             <InputGroupButton
               size="icon-xs"
@@ -94,7 +109,7 @@ export function ToolsSearch() {
             </InputGroupButton>
           </InputGroupAddon>
         )}
-        {!value && (
+        {!draft && (
           <InputGroupAddon align="inline-end">
             <InputGroupText>
               <kbd className="text-muted-foreground hidden rounded border bg-muted px-1.5 py-0.5 font-mono text-[10px] sm:inline">

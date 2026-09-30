@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatDateTimeLocalForInput } from "@/lib/shared/date";
+import { formatWallTime, resolveWallTime } from "@/lib/shared/timezone";
 
 const AVAILABLE_ZONES = [
   "UTC",
@@ -89,6 +89,7 @@ function formatInZone(date: Date, zone: string): string {
 
 export default function TimezoneConverterPage() {
   const [dateTimeInput, setDateTimeInput] = useState("");
+  const [nowInstant, setNowInstant] = useState<Date | null>(null);
   /**
    * Starts at UTC rather than the visitor's zone: reading `resolvedOptions()`
    * during render resolves to the server's zone while pre-rendering and the
@@ -110,8 +111,11 @@ export default function TimezoneConverterPage() {
   }, []);
 
   const handleNow = useCallback(() => {
-    setDateTimeInput(formatDateTimeLocalForInput(new Date()));
-  }, []);
+    const now = new Date();
+    now.setSeconds(0, 0);
+    setNowInstant(now);
+    setDateTimeInput(formatWallTime(now, sourceZone));
+  }, [sourceZone]);
 
   const handleRemoveZone = useCallback((zone: string) => {
     setSelectedZones((prev) => prev.filter((z) => z !== zone));
@@ -126,45 +130,11 @@ export default function TimezoneConverterPage() {
     [selectedZones],
   );
 
-  /**
-   * Converts the wall-clock `datetime-local` value (interpreted as being in
-   * `sourceZone`) into a UTC `Date`. We do this by:
-   *   1. Parsing the input as a local-time Date (browser TZ).
-   *   2. Formatting that instant in the source zone to get the wall-clock
-   *      values the source zone would show for that instant.
-   *   3. Comparing those wall-clock values to the ones the user typed to
-   *      derive the offset between the browser TZ and the source zone.
-   *   4. Shifting the Date by that delta so it represents the correct UTC
-   *      instant.
-   */
-  const sourceDate = useMemo(() => {
-    if (!dateTimeInput.trim()) return null;
-
-    const naiveDate = new Date(dateTimeInput);
-    if (Number.isNaN(naiveDate.getTime())) return null;
-
-    const fmt = new Intl.DateTimeFormat("en-US", {
-      timeZone: sourceZone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-
-    const parts = fmt.formatToParts(naiveDate);
-    const get = (type: Intl.DateTimeFormatPartTypes) =>
-      parts.find((p) => p.type === type)?.value ?? "0";
-
-    const wallInSourceZone = new Date(
-      `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`,
-    );
-
-    const deltaMs = wallInSourceZone.getTime() - naiveDate.getTime();
-    return new Date(naiveDate.getTime() - deltaMs);
-  }, [dateTimeInput, sourceZone]);
+  const resolution = useMemo(
+    () => resolveWallTime(dateTimeInput, sourceZone),
+    [dateTimeInput, sourceZone],
+  );
+  const sourceDate = nowInstant ?? resolution.date;
 
   const convertedTimes: ConvertedTime[] = useMemo(() => {
     if (!sourceDate) return [];
@@ -203,7 +173,10 @@ export default function TimezoneConverterPage() {
                 id="datetime-input"
                 type="datetime-local"
                 value={dateTimeInput}
-                onChange={(e) => setDateTimeInput(e.target.value)}
+                onChange={(e) => {
+                  setNowInstant(null);
+                  setDateTimeInput(e.target.value);
+                }}
               />
               <Button type="button" variant="outline" onClick={handleNow}>
                 <RiTimeLine data-icon="inline-start" />
@@ -213,9 +186,15 @@ export default function TimezoneConverterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label>Source time zone</Label>
-            <Select value={sourceZone} onValueChange={setSourceZone}>
-              <SelectTrigger className="w-full sm:w-56">
+            <Label htmlFor="source-zone">Source time zone</Label>
+            <Select
+              value={sourceZone}
+              onValueChange={(zone) => {
+                setNowInstant(null);
+                setSourceZone(zone);
+              }}
+            >
+              <SelectTrigger id="source-zone" className="w-full sm:w-56">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -229,6 +208,18 @@ export default function TimezoneConverterPage() {
           </div>
         </div>
       </section>
+
+      {resolution.error && (
+        <p role="alert" className="text-destructive text-sm">
+          {resolution.error}
+        </p>
+      )}
+      {resolution.ambiguous && !nowInstant && (
+        <output className="text-muted-foreground text-sm">
+          This local time occurs twice when the clocks move back. The earlier
+          occurrence is shown.
+        </output>
+      )}
 
       {/* Converted times */}
       {convertedTimes.length > 0 && (
@@ -278,9 +269,9 @@ export default function TimezoneConverterPage() {
       {addableZones.length > 0 && (
         <section className="flex items-end gap-2">
           <div className="space-y-2">
-            <Label>Add time zone</Label>
+            <Label htmlFor="add-zone">Add time zone</Label>
             <Select value={addZoneValue} onValueChange={handleAddZone}>
-              <SelectTrigger className="w-56">
+              <SelectTrigger id="add-zone" className="w-56">
                 <SelectValue placeholder="Choose a zone…" />
               </SelectTrigger>
               <SelectContent>

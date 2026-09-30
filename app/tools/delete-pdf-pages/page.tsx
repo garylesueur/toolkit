@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePdfDocument } from "@/hooks/use-pdf-document";
 import { deletePdfPages } from "@/lib/pdf/delete";
-import { downloadPdf } from "@/lib/pdf/download";
+import { downloadPdfBytes } from "@/lib/pdf/download";
 
 export default function DeletePdfPagesPage() {
   const {
@@ -26,6 +26,7 @@ export default function DeletePdfPagesPage() {
     loading,
     error,
     loadFile,
+    captureDocument,
     reset,
   } = usePdfDocument();
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -43,20 +44,24 @@ export default function DeletePdfPagesPage() {
 
   const handleSave = useCallback(async () => {
     if (!pdfBytes || selected.size === 0) return;
+    const isCurrent = captureDocument();
     setSaving(true);
     setSaveError(null);
     try {
       const result = await deletePdfPages(pdfBytes, selected);
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
-      await downloadPdf(result, `${baseName}-modified.pdf`);
+      const bytes = await result.save();
+      if (!isCurrent()) return;
+      downloadPdfBytes(bytes, `${baseName}-modified.pdf`);
     } catch (err) {
+      if (!isCurrent()) return;
       setSaveError(
         err instanceof Error ? err.message : "Could not delete pages.",
       );
     } finally {
-      setSaving(false);
+      if (isCurrent()) setSaving(false);
     }
-  }, [pdfBytes, selected, fileName]);
+  }, [pdfBytes, selected, fileName, captureDocument]);
 
   const canDelete = selected.size > 0 && selected.size < pageCount;
 
@@ -73,7 +78,12 @@ export default function DeletePdfPagesPage() {
 
       <div className="mt-8">
         <PdfDropZone
-          onFiles={(files) => loadFile(files[0])}
+          onFiles={(files) => {
+            setSelected(new Set());
+            setSaveError(null);
+            setSaving(false);
+            void loadFile(files[0]);
+          }}
           compact={!!pdfBytes}
         />
       </div>
@@ -104,6 +114,8 @@ export default function DeletePdfPagesPage() {
               size="sm"
               onClick={() => {
                 reset();
+                setSaving(false);
+                setSaveError(null);
                 setSelected(new Set());
               }}
             >

@@ -1,5 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+Most browser tools process input locally. The catalogue classifies each tool's processing boundary, including disclosed IP/domain/Open Graph lookups and Google Fonts. Markdown previews block automatic remote resources. Global page-view analytics are separate and must not receive tool input. See [PRIVACY.md](./PRIVACY.md) for the complete inventory and the separate server-side MCP conversion/storage flow.
+
+## Roadmap
+
+See [ROADMAP.md](./ROADMAP.md) for the browser-first product principles, PDF compression plan, and prioritised tool backlog.
+
 ## Getting Started
 
 First, run the development server:

@@ -3,14 +3,18 @@ import {
   RiAccessibilityLine,
   RiApps2AddLine,
   RiAspectRatioLine,
+  RiAttachmentLine,
+  RiBookOpenLine,
   RiBracesLine,
   RiCalendar2Line,
   RiCalendarEventLine,
   RiCalendarLine,
   RiCalendarScheduleLine,
+  RiCameraLine,
   RiCharacterRecognitionLine,
   RiCodeLine,
   RiCollapseDiagonalLine,
+  RiCrop2Line,
   RiComputerLine,
   RiDatabase2Line,
   RiDeleteBin6Line,
@@ -20,6 +24,8 @@ import {
   RiFileCodeLine,
   RiFileImageLine,
   RiFileInfoLine,
+  RiFileEditLine,
+  RiFileList3Line,
   RiFilePdf2Line,
   RiFileListLine,
   RiFileReduceLine,
@@ -60,6 +66,7 @@ import {
   RiMagicLine,
   RiShape2Line,
   RiWifiLine,
+  RiWaterPercentLine,
 } from "@remixicon/react";
 
 export type Tool = {
@@ -253,13 +260,130 @@ export const tools: Tool[] = [
     dateAdded: "2026-03-20",
   },
   {
-    name: "Hash Generator",
+    name: "Hash & Checksum Verifier",
     description:
-      "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text.",
+      "Hash text or verify a local file against a SHA checksum without uploading it.",
     href: "/tools/hash-generator",
     icon: RiShieldKeyholeLine,
     tags: ["security", "generation", "encoding"],
     dateAdded: "2026-02-25",
+  },
+  {
+    name: "Password Strength Checker",
+    description:
+      "Analyse password length, variety, and predictable patterns entirely locally.",
+    href: "/tools/password-strength",
+    icon: RiLockPasswordLine,
+    tags: ["security"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Suspicious URL Inspector",
+    description:
+      "Parse links and flag credentials, lookalikes, redirects, unusual ports, and other tricks locally.",
+    href: "/tools/url-inspector",
+    icon: RiSearchEyeLine,
+    tags: ["security", "dev-utils"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Image Metadata Viewer & Scrubber",
+    description:
+      "Inspect EXIF, GPS, device, and text metadata, then remove it by local re-encoding.",
+    href: "/tools/image-metadata-scrubber",
+    icon: RiFileImageLine,
+    tags: ["security", "image"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Browser Privacy Check",
+    description:
+      "Review local privacy signals, permission states, storage, and fingerprinting surface.",
+    href: "/tools/browser-privacy",
+    icon: RiEyeLine,
+    tags: ["security", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "CSP Builder",
+    description:
+      "Build a Content Security Policy and flag risky directives entirely locally.",
+    href: "/tools/csp-builder",
+    icon: RiFileShieldLine,
+    tags: ["security", "dev-utils"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PEM / Certificate Decoder",
+    description:
+      "Inspect local X.509 certificates, validity, usages, SANs, and fingerprints.",
+    href: "/tools/certificate-decoder",
+    icon: RiFileInfoLine,
+    tags: ["security", "dev-utils", "encoding"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "QR & Barcode Reader",
+    description:
+      "Decode QR codes and common barcodes from images or a camera without uploading them.",
+    href: "/tools/barcode-reader",
+    icon: RiQrCodeLine,
+    tags: ["security", "image", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "SQL Formatter & Minifier",
+    description:
+      "Format or compact Standard SQL, DB2, N1QL, and PL/SQL entirely locally.",
+    href: "/tools/sql-formatter",
+    icon: RiDatabase2Line,
+    tags: ["formatting", "dev-utils", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "XML Formatter & Converter",
+    description:
+      "Format, validate, or minify XML and convert between XML and JSON locally.",
+    href: "/tools/xml-tools",
+    icon: RiFileCodeLine,
+    tags: ["formatting", "conversion", "dev-utils", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "JSON to TypeScript",
+    description:
+      "Infer nested TypeScript interfaces, arrays, unions, and optional fields from JSON.",
+    href: "/tools/json-to-typescript",
+    icon: RiBracesLine,
+    tags: ["conversion", "dev-utils", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "URL & Query String Builder",
+    description:
+      "Parse, edit, reorder, and rebuild duplicate-safe URL query parameters locally.",
+    href: "/tools/query-string-builder",
+    icon: RiLinksLine,
+    tags: ["encoding", "dev-utils", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Text Line Tools",
+    description:
+      "Sort, deduplicate, shuffle, reverse, number, trim, and clean lines locally.",
+    href: "/tools/text-line-tools",
+    icon: RiSortAsc,
+    tags: ["text", "formatting", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "CSS Gradient & Shadow Builders",
+    description:
+      "Design gradients and box shadows with live previews and copy-ready CSS.",
+    href: "/tools/css-builders",
+    icon: RiPaletteLine,
+    tags: ["colour", "generation", "dev-utils"],
+    dateAdded: "2026-08-08",
   },
   {
     name: "Regex Tester",
@@ -338,6 +462,114 @@ export const tools: Tool[] = [
     icon: RiCalendarScheduleLine,
     tags: ["dev-utils", "date-time"],
     dateAdded: "2026-02-25",
+  },
+  {
+    name: "Cron Expression Builder",
+    description:
+      "Build a five-field cron schedule visually and preview its next run times.",
+    href: "/tools/cron-builder",
+    icon: RiCalendarScheduleLine,
+    tags: ["dev-utils", "date-time", "generation"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Barcode Generator",
+    description:
+      "Generate Code 128, EAN, UPC, Code 39, ITF-14, and Codabar locally.",
+    href: "/tools/barcode-generator",
+    icon: RiQrCodeLine,
+    tags: ["generation", "image", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "HTML, CSS & JavaScript Formatter",
+    description:
+      "Format or minify frontend code locally with syntax-aware parsers.",
+    href: "/tools/web-code-formatter",
+    icon: RiFileCodeLine,
+    tags: ["dev-utils", "formatting", "code"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Image Resize, Crop & Convert",
+    description:
+      "Crop, resize, and convert images to PNG, JPEG, WebP, or supported AVIF locally.",
+    href: "/tools/image-editor",
+    icon: RiCrop2Line,
+    tags: ["image", "conversion"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF N-up & Booklet",
+    description:
+      "Place two or four pages per sheet, or reorder pages for booklet printing locally.",
+    href: "/tools/impose-pdf",
+    icon: RiBookOpenLine,
+    tags: ["pdf", "formatting"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF Validator & Repair",
+    description:
+      "Check PDF structure and rebuild a verified compatibility copy locally with WebAssembly.",
+    href: "/tools/pdf-validator",
+    icon: RiFileShieldLine,
+    tags: ["pdf", "security", "analysis"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Protect & Unlock PDF",
+    description:
+      "Add AES-256 open-password protection or unlock an accessible PDF entirely in your browser.",
+    href: "/tools/protect-pdf",
+    icon: RiLockPasswordLine,
+    tags: ["pdf", "security"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Permanently Redact PDF",
+    description:
+      "Burn sensitive areas into flattened pages and verify hidden PDF structures are removed locally.",
+    href: "/tools/redact-pdf",
+    icon: RiFileShieldLine,
+    tags: ["pdf", "security", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF Accessibility Structure Checker",
+    description:
+      "Preflight PDF tags, language, titles, figures, fields, and links locally without claiming certification.",
+    href: "/tools/pdf-accessibility",
+    icon: RiAccessibilityLine,
+    tags: ["pdf", "accessibility", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "OCR PDF",
+    description:
+      "Recognise English printed text and create a searchable PDF locally with self-hosted WebAssembly.",
+    href: "/tools/ocr-pdf",
+    icon: RiCharacterRecognitionLine,
+    tags: ["pdf", "ocr", "text", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Extract PDF Images",
+    description:
+      "Recover original embedded raster images from selected PDF pages locally without rendering page screenshots.",
+    href: "/tools/extract-pdf-images",
+    icon: RiFileImageLine,
+    tags: ["pdf", "image", "extraction", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Extract PDF Fonts",
+    description:
+      "Recover embedded TrueType font programs from selected PDF pages locally with licensing and subset warnings.",
+    href: "/tools/extract-pdf-fonts",
+    icon: RiFontSize,
+    tags: ["pdf", "font", "extraction", "privacy"],
+    dateAdded: "2026-08-08",
   },
   {
     name: "CSV ↔ JSON Converter",
@@ -629,11 +861,128 @@ export const tools: Tool[] = [
   {
     name: "Compress PDF",
     description:
-      "Reduce PDF file size by re-saving and stripping unused objects — all in the browser.",
+      "Losslessly optimise fonts, content streams, and duplicate resources with WebAssembly.",
     href: "/tools/compress-pdf",
     icon: RiCollapseDiagonalLine,
     tags: ["pdf"],
     dateAdded: "2026-04-10",
+  },
+  {
+    name: "Images to PDF",
+    description:
+      "Combine ordered JPEG, PNG, and WebP images into one PDF — entirely in your browser.",
+    href: "/tools/images-to-pdf",
+    icon: RiFileImageLine,
+    tags: ["pdf", "image", "conversion"],
+    dateAdded: "2026-08-07",
+  },
+  {
+    name: "PDF to Images",
+    description:
+      "Export selected PDF pages as PNG or JPEG images with local PDF.js rendering.",
+    href: "/tools/pdf-to-images",
+    icon: RiFileImageLine,
+    tags: ["pdf", "image", "conversion"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Add Page Numbers",
+    description:
+      "Number all or selected PDF pages with custom format, position, size, and margins.",
+    href: "/tools/add-page-numbers",
+    icon: RiFileList3Line,
+    tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Watermark PDF",
+    description:
+      "Apply text or image watermarks over or behind selected PDF pages locally.",
+    href: "/tools/watermark-pdf",
+    icon: RiWaterPercentLine,
+    tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Crop PDF",
+    description:
+      "Adjust visible PDF page boundaries locally without rasterising or deleting content.",
+    href: "/tools/crop-pdf",
+    icon: RiCrop2Line,
+    tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Scan to PDF",
+    description:
+      "Capture, rotate, crop, and clean up page images before local PDF export.",
+    href: "/tools/scan-to-pdf",
+    icon: RiCameraLine,
+    tags: ["pdf", "image", "conversion"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF Form Filler",
+    description:
+      "Detect and fill local AcroForm fields, with optional explicit flattening.",
+    href: "/tools/pdf-form-filler",
+    icon: RiFileEditLine,
+    tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Sign PDF",
+    description:
+      "Draw, type, or upload a visible signature and place it on a PDF locally.",
+    href: "/tools/sign-pdf",
+    icon: RiFileEditLine,
+    tags: ["pdf"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF Attachments",
+    description:
+      "Inspect, download, and remove files embedded inside a PDF locally.",
+    href: "/tools/pdf-attachments",
+    icon: RiAttachmentLine,
+    tags: ["pdf", "data"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Remove PDF Comments & Markup",
+    description:
+      "Inspect and remove selected comments, highlights, drawings, stamps, and redaction marks while preserving links and forms.",
+    href: "/tools/remove-pdf-annotations",
+    icon: RiDeleteBin6Line,
+    tags: ["pdf", "privacy", "editing"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF Bookmarks",
+    description:
+      "Inspect, export, build, replace, or remove a nested PDF bookmark tree locally.",
+    href: "/tools/pdf-bookmarks",
+    icon: RiBookOpenLine,
+    tags: ["pdf", "navigation", "editing", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "PDF Active Content Inspector",
+    description:
+      "Inspect and selectively remove scripts, automatic or external actions, attachments, interactive media, and XFA content locally.",
+    href: "/tools/pdf-active-content",
+    icon: RiShieldKeyholeLine,
+    tags: ["pdf", "security", "privacy"],
+    dateAdded: "2026-08-08",
+  },
+  {
+    name: "Compare PDFs",
+    description:
+      "Find page-aligned visual differences with an overlay slider and local report.",
+    href: "/tools/compare-pdfs",
+    icon: RiGitMergeLine,
+    tags: ["pdf", "data"],
+    dateAdded: "2026-08-08",
   },
   {
     name: "Flatten PDF",

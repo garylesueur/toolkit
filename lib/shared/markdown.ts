@@ -1,6 +1,31 @@
 import DOMPurify from "dompurify";
 import { marked } from "marked";
 
+import { isEmbeddedMarkdownImage } from "./markdown-image.ts";
+
+let previewSanitizer: ReturnType<typeof DOMPurify> | null = null;
+
+function getPreviewSanitizer() {
+  if (!previewSanitizer) {
+    previewSanitizer = DOMPurify(window);
+    previewSanitizer.addHook("uponSanitizeAttribute", (node, attribute) => {
+      if (attribute.attrName === "src") {
+        attribute.keepAttr =
+          node.nodeName === "IMG" &&
+          isEmbeddedMarkdownImage(attribute.attrValue);
+      }
+    });
+    previewSanitizer.addHook("afterSanitizeAttributes", (node) => {
+      if (node.nodeName === "IMG" && !node.hasAttribute("src")) {
+        const placeholder = node.ownerDocument.createElement("span");
+        placeholder.textContent = `[Image blocked: ${node.getAttribute("alt") || "external resource"}]`;
+        node.replaceWith(placeholder);
+      }
+    });
+  }
+  return previewSanitizer;
+}
+
 /**
  * Renders markdown to HTML that is safe to hand to `dangerouslySetInnerHTML`.
  *
@@ -17,5 +42,20 @@ export function renderMarkdown(source: string): string {
   if (!DOMPurify.isSupported) return "";
 
   const rendered = marked.parse(source, { gfm: true, async: false });
-  return DOMPurify.sanitize(rendered);
+  return getPreviewSanitizer().sanitize(rendered, {
+    USE_PROFILES: { html: true },
+    FORBID_TAGS: [
+      "audio",
+      "video",
+      "source",
+      "track",
+      "picture",
+      "iframe",
+      "object",
+      "embed",
+      "link",
+      "style",
+    ],
+    FORBID_ATTR: ["srcset", "style", "poster", "background", "ping"],
+  });
 }

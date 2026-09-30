@@ -420,11 +420,9 @@ function CollapsibleSection({
 
 interface SectionGridProps {
   sections: InfoSection[];
-  copiedValue: string | null;
-  onCopy: (value: string) => void;
 }
 
-function SectionGrid({ sections, copiedValue, onCopy }: SectionGridProps) {
+function SectionGrid({ sections }: SectionGridProps) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {sections.map((section) => (
@@ -435,8 +433,6 @@ function SectionGrid({ sections, copiedValue, onCopy }: SectionGridProps) {
                 key={`${section.title}-${row.label}`}
                 label={row.label}
                 value={row.value}
-                copiedValue={copiedValue}
-                onCopy={onCopy}
               />
             ))}
           </div>
@@ -512,12 +508,6 @@ export default function BrowserInfoPage() {
     }
   }, []);
 
-  const handleCopy = useCallback(async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedValue(text);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
-
   const handleShare = useCallback(async () => {
     if (!shareUrl) return;
     await navigator.clipboard.writeText(shareUrl);
@@ -587,11 +577,7 @@ export default function BrowserInfoPage() {
         )}
 
         <div className="mt-8">
-          <SectionGrid
-            sections={sections}
-            copiedValue={copiedValue}
-            onCopy={handleCopy}
-          />
+          <SectionGrid sections={sections} />
         </div>
       </div>
     );
@@ -660,11 +646,7 @@ export default function BrowserInfoPage() {
         )}
 
         <div className="mt-8">
-          <SectionGrid
-            sections={sections}
-            copiedValue={copiedValue}
-            onCopy={handleCopy}
-          />
+          <SectionGrid sections={sections} />
         </div>
       </div>
     );

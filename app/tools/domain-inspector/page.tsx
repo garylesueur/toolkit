@@ -10,6 +10,7 @@ import {
 } from "@remixicon/react";
 import { useCallback, useState } from "react";
 
+import { ProcessingDisclosure } from "@/components/processing-disclosure";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { lookupDns } from "@/lib/dns/doh";
@@ -99,14 +100,7 @@ export default function DomainInspectorPage() {
         Registration data over RDAP — the modern replacement for WHOIS —
         alongside live DNS records. Also works for IP addresses and AS numbers.
       </p>
-      <div className="mt-3 flex items-start gap-2 rounded-lg border bg-muted/30 px-3 py-2.5">
-        <RiInformationLine className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-        <p className="text-muted-foreground text-xs leading-relaxed">
-          Lookups run from your browser straight to IANA, the authoritative
-          registry, and Cloudflare&apos;s DNS resolver. Nothing passes through
-          this site&apos;s servers.
-        </p>
-      </div>
+      <ProcessingDisclosure href="/tools/domain-inspector" />
 
       <div className="mt-8 space-y-3">
         <div className="flex flex-wrap items-center gap-2">

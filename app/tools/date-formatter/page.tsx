@@ -9,8 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatRelative, formatDateTimeLocalForInput } from "@/lib/shared/date";
 
-const COPY_RESET_MS = 2000;
-
 const LOCAL_DATE_TIME_FORMATTER = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "long",
@@ -60,14 +58,6 @@ function computeFormats(date: Date): FormattedResult[] {
 
 export default function DateFormatterPage() {
   const [dateInput, setDateInput] = useState("");
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
-
-  const handleCopy = useCallback(async (value: string) => {
-    if (!value) return;
-    await navigator.clipboard.writeText(value);
-    setCopiedValue(value);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
 
   const handleNow = useCallback(() => {
     setDateInput(formatDateTimeLocalForInput(new Date()));
@@ -123,8 +113,6 @@ export default function DateFormatterPage() {
                 key={row.label}
                 label={row.label}
                 value={row.value}
-                copiedValue={copiedValue}
-                onCopy={handleCopy}
               />
             ))}
           </div>

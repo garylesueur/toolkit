@@ -9,8 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatDateForInput } from "@/lib/shared/date";
 
-const COPY_RESET_MS = 2000;
-
 const ISO_MONDAY = 1;
 const ISO_SUNDAY = 7;
 const DAYS_PER_WEEK = 7;
@@ -123,14 +121,6 @@ export default function WeekNumberPage() {
   const [yearInput, setYearInput] = useState(() =>
     new Date().getFullYear().toString(),
   );
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
-
-  const handleCopy = useCallback(async (value: string) => {
-    if (!value) return;
-    await navigator.clipboard.writeText(value);
-    setCopiedValue(value);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
 
   const handleToday = useCallback(() => {
     setDateInput(formatDateForInput(new Date()));
@@ -204,26 +194,15 @@ export default function WeekNumberPage() {
             <CopyableRow
               label="ISO week number"
               value={`Week ${dateResult.weekNumber}`}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
             <CopyableRow
               label="ISO week year"
               value={dateResult.weekYear.toString()}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
-            <CopyableRow
-              label="Day of the week"
-              value={dateResult.dayName}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
-            />
+            <CopyableRow label="Day of the week" value={dateResult.dayName} />
             <CopyableRow
               label="Day number within the week (ISO)"
               value={dateResult.isoDayNumber.toString()}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
           </div>
         )}
@@ -269,14 +248,10 @@ export default function WeekNumberPage() {
             <CopyableRow
               label="Monday (start of week)"
               value={DATE_FORMATTER.format(weekRange.monday)}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
             <CopyableRow
               label="Sunday (end of week)"
               value={DATE_FORMATTER.format(weekRange.sunday)}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
           </div>
         )}
