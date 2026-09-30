@@ -1,8 +1,14 @@
 "use client";
 
-import { RiDownload2Line, RiLoopLeftLine } from "@remixicon/react";
+import {
+  RiArrowRightLine,
+  RiDownload2Line,
+  RiLoopLeftLine,
+} from "@remixicon/react";
+import { useRouter } from "next/navigation";
 import { useState, useMemo, useEffect, useCallback } from "react";
 
+import { ImageToolHandoff } from "@/components/image-tool-handoff";
 import { ProcessingDisclosure } from "@/components/processing-disclosure";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +50,7 @@ import type {
   FontOption,
   GradientDirection,
 } from "@/lib/logo-generator/types";
+import { storeImageHandoff } from "@/lib/tool-handoff/storage";
 import { cn } from "@/lib/utils";
 
 const RADIUS_OPTIONS = [
@@ -70,6 +77,7 @@ const HORIZONTAL_MAX = 200;
 
 const ICON_SIZE_MIN = 30;
 const ICON_SIZE_MAX = 200;
+const LOGO_HANDOFF_SIZE = 1024;
 
 /** Track which Google Font stylesheets have been injected */
 const loadedFonts = new Set<string>();
@@ -95,6 +103,7 @@ function filterIcons(query: string) {
 }
 
 export default function LogoGeneratorPage() {
+  const router = useRouter();
   const [settings, setSettings] = usePersistedState<LogoGeneratorSettings>(
     "toolkit:logo-generator",
     LOGO_STATE_VERSION,
@@ -203,6 +212,28 @@ export default function LogoGeneratorPage() {
       setExporting(false);
     }
   }, [svgString, exportPrefix]);
+
+  const getLogoArtifact = useCallback(
+    async () => ({
+      blob: new Blob(
+        [
+          svgString.replace(
+            "<svg ",
+            `<svg width="${LOGO_HANDOFF_SIZE}" height="${LOGO_HANDOFF_SIZE}" `,
+          ),
+        ],
+        { type: "image/svg+xml" },
+      ),
+      filename: `${exportPrefix}-logo.svg`,
+      sourceHref: "/tools/logo-generator",
+    }),
+    [exportPrefix, svgString],
+  );
+
+  const handleContinueToAppIcons = useCallback(async () => {
+    await storeImageHandoff(await getLogoArtifact());
+    router.push("/tools/app-icon-bundle");
+  }, [getLogoArtifact, router]);
 
   function handleLettersChange(value: string) {
     const cleaned = value
@@ -830,6 +861,34 @@ export default function LogoGeneratorPage() {
                 </Button>
               ))}
             </div>
+
+            <Button
+              variant="secondary"
+              onClick={handleContinueToAppIcons}
+              disabled={!canExport}
+              className="mt-2 w-full"
+            >
+              Continue to app icon bundle
+              <RiArrowRightLine data-icon="inline-end" aria-hidden />
+            </Button>
+
+            <ImageToolHandoff
+              getArtifact={getLogoArtifact}
+              destinations={[
+                {
+                  label: "Image Crop & Resize",
+                  href: "/tools/image-crop-resize",
+                },
+                {
+                  label: "Favicon Generator",
+                  href: "/tools/favicon-generator",
+                },
+                {
+                  label: "Chrome Extension Icons",
+                  href: "/tools/chrome-extension-icons",
+                },
+              ]}
+            />
           </div>
         </div>
       </div>

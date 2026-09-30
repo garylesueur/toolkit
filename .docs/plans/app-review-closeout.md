@@ -4,6 +4,10 @@ Date: 30 September 2026
 Status: implementation complete; verification completed with the limitations below
 Scope: uncommitted implementation of `.docs/plans/app-review-remediation.md`; original footer, registry and Mermaid work preserved. No commits or publication performed.
 
+Publication follow-up: the user subsequently authorised a new PR containing all 42 unpublished feature commits and the remediation, plus weekly dependency updates. Current `origin/main` was merged without rewriting history. Its Mermaid fixes, tool handoffs, keyboard search and Sketch Pad are preserved. Source conflicts were resolved by behaviour; pnpm regenerated the lockfile. Three newly merged tools were added to the local-processing inventory after the existing coverage tests exposed missing classifications.
+
+The assembled PR passed all 338 tests, typecheck, lint, production build and a fresh zero-advisory audit. Lint now reports 41 warnings after including main's existing Sketch Pad patterns. The new Dependabot configuration checks npm and GitHub Actions weekly with a seven-day version cooldown, groups patch/minor runtime and tooling updates, and leaves majors separate. A read-only CI workflow uses pinned official actions and Node 24.19.0 to install the frozen lockfile, check the worker, types, lint, tests and build. The repository currently has no main-branch protection; this workflow supplies checks but does not configure enforcement or automatic merging. The earlier no-publication statements below describe the implementation-stage checkpoint.
+
 ## Self-review findings
 
 The run-plan close-out reviewed the complete implementation diff and its callers against the scoped behaviour contract. There is no committed implementation branch or feature-spec estate, so the plan and working-tree baseline govern this review.

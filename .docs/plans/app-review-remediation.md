@@ -1,8 +1,11 @@
 # App review implementation plan
 
-Date: 30 September 2026  
-Status: implementation complete; acceptance limitations recorded in close-out  
-Strategy: vertical slices, with security dependency updates first  
+Date: 30 September 2026
+
+Status: implementation complete; acceptance limitations recorded in close-out
+
+Strategy: vertical slices, with security dependency updates first
+
 Scope: findings from the application review in this chat
 
 ## Intended outcome

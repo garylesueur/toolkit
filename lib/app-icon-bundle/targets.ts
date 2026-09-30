@@ -1,0 +1,133 @@
+import type { IosIconTarget } from "./types";
+
+export const IOS_ICON_TARGETS: IosIconTarget[] = [
+  {
+    filename: "AppIcon-20@2x.png",
+    idiom: "iphone",
+    pointSize: "20x20",
+    scale: "2x",
+    pixelSize: 40,
+  },
+  {
+    filename: "AppIcon-20@3x.png",
+    idiom: "iphone",
+    pointSize: "20x20",
+    scale: "3x",
+    pixelSize: 60,
+  },
+  {
+    filename: "AppIcon-29@2x.png",
+    idiom: "iphone",
+    pointSize: "29x29",
+    scale: "2x",
+    pixelSize: 58,
+  },
+  {
+    filename: "AppIcon-29@3x.png",
+    idiom: "iphone",
+    pointSize: "29x29",
+    scale: "3x",
+    pixelSize: 87,
+  },
+  {
+    filename: "AppIcon-40@2x.png",
+    idiom: "iphone",
+    pointSize: "40x40",
+    scale: "2x",
+    pixelSize: 80,
+  },
+  {
+    filename: "AppIcon-40@3x.png",
+    idiom: "iphone",
+    pointSize: "40x40",
+    scale: "3x",
+    pixelSize: 120,
+  },
+  {
+    filename: "AppIcon-60@2x.png",
+    idiom: "iphone",
+    pointSize: "60x60",
+    scale: "2x",
+    pixelSize: 120,
+  },
+  {
+    filename: "AppIcon-60@3x.png",
+    idiom: "iphone",
+    pointSize: "60x60",
+    scale: "3x",
+    pixelSize: 180,
+  },
+  {
+    filename: "AppIcon-iPad-20.png",
+    idiom: "ipad",
+    pointSize: "20x20",
+    scale: "1x",
+    pixelSize: 20,
+  },
+  {
+    filename: "AppIcon-iPad-20@2x.png",
+    idiom: "ipad",
+    pointSize: "20x20",
+    scale: "2x",
+    pixelSize: 40,
+  },
+  {
+    filename: "AppIcon-iPad-29.png",
+    idiom: "ipad",
+    pointSize: "29x29",
+    scale: "1x",
+    pixelSize: 29,
+  },
+  {
+    filename: "AppIcon-iPad-29@2x.png",
+    idiom: "ipad",
+    pointSize: "29x29",
+    scale: "2x",
+    pixelSize: 58,
+  },
+  {
+    filename: "AppIcon-iPad-40.png",
+    idiom: "ipad",
+    pointSize: "40x40",
+    scale: "1x",
+    pixelSize: 40,
+  },
+  {
+    filename: "AppIcon-iPad-40@2x.png",
+    idiom: "ipad",
+    pointSize: "40x40",
+    scale: "2x",
+    pixelSize: 80,
+  },
+  {
+    filename: "AppIcon-iPad-76.png",
+    idiom: "ipad",
+    pointSize: "76x76",
+    scale: "1x",
+    pixelSize: 76,
+  },
+  {
+    filename: "AppIcon-iPad-76@2x.png",
+    idiom: "ipad",
+    pointSize: "76x76",
+    scale: "2x",
+    pixelSize: 152,
+  },
+  {
+    filename: "AppIcon-iPad-83.5@2x.png",
+    idiom: "ipad",
+    pointSize: "83.5x83.5",
+    scale: "2x",
+    pixelSize: 167,
+  },
+  {
+    filename: "AppIcon-1024.png",
+    idiom: "ios-marketing",
+    pointSize: "1024x1024",
+    scale: "1x",
+    pixelSize: 1024,
+  },
+];
+
+export const MIN_RECOMMENDED_SOURCE_SIZE = 1024;
+export const APP_ICON_HANDOFF_KEY = "toolkit:app-icon-bundle:handoff";
