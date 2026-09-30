@@ -29,6 +29,7 @@
     "dompurify": "^3.4.12",
     "konva": "^10.3.1",
     "marked": "^18.0.7",
+    "mermaid": "^12.0.0",
     "next": "^16.2.12",
     "next-themes": "^0.4.6",
     "papaparse": "^5.5.4",
