@@ -6,10 +6,9 @@ import { useState, useCallback } from "react";
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useClipboard } from "@/hooks/use-clipboard";
 
 type Direction = "encode" | "decode";
-
-const COPY_FEEDBACK_MS = 2000;
 
 /** Encodes special characters to HTML entities. Replaces & first to avoid double-encoding. */
 function encodeHtmlEntities(text: string): string {
@@ -32,7 +31,6 @@ function decodeHtmlEntities(text: string): string {
 export default function HtmlEntitiesPage() {
   const [direction, setDirection] = useState<Direction>("encode");
   const [inputText, setInputText] = useState("");
-  const [copied, setCopied] = useState(false);
 
   const output =
     direction === "encode"
@@ -53,11 +51,7 @@ export default function HtmlEntitiesPage() {
     [direction, inputText],
   );
 
-  const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), COPY_FEEDBACK_MS);
-  }, [output]);
+  const { copy: handleCopy, copied, error: copyError } = useClipboard(output);
 
   return (
     <div>
@@ -91,6 +85,12 @@ export default function HtmlEntitiesPage() {
           Decode
         </Button>
       </div>
+
+      {copyError && (
+        <p role="alert" className="text-destructive text-sm">
+          {copyError}
+        </p>
+      )}
 
       {/* Textareas */}
       <div className="mt-6 space-y-4">
@@ -130,7 +130,11 @@ export default function HtmlEntitiesPage() {
 
       {/* Copy button */}
       <div className="mt-4">
-        <Button variant="outline" onClick={() => void handleCopy()}>
+        <Button
+          variant="outline"
+          onClick={() => void handleCopy()}
+          disabled={!output}
+        >
           {copied ? (
             <RiCheckLine
               className="size-4 text-green-600 dark:text-green-500"
@@ -139,7 +143,7 @@ export default function HtmlEntitiesPage() {
           ) : (
             <RiFileCopyLine data-icon="inline-start" />
           )}
-          {copied ? "Copied" : "Copy result"}
+          {copied ? "Copied" : "Copy"}
         </Button>
       </div>
     </div>

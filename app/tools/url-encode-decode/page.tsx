@@ -5,7 +5,9 @@ import { useState, useCallback } from "react";
 
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useClipboard } from "@/hooks/use-clipboard";
 
 type Direction = "encode" | "decode";
 
@@ -16,7 +18,6 @@ const DECODE_ERROR_MESSAGE = "Malformed URI sequence";
 export default function UrlEncodeDecodePage() {
   const [direction, setDirection] = useState<Direction>("encode");
   const [inputText, setInputText] = useState("");
-  const [copied, setCopied] = useState(false);
 
   const handleSetDirection = useCallback(
     (newDirection: Direction) => {
@@ -49,12 +50,7 @@ export default function UrlEncodeDecodePage() {
     }
   }
 
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [output]);
+  const { copy: handleCopy, copied, error: copyError } = useClipboard(output);
 
   const placeholder =
     direction === "encode"
@@ -93,9 +89,19 @@ export default function UrlEncodeDecodePage() {
         </Button>
       </div>
 
+      {copyError && (
+        <p role="alert" className="text-destructive text-sm">
+          {copyError}
+        </p>
+      )}
+
       {/* Input */}
       <div className="mt-6">
+        <Label htmlFor="url-input">
+          {direction === "encode" ? "Text to encode" : "URL text to decode"}
+        </Label>
         <Textarea
+          id="url-input"
           placeholder={placeholder}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
@@ -105,7 +111,15 @@ export default function UrlEncodeDecodePage() {
 
       {/* Output */}
       <div className="mt-4">
-        <Textarea value={output} readOnly className="min-h-32 resize-none" />
+        <Label htmlFor="url-output">
+          {direction === "encode" ? "Encoded URL text" : "Decoded text"}
+        </Label>
+        <Textarea
+          id="url-output"
+          value={output}
+          readOnly
+          className="min-h-32 resize-none"
+        />
       </div>
 
       {decodeError && (

@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 
 import { CopyableRow } from "@/components/copyable-row";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-const COPY_RESET_MS = 2000;
 
 const CIDR_PATTERN = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/(\d{1,2})$/;
 
@@ -106,15 +104,8 @@ function buildResultRows(result: CidrResult): ResultRow[] {
 
 export default function CidrCalculatorPage() {
   const [input, setInput] = useState("");
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const result = useMemo(() => calculateCidr(input), [input]);
-
-  const handleCopy = useCallback(async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedValue(text);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
 
   const hasInput = input.trim().length > 0;
   const rows = result ? buildResultRows(result) : null;
@@ -149,13 +140,7 @@ export default function CidrCalculatorPage() {
       {rows && (
         <div className="mt-6 space-y-2">
           {rows.map((row) => (
-            <CopyableRow
-              key={row.label}
-              label={row.label}
-              value={row.value}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
-            />
+            <CopyableRow key={row.label} label={row.label} value={row.value} />
           ))}
         </div>
       )}

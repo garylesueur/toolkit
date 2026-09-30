@@ -31,6 +31,7 @@ export default function SplitPdfPage() {
     loading,
     error,
     loadFile,
+    captureDocument,
     reset,
   } = usePdfDocument();
   const [mode, setMode] = useState<SplitMode>("all");
@@ -42,6 +43,7 @@ export default function SplitPdfPage() {
 
   const handleSplit = useCallback(async () => {
     if (!pdfBytes) return;
+    const isCurrent = captureDocument();
     setSaving(true);
     try {
       let results: { name: string; bytes: Uint8Array }[];
@@ -76,6 +78,7 @@ export default function SplitPdfPage() {
         results = await splitPdfByRanges(pdfBytes, ranges, baseName);
       }
 
+      if (!isCurrent()) return;
       if (results.length === 1) {
         downloadPdfBytes(results[0].bytes, results[0].name);
       } else {
@@ -85,19 +88,21 @@ export default function SplitPdfPage() {
           input: r.bytes,
         }));
         const blob = await downloadZip(files).blob();
+        if (!isCurrent()) return;
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
         a.download = `${baseName}-split.zip`;
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
     } catch (err) {
+      if (!isCurrent()) return;
       setRangeError(err instanceof Error ? err.message : "Split failed.");
     } finally {
-      setSaving(false);
+      if (isCurrent()) setSaving(false);
     }
-  }, [pdfBytes, mode, rangeInput, pageCount, baseName]);
+  }, [pdfBytes, mode, rangeInput, pageCount, baseName, captureDocument]);
 
   return (
     <div>
@@ -112,7 +117,12 @@ export default function SplitPdfPage() {
 
       <div className="mt-8">
         <PdfDropZone
-          onFiles={(files) => loadFile(files[0])}
+          onFiles={(files) => {
+            setRangeInput("");
+            setRangeError(null);
+            setSaving(false);
+            void loadFile(files[0]);
+          }}
           compact={!!pdfBytes}
         />
       </div>
@@ -177,6 +187,7 @@ export default function SplitPdfPage() {
               size="sm"
               onClick={() => {
                 reset();
+                setSaving(false);
                 setRangeInput("");
                 setRangeError(null);
               }}

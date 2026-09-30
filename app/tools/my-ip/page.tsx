@@ -210,8 +210,6 @@ export default function MyIpPage() {
                     key={entry.label}
                     label={entry.label}
                     value={entry.value}
-                    copiedValue={copiedValue}
-                    onCopy={handleCopy}
                   />
                 ))}
               </div>
@@ -222,12 +220,7 @@ export default function MyIpPage() {
             <h2 className="text-lg font-semibold">Request details</h2>
             <div className="space-y-2">
               {data.source && (
-                <CopyableRow
-                  label="Read from header"
-                  value={data.source}
-                  copiedValue={copiedValue}
-                  onCopy={handleCopy}
-                />
+                <CopyableRow label="Read from header" value={data.source} />
               )}
               <div className="flex flex-wrap items-center gap-3">
                 <Button

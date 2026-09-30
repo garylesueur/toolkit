@@ -5,12 +5,12 @@ import { useState, useCallback, useMemo } from "react";
 
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useClipboard } from "@/hooks/use-clipboard";
 import { decodeBase64ToUtf8, encodeUtf8ToBase64 } from "@/lib/shared/base64";
 
 type Direction = "encode" | "decode";
-
-const COPY_RESET_MS = 2000;
 
 function base64Encode(input: string): { output: string; error: string | null } {
   try {
@@ -35,7 +35,6 @@ function base64Decode(input: string): { output: string; error: string | null } {
 export default function Base64Page() {
   const [direction, setDirection] = useState<Direction>("encode");
   const [input, setInput] = useState("");
-  const [copied, setCopied] = useState(false);
 
   const { output, error } = useMemo(() => {
     if (direction === "encode") {
@@ -53,12 +52,7 @@ export default function Base64Page() {
     [direction, output],
   );
 
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), COPY_RESET_MS);
-  }, [output]);
+  const { copy: handleCopy, copied, error: copyError } = useClipboard(output);
 
   const inputPlaceholder =
     direction === "encode"
@@ -96,10 +90,20 @@ export default function Base64Page() {
         </Button>
       </div>
 
+      {copyError && (
+        <p role="alert" className="text-destructive text-sm">
+          {copyError}
+        </p>
+      )}
+
       {/* Textareas */}
       <div className="mt-6 space-y-4">
         <div>
+          <Label htmlFor="base64-input">
+            {direction === "encode" ? "Text to encode" : "Base64 to decode"}
+          </Label>
           <Textarea
+            id="base64-input"
             placeholder={inputPlaceholder}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -107,7 +111,11 @@ export default function Base64Page() {
           />
         </div>
         <div>
+          <Label htmlFor="base64-output">
+            {direction === "encode" ? "Base64 output" : "Decoded text"}
+          </Label>
           <Textarea
+            id="base64-output"
             placeholder={
               direction === "encode" ? "Base64 output…" : "Decoded text…"
             }

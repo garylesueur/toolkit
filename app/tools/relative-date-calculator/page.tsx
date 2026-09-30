@@ -16,8 +16,6 @@ import {
 } from "@/components/ui/select";
 import { addMonths, formatDateForInput } from "@/lib/shared/date";
 
-const COPY_RESET_MS = 2000;
-
 const SATURDAY = 6;
 const SUNDAY = 0;
 
@@ -94,14 +92,6 @@ export default function RelativeDateCalculatorPage() {
   const [amount, setAmount] = useState("1");
   const [unit, setUnit] = useState<OffsetUnit>("days");
   const [direction, setDirection] = useState<OffsetDirection>("after");
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
-
-  const handleCopy = useCallback(async (value: string) => {
-    if (!value) return;
-    await navigator.clipboard.writeText(value);
-    setCopiedValue(value);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
 
   const handleToday = useCallback(() => {
     setDateInput(formatDateForInput(new Date()));
@@ -222,8 +212,6 @@ export default function RelativeDateCalculatorPage() {
                 key={row.label}
                 label={row.label}
                 value={row.value}
-                copiedValue={copiedValue}
-                onCopy={handleCopy}
               />
             ))}
           </div>

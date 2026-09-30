@@ -43,6 +43,7 @@ const LOCAL_TOOL_HREFS = [
   "/tools/css-unit-converter",
   "/tools/hidden-characters",
   "/tools/markdown-preview",
+  "/tools/mermaid-viewer",
   "/tools/image-compressor",
   "/tools/cron-explainer",
   "/tools/cron-builder",

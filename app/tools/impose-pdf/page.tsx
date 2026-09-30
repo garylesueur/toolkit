@@ -49,6 +49,7 @@ export default function ImposePdfPage() {
     loading,
     error,
     loadFile,
+    captureDocument,
     reset,
   } = usePdfDocument();
   const [mode, setMode] = useState<ImpositionMode>("2-up");
@@ -75,6 +76,7 @@ export default function ImposePdfPage() {
 
   async function saveImposedPdf() {
     if (!pdfBytes) return;
+    const isCurrent = captureDocument();
     setSaving(true);
     setSaveError(null);
     setProgress({ completed: 0, total: sheets.length });
@@ -82,19 +84,23 @@ export default function ImposePdfPage() {
       const result = await imposePdf(
         pdfBytes,
         { mode, pageSize, orientation, margin, gap },
-        (completed, total) => setProgress({ completed, total }),
+        (completed, total) => {
+          if (isCurrent()) setProgress({ completed, total });
+        },
       );
+      if (!isCurrent()) return;
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
       downloadPdfBytes(
         result,
         `${baseName}-${mode === "booklet" ? "booklet" : mode}.pdf`,
       );
     } catch (caught) {
+      if (!isCurrent()) return;
       setSaveError(
         caught instanceof Error ? caught.message : "Could not impose PDF",
       );
     } finally {
-      setSaving(false);
+      if (isCurrent()) setSaving(false);
     }
   }
 
@@ -112,7 +118,12 @@ export default function ImposePdfPage() {
 
       <div className="mt-8">
         <PdfDropZone
-          onFiles={(files) => loadFile(files[0])}
+          onFiles={(files) => {
+            setSaveError(null);
+            setProgress({ completed: 0, total: 0 });
+            setSaving(false);
+            void loadFile(files[0]);
+          }}
           compact={Boolean(pdfBytes)}
           label={pdfBytes ? "Choose a different PDF" : "Choose a PDF to impose"}
           sublabel="PDF file - up to 200 MB"

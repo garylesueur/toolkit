@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 
 import { CopyableRow } from "@/components/copyable-row";
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Textarea } from "@/components/ui/textarea";
-
-const COPY_RESET_MS = 2000;
 
 /** Split input into words by detecting boundaries: spaces, hyphens, underscores, camelCase transitions. */
 function splitIntoWords(input: string): string[] {
@@ -83,19 +81,12 @@ interface ConversionResult {
 
 export default function CaseConverterPage() {
   const [input, setInput] = useState("");
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const results: ConversionResult[] = useMemo(() => {
     const words = splitIntoWords(input);
     if (words.length === 0) return [];
     return CASES.map((c) => ({ label: c.label, value: c.convert(words) }));
   }, [input]);
-
-  const handleCopy = useCallback(async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedValue(text);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
 
   return (
     <div>
@@ -126,8 +117,6 @@ export default function CaseConverterPage() {
               key={result.label}
               label={result.label}
               value={result.value}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
           ))}
         </div>

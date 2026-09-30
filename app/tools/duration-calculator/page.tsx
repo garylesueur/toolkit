@@ -13,7 +13,6 @@ import {
   MONTHS_PER_YEAR,
 } from "@/lib/shared/date";
 
-const COPY_RESET_MS = 2000;
 const MS_PER_SECOND = 1000;
 const MS_PER_MINUTE = 60 * MS_PER_SECOND;
 const MS_PER_HOUR = 60 * MS_PER_MINUTE;
@@ -100,14 +99,6 @@ export default function DurationCalculatorPage() {
   const [durationInputs, setDurationInputs] = useState<DurationInputsState>(
     EMPTY_DURATION_INPUTS,
   );
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
-
-  const handleCopy = useCallback(async (value: string) => {
-    if (!value) return;
-    await navigator.clipboard.writeText(value);
-    setCopiedValue(value);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
 
   const handleStartNow = useCallback(() => {
     setStartDate(formatDateTimeLocalForInput(new Date()));
@@ -258,38 +249,23 @@ export default function DurationCalculatorPage() {
             <CopyableRow
               label="Years, months, days"
               value={betweenResults.breakdown}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
-            <CopyableRow
-              label="Total days"
-              value={betweenResults.totalDays}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
-            />
+            <CopyableRow label="Total days" value={betweenResults.totalDays} />
             <CopyableRow
               label="Total hours"
               value={betweenResults.totalHours}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
             <CopyableRow
               label="Total minutes"
               value={betweenResults.totalMinutes}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
             <CopyableRow
               label="Total seconds"
               value={betweenResults.totalSeconds}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
             <CopyableRow
               label="Total milliseconds"
               value={betweenResults.totalMilliseconds}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
           </div>
         )}
@@ -341,18 +317,8 @@ export default function DurationCalculatorPage() {
 
         {addResult && (
           <div className="mt-4 space-y-2">
-            <CopyableRow
-              label="ISO 8601"
-              value={addResult.iso}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
-            />
-            <CopyableRow
-              label="Local date/time"
-              value={addResult.local}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
-            />
+            <CopyableRow label="ISO 8601" value={addResult.iso} />
+            <CopyableRow label="Local date/time" value={addResult.local} />
           </div>
         )}
       </section>

@@ -1,15 +1,14 @@
 "use client";
 
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 
 import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useClipboard } from "@/hooks/use-clipboard";
 import { useSanitisedMarkdown } from "@/hooks/use-sanitised-markdown";
-
-const COPY_RESET_MS = 2000;
 
 const SAMPLE_MARKDOWN = `# Hello, Markdown!
 
@@ -37,16 +36,10 @@ console.log(greeting);
 
 export default function MarkdownPreviewPage() {
   const [input, setInput] = useState(SAMPLE_MARKDOWN);
-  const [copied, setCopied] = useState(false);
 
   const html = useSanitisedMarkdown(input);
 
-  const handleCopy = useCallback(async () => {
-    if (!html) return;
-    await navigator.clipboard.writeText(html);
-    setCopied(true);
-    setTimeout(() => setCopied(false), COPY_RESET_MS);
-  }, [html]);
+  const { copy: handleCopy, copied, error: copyError } = useClipboard(html);
 
   return (
     <div>
@@ -72,9 +65,15 @@ export default function MarkdownPreviewPage() {
           ) : (
             <RiFileCopyLine className="mr-1.5 size-4" />
           )}
-          {copied ? "Copied!" : "Copy as HTML"}
+          {copied ? "Copied" : "Copy"}
         </Button>
       </div>
+
+      {copyError && (
+        <p role="alert" className="text-destructive text-sm">
+          {copyError}
+        </p>
+      )}
 
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-2">

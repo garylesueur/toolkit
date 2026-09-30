@@ -60,20 +60,29 @@ minimumReleaseAgeExclude:
   - pdfjs-dist@6.2.108
   - postcss@8.5.25
   - ip-address@10.3.1
+  - dompurify@3.4.16
 minimumReleaseAgeStrict: false
 overrides:
   "@babel/core@<7.29.1": ^7.29.1
   # GHSA-frvp-7c67-39w9: path traversal in serve-static via encoded backslash.
   "@hono/node-server@<2.0.5": ^2.0.11
   body-parser@<2.3.0: ^2.3.0
-  brace-expansion@<5.0.8: ^5.0.8
-  fast-uri@<3.1.4: ^3.1.4
-  hono@<4.12.32: ^4.12.32
-  ip-address@<10.1.1: ^10.3.1
-  js-yaml@<4.3.0: ^4.3.0
+  brace-expansion@<5.0.12: ^5.0.12
+  fast-uri@<3.1.8: ^3.1.8
+  hono@<4.13.5: ^4.13.5
+  ip-address@<10.7.1: ^10.7.1
+  js-yaml@<4.3.2: ^4.3.2
   postcss@<8.5.25: ^8.5.25
-  qs@<6.15.2: ^6.15.3
+  qs@<6.16.0: ^6.16.0
   # GHSA-f88m-g3jw-g9cj: libvips CVEs inherited by sharp. Next declares
   # sharp ^0.34.5, but nothing here uses next/image so it is never invoked.
-  sharp@<0.35.0: ^0.35.3
+  sharp@<0.35.4: ^0.35.4
+  # Keep transitive parser/network fixes on their existing major lines.
+  dompurify@<3.4.13: ^3.4.16
+  undici@>=6.0.0 <6.28.1: ^6.28.1
+  nanoid@>=3.0.0 <3.3.18: ^3.3.18
+  postcss-selector-parser@>=7.0.0 <7.1.3: ^7.1.3
+  browserslist@<4.28.7: ^4.28.7
+  baseline-browser-mapping@<2.11.0: ^2.11.0
+  lodash-es@<4.17.24: ^4.17.24
 resolutionMode: time-based

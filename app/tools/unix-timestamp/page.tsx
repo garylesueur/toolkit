@@ -13,7 +13,6 @@ import {
   formatDateTimeLocalForInput,
 } from "@/lib/shared/date";
 
-const COPY_RESET_MS = 2000;
 const SECONDS_THRESHOLD = 10_000_000_000;
 
 /**
@@ -29,14 +28,6 @@ function toMilliseconds(value: number): number {
 export default function UnixTimestampPage() {
   const [timestampInput, setTimestampInput] = useState("");
   const [dateInput, setDateInput] = useState("");
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
-
-  const handleCopy = useCallback(async (value: string) => {
-    if (!value) return;
-    await navigator.clipboard.writeText(value);
-    setCopiedValue(value);
-    setTimeout(() => setCopiedValue(null), COPY_RESET_MS);
-  }, []);
 
   const handleTimestampNow = useCallback(() => {
     setTimestampInput(Math.floor(Date.now() / 1000).toString());
@@ -124,30 +115,13 @@ export default function UnixTimestampPage() {
 
         {timestampResults && (
           <div className="mt-4 space-y-2">
-            <CopyableRow
-              label="ISO 8601"
-              value={timestampResults.iso}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
-            />
+            <CopyableRow label="ISO 8601" value={timestampResults.iso} />
             <CopyableRow
               label="Local date/time"
               value={timestampResults.local}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
-            <CopyableRow
-              label="Relative"
-              value={timestampResults.relative}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
-            />
-            <CopyableRow
-              label="UTC"
-              value={timestampResults.utc}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
-            />
+            <CopyableRow label="Relative" value={timestampResults.relative} />
+            <CopyableRow label="UTC" value={timestampResults.utc} />
           </div>
         )}
       </section>
@@ -184,14 +158,10 @@ export default function UnixTimestampPage() {
             <CopyableRow
               label="Unix timestamp (seconds)"
               value={dateResults.seconds}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
             <CopyableRow
               label="Unix timestamp (milliseconds)"
               value={dateResults.milliseconds}
-              copiedValue={copiedValue}
-              onCopy={handleCopy}
             />
           </div>
         )}

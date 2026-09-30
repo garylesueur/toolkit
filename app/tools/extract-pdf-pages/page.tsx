@@ -15,7 +15,7 @@ import { PrivacyBanner } from "@/components/privacy-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePdfDocument } from "@/hooks/use-pdf-document";
-import { downloadPdf } from "@/lib/pdf/download";
+import { downloadPdfBytes } from "@/lib/pdf/download";
 import { extractPdfPages } from "@/lib/pdf/extract";
 
 export default function ExtractPdfPagesPage() {
@@ -27,6 +27,7 @@ export default function ExtractPdfPagesPage() {
     loading,
     error,
     loadFile,
+    captureDocument,
     reset,
   } = usePdfDocument();
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -48,21 +49,25 @@ export default function ExtractPdfPagesPage() {
 
   const handleSave = useCallback(async () => {
     if (!pdfBytes || selected.size === 0) return;
+    const isCurrent = captureDocument();
     setSaving(true);
     setSaveError(null);
     try {
       const indices = Array.from(selected).sort((a, b) => a - b);
       const result = await extractPdfPages(pdfBytes, indices);
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
-      await downloadPdf(result, `${baseName}-extracted.pdf`);
+      const bytes = await result.save();
+      if (!isCurrent()) return;
+      downloadPdfBytes(bytes, `${baseName}-extracted.pdf`);
     } catch (err) {
+      if (!isCurrent()) return;
       setSaveError(
         err instanceof Error ? err.message : "Could not extract pages.",
       );
     } finally {
-      setSaving(false);
+      if (isCurrent()) setSaving(false);
     }
-  }, [pdfBytes, selected, fileName]);
+  }, [pdfBytes, selected, fileName, captureDocument]);
 
   return (
     <div>
@@ -78,7 +83,12 @@ export default function ExtractPdfPagesPage() {
 
       <div className="mt-8">
         <PdfDropZone
-          onFiles={(files) => loadFile(files[0])}
+          onFiles={(files) => {
+            setSelected(new Set());
+            setSaveError(null);
+            setSaving(false);
+            void loadFile(files[0]);
+          }}
           compact={!!pdfBytes}
         />
       </div>
@@ -113,6 +123,8 @@ export default function ExtractPdfPagesPage() {
               size="sm"
               onClick={() => {
                 reset();
+                setSaving(false);
+                setSaveError(null);
                 setSelected(new Set());
               }}
             >

@@ -377,6 +377,15 @@ export const tools: Tool[] = [
     dateAdded: "2026-02-25",
   },
   {
+    name: "Mermaid Viewer",
+    description:
+      "Open or drop Mermaid files to view diagrams, zoom in, and edit their source locally.",
+    href: "/tools/mermaid-viewer",
+    icon: RiGitMergeLine,
+    tags: ["dev-utils", "image", "text"],
+    dateAdded: "2026-09-30",
+  },
+  {
     name: "Image Compressor",
     description:
       "Batch compress images with side-by-side preview and ZIP download.",

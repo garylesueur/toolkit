@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePdfDocument } from "@/hooks/use-pdf-document";
 import type { RotationAngle } from "@/lib/pdf/constants";
-import { downloadPdf } from "@/lib/pdf/download";
+import { downloadPdfBytes } from "@/lib/pdf/download";
 import { rotatePdfPages } from "@/lib/pdf/rotate";
 
 export default function RotatePdfPage() {
@@ -28,6 +28,7 @@ export default function RotatePdfPage() {
     loading,
     error,
     loadFile,
+    captureDocument,
     reset,
   } = usePdfDocument();
   const [rotations, setRotations] = useState<Map<number, RotationAngle>>(
@@ -61,20 +62,24 @@ export default function RotatePdfPage() {
 
   const handleSave = useCallback(async () => {
     if (!pdfBytes || rotations.size === 0) return;
+    const isCurrent = captureDocument();
     setSaving(true);
     setSaveError(null);
     try {
       const result = await rotatePdfPages(pdfBytes, rotations);
       const baseName = (fileName ?? "document").replace(/\.pdf$/i, "");
-      await downloadPdf(result, `${baseName}-rotated.pdf`);
+      const bytes = await result.save();
+      if (!isCurrent()) return;
+      downloadPdfBytes(bytes, `${baseName}-rotated.pdf`);
     } catch (err) {
+      if (!isCurrent()) return;
       setSaveError(
         err instanceof Error ? err.message : "Could not rotate the PDF.",
       );
     } finally {
-      setSaving(false);
+      if (isCurrent()) setSaving(false);
     }
-  }, [pdfBytes, rotations, fileName]);
+  }, [pdfBytes, rotations, fileName, captureDocument]);
 
   const changedCount = Array.from(rotations.values()).filter(
     (r) => r !== 0,
@@ -94,7 +99,12 @@ export default function RotatePdfPage() {
 
       <div className="mt-8">
         <PdfDropZone
-          onFiles={(files) => loadFile(files[0])}
+          onFiles={(files) => {
+            setRotations(new Map());
+            setSaveError(null);
+            setSaving(false);
+            void loadFile(files[0]);
+          }}
           compact={!!pdfBytes}
         />
       </div>
@@ -124,6 +134,8 @@ export default function RotatePdfPage() {
               size="sm"
               onClick={() => {
                 reset();
+                setSaving(false);
+                setSaveError(null);
                 setRotations(new Map());
               }}
             >

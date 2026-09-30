@@ -2,7 +2,7 @@
 
 import { RiSearchLine, RiCloseLine } from "@remixicon/react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useCallback, useRef, useTransition } from "react";
+import { useCallback, useRef, useTransition, useState, useEffect } from "react";
 
 import {
   InputGroup,
@@ -23,33 +23,61 @@ export function ToolsSearch() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const query = searchParams.get(SEARCH_PARAM_KEY) ?? "";
+  const [draft, setDraft] = useState(query);
+  const submittedQueries = useRef<string[]>([]);
+  const latestParams = useRef(searchParams);
+  useEffect(() => {
+    latestParams.current = searchParams;
+  }, [searchParams]);
+
+  useEffect(() => {
+    const acknowledgement = submittedQueries.current.indexOf(query);
+    if (acknowledgement >= 0) {
+      submittedQueries.current.splice(0, acknowledgement + 1);
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    submittedQueries.current = [];
+    setDraft(query);
+  }, [query]);
+
+  useEffect(
+    () => () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    },
+    [],
+  );
 
   const updateSearchParam = useCallback(
     (value: string) => {
+      setDraft(value);
       if (debounceRef.current) clearTimeout(debounceRef.current);
 
       debounceRef.current = setTimeout(() => {
         startTransition(() => {
-          const params = new URLSearchParams(searchParams.toString());
+          const params = new URLSearchParams(latestParams.current.toString());
           if (value) {
             params.set(SEARCH_PARAM_KEY, value);
           } else {
             params.delete(SEARCH_PARAM_KEY);
           }
           const qs = params.toString();
+          submittedQueries.current.push(value);
           router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
         });
       }, DEBOUNCE_MS);
     },
-    [searchParams, router, pathname, startTransition],
+    [router, pathname, startTransition],
   );
 
   const clearSearch = useCallback(() => {
+    setDraft("");
     if (debounceRef.current) clearTimeout(debounceRef.current);
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       params.delete(SEARCH_PARAM_KEY);
       const qs = params.toString();
+      submittedQueries.current.push("");
       router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
     });
   }, [searchParams, router, pathname, startTransition]);
@@ -64,11 +92,11 @@ export function ToolsSearch() {
         </InputGroupAddon>
         <InputGroupInput
           placeholder="Search tools…"
-          defaultValue={query}
+          value={draft}
           onChange={(e) => updateSearchParam(e.target.value)}
           aria-label="Search tools"
         />
-        {query && (
+        {draft && (
           <InputGroupAddon align="inline-end">
             <InputGroupButton
               size="icon-xs"

@@ -15,7 +15,9 @@ export async function renderPageThumbnail(
   source: Uint8Array | PDFDocumentProxy,
   pageIndex: number,
   scale = 0.4,
+  signal?: AbortSignal,
 ): Promise<string> {
+  signal?.throwIfAborted();
   let pdf: PDFDocumentProxy;
   // Only destroy a document we opened ourselves; a caller-supplied proxy is
   // still theirs to manage.
@@ -39,11 +41,20 @@ export async function renderPageThumbnail(
     canvas.width = viewport.width;
     canvas.height = viewport.height;
 
-    await page.render({
+    signal?.throwIfAborted();
+    const renderTask = page.render({
       canvasContext: canvas.getContext("2d")!,
       viewport,
       canvas,
-    }).promise;
+    });
+    const cancel = () => renderTask.cancel();
+    signal?.addEventListener("abort", cancel, { once: true });
+    try {
+      await renderTask.promise;
+      signal?.throwIfAborted();
+    } finally {
+      signal?.removeEventListener("abort", cancel);
+    }
 
     return canvas.toDataURL("image/png");
   } finally {
@@ -55,20 +66,29 @@ export async function renderPageThumbnail(
 export async function renderAllThumbnails(
   bytes: Uint8Array,
   scale = 0.4,
+  signal?: AbortSignal,
 ): Promise<string[]> {
+  signal?.throwIfAborted();
   const pdfjs = await getPdfjs();
   // PDF.js may transfer this buffer to its worker. The hook that owns `bytes`
   // still needs the original for the user's eventual PDF operation.
-  const pdf = await pdfjs.getDocument({ data: bytes.slice() }).promise;
-
+  signal?.throwIfAborted();
+  const task = pdfjs.getDocument({ data: bytes.slice() });
+  const cancel = () => {
+    void task.destroy().catch(() => {});
+  };
+  signal?.addEventListener("abort", cancel, { once: true });
   try {
+    const pdf = await task.promise;
     const results: string[] = [];
     for (let i = 0; i < pdf.numPages; i++) {
-      results.push(await renderPageThumbnail(pdf, i, scale));
+      signal?.throwIfAborted();
+      results.push(await renderPageThumbnail(pdf, i, scale, signal));
     }
     return results;
   } finally {
     // Without this the worker holds every document ever opened in the session.
-    await pdf.loadingTask.destroy();
+    signal?.removeEventListener("abort", cancel);
+    await task.destroy();
   }
 }
