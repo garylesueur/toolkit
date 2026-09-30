@@ -63,7 +63,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@types/html-minifier-terser": "^7.0.2",
     "@types/jsbarcode": "3.11.4",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.6.2",
     "@types/papaparse": "^5.5.2",
     "@types/pdfmake": "0.3.3",
     "@types/qrcode": "^1.5.6",
