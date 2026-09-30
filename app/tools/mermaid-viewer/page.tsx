@@ -8,6 +8,7 @@ import { PrivacyBanner } from "@/components/privacy-banner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { validateMermaidImages } from "@/lib/mermaid/validate-images";
 
 const MAX_FILE_BYTES = 50_000;
 const SAMPLE = `flowchart LR
@@ -22,6 +23,7 @@ export default function MermaidViewerPage() {
   const [filename, setFilename] = useState("");
   const [fileError, setFileError] = useState("");
   const [renderError, setRenderError] = useState("");
+  const [sourceOpen, setSourceOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [rendering, setRendering] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -37,7 +39,9 @@ export default function MermaidViewerPage() {
     const previousFocus = document.activeElement;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    viewerRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    if (!viewerRef.current?.contains(document.activeElement)) {
+      viewerRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    }
     function handleKey(event: KeyboardEvent) {
       if (event.key === "Escape") {
         ++fileRequest.current;
@@ -126,10 +130,26 @@ export default function MermaidViewerPage() {
         mermaid.initialize({
           startOnLoad: false,
           securityLevel: "strict",
+          // HTML labels must not load images while Mermaid measures them.
+          dompurifyConfig: {
+            FORBID_TAGS: ["style", "img"],
+            FORBID_ATTR: ["src", "srcset"],
+          },
+          secure: [
+            "secure",
+            "securityLevel",
+            "startOnLoad",
+            "maxTextSize",
+            "suppressErrorRendering",
+            "maxEdges",
+            "dompurifyConfig",
+          ],
           suppressErrorRendering: true,
           theme: resolvedTheme === "dark" ? "dark" : "default",
           maxTextSize: MAX_FILE_BYTES,
         });
+        await validateMermaidImages(mermaid, source);
+        if (cancelled) return;
         document.body.appendChild(container);
         const { svg } = await mermaid.render(
           `mermaid-${crypto.randomUUID()}`,
@@ -148,6 +168,7 @@ export default function MermaidViewerPage() {
               ? error.message
               : "Could not render this diagram.",
           );
+          setSourceOpen(true);
         }
       } finally {
         container.remove();
@@ -223,6 +244,9 @@ export default function MermaidViewerPage() {
 
       <div
         ref={viewerRef}
+        role={viewerOpen ? "dialog" : undefined}
+        aria-modal={viewerOpen ? true : undefined}
+        aria-labelledby={viewerOpen ? "mermaid-viewer-title" : undefined}
         className={
           source.trim()
             ? "fixed inset-0 z-50 flex flex-col bg-background p-4 sm:p-6"
@@ -230,9 +254,12 @@ export default function MermaidViewerPage() {
         }
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="min-w-0 break-all text-sm font-medium">
+          <h2
+            id="mermaid-viewer-title"
+            className="min-w-0 break-all text-sm font-medium"
+          >
             {filename || "Diagram preview"}
-          </p>
+          </h2>
           <div className="flex flex-wrap items-center gap-2">
             {source.trim() && (
               <Button
@@ -353,7 +380,8 @@ export default function MermaidViewerPage() {
 
         <details
           className="mt-3 shrink-0"
-          open={Boolean(renderError) || undefined}
+          open={sourceOpen}
+          onToggle={(event) => setSourceOpen(event.currentTarget.open)}
         >
           <summary className="cursor-pointer text-sm font-medium">
             View or edit Mermaid source
